@@ -12,6 +12,7 @@ from fastapi.responses import JSONResponse
 from app.core.config import settings
 from app.db.connection import engine, check_db_connectivity
 from app.api.health import router as health_router
+from app.api.auth import router as auth_router
 from app.api.router import api_router
 
 logger = logging.getLogger("uvicorn.error")
@@ -61,6 +62,9 @@ def create_app() -> FastAPI:
     # Mount health router at root for direct /health and /health/ready access
     app.include_router(health_router)
 
+    # Mount auth router at root for direct /auth/login and /auth/me access
+    app.include_router(auth_router)
+
     # Mount API v1 router for versioned routes (/api/v1/...)
     app.include_router(api_router, prefix=settings.API_V1_PREFIX)
 
@@ -78,6 +82,8 @@ def create_app() -> FastAPI:
             "docs_url": "/docs",
             "health_url": "/health",
             "readiness_url": "/health/ready",
+            "auth_login_url": "/auth/login",
+            "auth_me_url": "/auth/me",
         }
 
     @app.exception_handler(Exception)

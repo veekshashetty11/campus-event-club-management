@@ -6,7 +6,7 @@ Never exposes plaintext passwords or sensitive credentials in string representat
 
 from typing import List, Union
 from urllib.parse import urlparse
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, ValidationInfo
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -36,12 +36,36 @@ class Settings(BaseSettings):
     DB_MAX_OVERFLOW: int = 10
     DB_POOL_TIMEOUT: float = 5.0
 
+    # Authentication & JWT Configuration (Must be loaded from environment; no insecure hardcoded fallback)
+    JWT_SECRET_KEY: str = Field(
+        ...,
+        description="Cryptographic secret key for signing JWT tokens (min 32 characters, loaded strictly from environment)"
+    )
+    JWT_ALGORITHM: str = Field(
+        default="HS256",
+        description="Cryptographic algorithm for JWT signing"
+    )
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(
+        default=60,
+        description="Access token lifespan in minutes"
+    )
+
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=(".env", "backend/.env"),
         env_file_encoding="utf-8",
         case_sensitive=True,
         extra="ignore"
     )
+
+    @field_validator("JWT_SECRET_KEY")
+    @classmethod
+    def validate_jwt_secret_key(cls, v: str, info: ValidationInfo) -> str:
+        if not v or not v.strip():
+            raise ValueError("JWT_SECRET_KEY must be provided via environment configuration.")
+        cleaned = v.strip()
+        if len(cleaned) < 32:
+            raise ValueError("JWT_SECRET_KEY must be at least 32 characters long to ensure cryptographic security.")
+        return cleaned
 
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod

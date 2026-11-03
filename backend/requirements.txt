@@ -7,6 +7,10 @@ pydantic>=2.6.0,<3.0.0
 pydantic-settings>=2.2.0,<3.0.0
 python-dotenv>=1.0.1
 
+# Security & Authentication
+bcrypt>=4.1.0,<5.0.0
+pyjwt>=2.8.0,<3.0.0
+
 # Database & ORM (Synchronous PostgreSQL via psycopg 3)
 sqlalchemy>=2.0.28,<2.1.0
 psycopg[binary]>=3.1.18,<3.3.0
