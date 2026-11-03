@@ -2,7 +2,53 @@
 
 **Project:** Campus Event & Club Management System
 **File:** `database/schema/campus_event_club_management_schema.sql`
-**Status:** Phase 2 — Core DDL (tables, indexes, views). Functions and triggers are planned but not yet implemented.
+**Status:** Phase 3 — Functions, triggers, and views implemented (NOT YET EXECUTED).
+            Phase 2 — Core DDL (28 tables, indexes, views) — complete.
+
+---
+
+## Phase 3 Approved Decisions (D1–D5)
+
+### D1 — Three-Level Sequential Event Approval
+**Approved:** Implemented in `fn_process_event_approval()`.
+- Level 1: `club_advisor` role
+- Level 2: `student_affairs` role
+- Level 3: `administrator` role
+- Levels must be completed in strict ascending order.
+- `events.current_approval_level` (new column, Phase 3) tracks progress in O(1).
+- Rejection at any level sets `events.status = 'rejected'` and halts the workflow.
+- The same approver cannot submit twice at the same level.
+- The function does NOT rely on `current_user` / `session_user` for identity — the caller passes the authenticated user UUID explicitly.
+
+### D2 — Automatic Waitlist Promotion
+**Approved:** Implemented in `trg_waitlist_promotion` (AFTER UPDATE on `event_registrations`).
+- Triggers when `status` changes from `'registered'` → `'cancelled'`.
+- Uses `FOR UPDATE` on the `events` row and `FOR UPDATE SKIP LOCKED` on the waitlist row to prevent concurrent promotions of the same entry.
+- Promoted user gets a 24-hour window (`expires_at`) to confirm.
+- Waitlist positions are renumbered within the same transaction (safe because `uq_waitlist_position` is `DEFERRABLE`).
+
+### D3 — Certificate Eligibility
+**Approved:** `'present'` and `'late'` attendance statuses qualify for a certificate.
+`'absent'` and `'excused'` do not.
+- Implemented in `trg_certificate_issuance` (AFTER INSERT OR UPDATE on `attendance`).
+- `ON CONFLICT (event_id, user_id, certificate_type) DO NOTHING` prevents duplicates.
+- Revocation is a separate explicit administrative action (not handled by trigger).
+
+### D4 — Configurable Attendance Points
+**Approved:** Points stored on `events` table as `points_on_time` (default 10) and `points_late` (default 5).
+- Added via `ALTER TABLE` in Phase 3 schema amendments.
+- `trg_attendance_points` reads these columns at trigger time — no hard-coded values in trigger functions.
+- Uses delta arithmetic (`v_pts - v_prev_pts`) to adjust `users.points` when attendance status changes, preventing double-awarding.
+- `NULL` value for either column means "award no points for that status".
+
+### D5 — Audit Scope
+**Approved:** 16 audited tables across all 5 groups:
+`users`, `roles`, `permissions`, `clubs`, `club_members`, `events`, `event_approvals`, `venue_bookings`, `equipment_bookings`, `event_registrations`, `event_waitlist`, `club_budgets`, `expenses`, `event_sponsors`, `attendance`, `certificates`.
+- Lookup tables (`departments`, `event_categories`, `event_series`, `venues`, `equipment`, `sponsors`, `badges`, `feedback`, `notifications`, `user_badges`) are NOT audited to reduce noise.
+- Application user passed via `SET LOCAL "app.current_user_id" = '<uuid>'` before DML.
+- `fn_audit_log_entry` (SECURITY DEFINER) strips: `password_hash`, `verification_hash`, `ticket_code`, `session_id`.
+
+---
 
 ---
 
@@ -191,22 +237,24 @@ Soft-delete columns can be added to specific tables (e.g., `users`, `clubs`) in 
 
 ---
 
-## 13. Planned Advanced Routines (NOT YET IMPLEMENTED)
+## 13. Advanced Routines — Phase 3 Implementation Status
 
-The following are **planned** for `database/schema/functions.sql` and `database/schema/triggers.sql`. They are documented here for completeness but **will not be claimed as working until implemented and tested**.
+All planned routines have been written. **Not yet executed or verified against a live database.**
 
-| Routine | Type | Purpose |
+| Routine | File | Status |
 |---|---|---|
-| `fn_process_event_approval(event_id, approver_id, decision, comments)` | Function | Advances multi-level approval workflow; sets event status on final approval/rejection |
-| `fn_register_for_event(p_event_id, p_user_id)` | Function | Atomic registration: checks capacity, adds to registrations or waitlist, updates counters |
-| `fn_club_score()` | Function | Computes a composite score per club (events, members, ratings, attendance) for leaderboard |
-| `trg_waitlist_promotion` | Trigger | Fires on registration cancellation; promotes the first waiting user |
-| `trg_budget_validation` | Trigger | Fires BEFORE expense approval UPDATE; rejects if approval would exceed budget |
-| `trg_attendance_points` | Trigger | Fires AFTER attendance INSERT/UPDATE; awards points to `users.points` |
-| `trg_certificate_issuance` | Trigger | Fires AFTER attendance status set to 'present'; creates a 'pending' certificate row |
-| `trg_audit_log` | Trigger (generic) | Fires AFTER INSERT/UPDATE/DELETE on sensitive tables; writes to `audit_log` |
-| `trg_update_search_vector` | Trigger | Fires BEFORE INSERT OR UPDATE on `events`; rebuilds `search_vector` |
-| `trg_sync_event_counts` | Trigger | Fires AFTER INSERT/UPDATE/DELETE on `event_registrations` and `event_waitlist`; keeps denormalised counters in sync |
+| `fn_process_event_approval()` | `functions.sql §1` | Written |
+| `fn_register_for_event()` | `functions.sql §2` | Written |
+| `fn_club_score()` | `functions.sql §3` | Written |
+| `fn_audit_log_entry()` | `functions.sql §4` | Written |
+| `trg_update_search_vector` | `triggers.sql §1` | Written |
+| `trg_sync_registered_count` | `triggers.sql §2a` | Written |
+| `trg_sync_waitlist_count` | `triggers.sql §2b` | Written |
+| `trg_waitlist_promotion` | `triggers.sql §3` | Written |
+| `trg_budget_validation` | `triggers.sql §4` | Written |
+| `trg_attendance_points` | `triggers.sql §5` | Written |
+| `trg_certificate_issuance` | `triggers.sql §6` | Written |
+| `trg_audit_*` (16 triggers) | `triggers.sql §7` | Written |
 
 ---
 

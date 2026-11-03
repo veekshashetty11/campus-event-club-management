@@ -927,3 +927,46 @@ GROUP BY
 --                                     event counter sync
 --   database/seeds/seed_data.sql    — reference data and demo records
 -- ============================================================
+-- ============================================================
+-- Campus Event & Club Management System
+-- PostgreSQL 14+ — Schema Amendments for Phase 3
+-- ============================================================
+-- File   : database/schema/campus_event_club_management_schema.sql
+-- APPEND : These ALTER TABLE statements extend the schema created
+--          in Phase 2. Run AFTER the base schema, BEFORE
+--          functions.sql, triggers.sql, and views.sql.
+-- ============================================================
+-- AMENDMENT LOG
+-- 2026-11-03  Phase 3 — Three targeted additions:
+--   (A3-1) events.points_on_time   — configurable points for on-time attendance  (D4)
+--   (A3-2) events.points_late      — configurable points for late attendance      (D4)
+--   (A3-3) events.current_approval_level — tracks the active approval level so
+--           fn_process_event_approval can enforce sequential order in O(1)        (D1)
+-- ============================================================
+
+-- ── A3-1 & A3-2: Per-event configurable attendance points ────
+-- D4 decision: store point values on events so they are visible
+-- in the same row as the event and require no extra table.
+-- Triggers read these columns instead of hard-coded constants.
+-- NULL means "award no points for that attendance status".
+ALTER TABLE events
+    ADD COLUMN IF NOT EXISTS points_on_time  INTEGER DEFAULT 10
+        CHECK (points_on_time  IS NULL OR points_on_time  >= 0),
+    ADD COLUMN IF NOT EXISTS points_late     INTEGER DEFAULT 5
+        CHECK (points_late     IS NULL OR points_late     >= 0);
+
+COMMENT ON COLUMN events.points_on_time IS
+    'Points awarded when attendance.status = ''present''. NULL = no points.';
+COMMENT ON COLUMN events.points_late IS
+    'Points awarded when attendance.status = ''late''.    NULL = no points.';
+
+-- ── A3-3: Approval level tracker ─────────────────────────────
+-- Tracks the highest approval level that has been completed.
+-- 0 = not yet started, 1 = level-1 approved, 2 = level-2 approved, 3 = fully approved.
+-- fn_process_event_approval uses this to enforce sequential order.
+ALTER TABLE events
+    ADD COLUMN IF NOT EXISTS current_approval_level SMALLINT NOT NULL DEFAULT 0
+        CHECK (current_approval_level BETWEEN 0 AND 5);
+
+COMMENT ON COLUMN events.current_approval_level IS
+    'Highest approval level completed. 0 = none. Updated atomically by fn_process_event_approval.';
