@@ -349,13 +349,8 @@ BEGIN
         VALUES (p_event_id, p_user_id, 'registered')
         RETURNING registration_id INTO v_registration_id;
 
-        -- Update denormalised counter (trigger also does this; function
-        -- updates it directly so callers see the new count immediately
-        -- even before the trigger fires in the same statement).
-        UPDATE events
-        SET    registered_count = registered_count + 1,
-               updated_at       = NOW()
-        WHERE  event_id = p_event_id;
+        -- Note: events.registered_count is automatically incremented
+        -- by trg_sync_registered_count on event_registrations INSERT.
 
         -- Notify user
         INSERT INTO notifications (user_id, title, body, type, reference_type, reference_id)
@@ -388,10 +383,8 @@ BEGIN
         VALUES (p_event_id, p_user_id, v_next_position, 'waiting')
         RETURNING waitlist_id INTO v_waitlist_id;
 
-        UPDATE events
-        SET    waitlist_count = waitlist_count + 1,
-               updated_at     = NOW()
-        WHERE  event_id = p_event_id;
+        -- Note: events.waitlist_count is automatically incremented
+        -- by trg_sync_waitlist_count on event_waitlist INSERT.
 
         -- Notify user
         INSERT INTO notifications (user_id, title, body, type, reference_type, reference_id)

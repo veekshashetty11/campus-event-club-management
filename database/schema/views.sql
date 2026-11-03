@@ -26,7 +26,8 @@
 -- Public-facing list of published/approved events in the future.
 -- Shows seat availability. NULL seats_available = unlimited.
 -- ─────────────────────────────────────────────────────────────
-CREATE OR REPLACE VIEW vw_upcoming_events AS
+DROP VIEW IF EXISTS vw_upcoming_events;
+CREATE VIEW vw_upcoming_events AS
 SELECT
     e.event_id,
     e.title,
@@ -77,7 +78,8 @@ COMMENT ON VIEW vw_upcoming_events IS
 -- ── vw_club_leaderboard ──────────────────────────────────────
 -- Ranks active clubs using the fn_club_score() composite score.
 -- ─────────────────────────────────────────────────────────────
-CREATE OR REPLACE VIEW vw_club_leaderboard AS
+DROP VIEW IF EXISTS vw_club_leaderboard;
+CREATE VIEW vw_club_leaderboard AS
 SELECT
     c.club_id,
     c.name                                              AS club_name,
@@ -109,7 +111,8 @@ COMMENT ON VIEW vw_club_leaderboard IS
 -- attendance_pct is based on registered_count (not total marked),
 -- since unmarked registrants count as implicit no-shows.
 -- ─────────────────────────────────────────────────────────────
-CREATE OR REPLACE VIEW vw_event_attendance_summary AS
+DROP VIEW IF EXISTS vw_event_attendance_summary;
+CREATE VIEW vw_event_attendance_summary AS
 SELECT
     e.event_id,
     e.title                                                             AS event_title,
@@ -159,7 +162,8 @@ COMMENT ON VIEW vw_event_attendance_summary IS
 -- ── vw_budget_summary ────────────────────────────────────────
 -- Club budget utilisation with breakdown by expense status.
 -- ─────────────────────────────────────────────────────────────
-CREATE OR REPLACE VIEW vw_budget_summary AS
+DROP VIEW IF EXISTS vw_budget_summary;
+CREATE VIEW vw_budget_summary AS
 SELECT
     cb.budget_id,
     cb.club_id,
