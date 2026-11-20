@@ -16,6 +16,7 @@ const pathLabels: Record<string, string> = {
   coordinator: 'Coordinator',
   advisor: 'Advisor',
   administrator: 'Administrator',
+  'venue-manager': 'Venue Manager',
   dashboard: 'Dashboard',
   events: 'Events',
   browse: 'Browse Events',
@@ -24,6 +25,18 @@ const pathLabels: Record<string, string> = {
   certificates: 'Certificates',
   notifications: 'Notifications',
   profile: 'Profile',
+  venues: 'Venues',
+  bookings: 'Bookings',
+  equipment: 'Equipment',
+  calendar: 'Calendar',
+  reports: 'Reports',
+  approvals: 'Approvals',
+  budget: 'Budget',
+  sponsors: 'Sponsors',
+  attendance: 'Attendance',
+  users: 'Users',
+  audit: 'Audit Log',
+  settings: 'Settings',
 };
 
 export default function Breadcrumbs({ items, autoGenerate = false }: BreadcrumbsProps) {
@@ -45,25 +58,25 @@ export default function Breadcrumbs({ items, autoGenerate = false }: Breadcrumbs
   if (crumbs.length === 0) return null;
 
   return (
-    <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-sm text-slate-500">
+    <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-slate-400">
       <Link
         to="/"
-        className="flex items-center gap-1 hover:text-slate-700 transition-colors"
+        className="flex items-center gap-1 text-slate-500 hover:text-indigo-400 transition-colors"
       >
-        <Home size={14} />
+        <Home size={13} />
       </Link>
       {crumbs.map((crumb, idx) => (
-        <span key={idx} className="flex items-center gap-1">
-          <ChevronRight size={14} className="text-slate-300" />
+        <span key={idx} className="flex items-center gap-1.5">
+          <ChevronRight size={12} className="text-slate-600" />
           {crumb.path ? (
             <Link
               to={crumb.path}
-              className="hover:text-slate-700 transition-colors"
+              className="text-slate-400 hover:text-indigo-400 transition-colors"
             >
               {crumb.label}
             </Link>
           ) : (
-            <span className="text-slate-800 font-medium">{crumb.label}</span>
+            <span className="text-slate-200 font-semibold">{crumb.label}</span>
           )}
         </span>
       ))}

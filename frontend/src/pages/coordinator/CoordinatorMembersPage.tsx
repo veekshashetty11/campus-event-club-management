@@ -143,18 +143,18 @@ export default function CoordinatorMembersPage() {
       {/* Header & Stats Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Club Member Roster</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">Club Member Roster</h1>
+          <p className="text-sm text-slate-400">
             Manage student registrations, approval requests, and leadership roles for {club.name}.
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800">
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold text-emerald-400">
             <Users size={15} />
             <span>{approvedCount} Active Members</span>
           </div>
           {pendingCount > 0 && (
-            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-xs font-semibold text-amber-800 animate-pulse">
+            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-amber-400 animate-pulse">
               <Clock size={15} />
               <span>{pendingCount} Pending Approval</span>
             </div>
@@ -166,8 +166,8 @@ export default function CoordinatorMembersPage() {
         <div
           className={`p-4 rounded-xl flex items-center justify-between border text-sm ${
             !actionMessage.isError
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-              : 'bg-rose-50 border-rose-200 text-rose-800'
+              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300'
+              : 'bg-rose-500/10 border-rose-500/20 text-rose-300'
           }`}
         >
           <div className="flex items-center gap-2">
@@ -184,7 +184,7 @@ export default function CoordinatorMembersPage() {
       )}
 
       {/* Filters and Search Bar */}
-      <Card className="p-4">
+      <Card className="p-4 bg-[#111C32] border-[#263650]">
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="relative w-full md:w-80">
             <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -193,18 +193,18 @@ export default function CoordinatorMembersPage() {
               placeholder="Search member, email, roll no..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-slate-200 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+              className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-[#263650] bg-[#17243B] text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
             />
           </div>
 
           <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+            <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
               <Filter size={14} /> Status:
             </div>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as 'all' | 'approved' | 'pending' | 'rejected')}
-              className="text-xs font-medium rounded-lg border border-slate-200 bg-white py-1.5 px-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+              className="text-xs font-medium rounded-xl border border-[#263650] bg-[#17243B] py-1.5 px-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
             >
               <option value="all">All Statuses ({clubMembers.length})</option>
               <option value="approved">Approved ({approvedCount})</option>
@@ -212,13 +212,13 @@ export default function CoordinatorMembersPage() {
               <option value="rejected">Rejected</option>
             </select>
 
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 ml-2">
+            <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 ml-2">
               Role:
             </div>
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="text-xs font-medium rounded-lg border border-slate-200 bg-white py-1.5 px-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+              className="text-xs font-medium rounded-xl border border-[#263650] bg-[#17243B] py-1.5 px-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
             >
               <option value="all">All Roles</option>
               <option value="president">President</option>
@@ -232,11 +232,11 @@ export default function CoordinatorMembersPage() {
       </Card>
 
       {/* Members Table */}
-      <Card className="overflow-hidden border border-slate-200/80">
+      <Card className="overflow-hidden border border-[#263650] bg-[#111C32]">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50/75 border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-500">
+              <tr className="bg-[#17243B] border-b border-[#263650] text-xs font-semibold uppercase tracking-wider text-slate-400">
                 <th className="py-3.5 px-5">Member</th>
                 <th className="py-3.5 px-4">Roll Number</th>
                 <th className="py-3.5 px-4">Club Role</th>
@@ -245,13 +245,13 @@ export default function CoordinatorMembersPage() {
                 <th className="py-3.5 px-5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-sm">
+            <tbody className="divide-y divide-[#263650]/60 text-sm">
               {filteredMembers.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-slate-400">
-                    <Users size={32} className="mx-auto mb-2 opacity-50 text-slate-300" />
-                    <p className="font-medium text-slate-600">No members found</p>
-                    <p className="text-xs text-slate-400 mt-1">Try clearing your filters or search terms.</p>
+                  <td colSpan={6} className="py-12 text-center text-slate-500">
+                    <Users size={32} className="mx-auto mb-2 opacity-50 text-slate-500" />
+                    <p className="font-medium text-slate-300">No members found</p>
+                    <p className="text-xs text-slate-500 mt-1">Try clearing your filters or search terms.</p>
                   </td>
                 </tr>
               ) : (
@@ -264,25 +264,25 @@ export default function CoordinatorMembersPage() {
                   const joined = m.joinedDate || m.joinedAt || '2026-09-01';
 
                   return (
-                    <tr key={m.membershipId} className="hover:bg-slate-50/60 transition-colors">
+                    <tr key={m.membershipId} className="hover:bg-[#17243B]/60 transition-colors">
                       <td className="py-3.5 px-5">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-brand-100 text-brand-800 font-bold text-xs flex items-center justify-center shrink-0">
+                          <div className="w-9 h-9 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 font-bold text-xs flex items-center justify-center shrink-0">
                             {name.charAt(0)}
                           </div>
                           <div>
-                            <p className="font-semibold text-slate-900">{name}</p>
+                            <p className="font-semibold text-slate-100">{name}</p>
                             <p className="text-xs text-slate-400">{email}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="py-3.5 px-4 text-xs font-mono text-slate-600">{roll}</td>
+                      <td className="py-3.5 px-4 text-xs font-mono text-slate-300">{roll}</td>
                       <td className="py-3.5 px-4">
                         <Badge variant={getRoleBadgeVariant(role)} className="capitalize">
                           {role.replace('_', ' ')}
                         </Badge>
                       </td>
-                      <td className="py-3.5 px-4 text-xs text-slate-500">
+                      <td className="py-3.5 px-4 text-xs text-slate-400">
                         {new Date(joined).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
@@ -308,14 +308,14 @@ export default function CoordinatorMembersPage() {
                           <div className="flex items-center justify-end gap-2">
                             <button
                               onClick={() => handleStatusChange(m.membershipId, 'approved')}
-                              className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors"
+                              className="p-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 transition-colors"
                               title="Approve Member"
                             >
                               <UserCheck size={16} />
                             </button>
                             <button
                               onClick={() => handleStatusChange(m.membershipId, 'rejected')}
-                              className="p-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 transition-colors"
+                              className="p-1.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500/20 transition-colors"
                               title="Reject Member"
                             >
                               <UserX size={16} />
@@ -332,14 +332,14 @@ export default function CoordinatorMembersPage() {
                                 });
                                 setSelectedRole(role);
                               }}
-                              className="p-1.5 rounded-lg text-slate-500 hover:text-brand-700 hover:bg-slate-100 transition-colors"
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-400 hover:bg-[#17243B] transition-colors"
                               title="Change Role"
                             >
                               <Shield size={16} />
                             </button>
                             <button
                               onClick={() => setRemoveMembershipId({ id: m.membershipId, name })}
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
                               title="Remove Member"
                             >
                               <Trash2 size={16} />
@@ -363,13 +363,13 @@ export default function CoordinatorMembersPage() {
         title="Update Member Role"
       >
         <div className="space-y-4 pt-2">
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-slate-300">
             Assign a designated leadership or team responsibility for{' '}
-            <strong className="text-slate-800">{roleModalMembership?.name}</strong>.
+            <strong className="text-slate-100">{roleModalMembership?.name}</strong>.
           </p>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
               Select Role
             </label>
             <div className="space-y-2">
@@ -383,8 +383,8 @@ export default function CoordinatorMembersPage() {
                   key={r.id}
                   className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
                     selectedRole === r.id
-                      ? 'border-brand-600 bg-brand-50/50 text-brand-950 ring-1 ring-brand-500/20'
-                      : 'border-slate-200 hover:bg-slate-50 text-slate-800'
+                      ? 'border-indigo-500 bg-indigo-500/15 text-slate-100 ring-1 ring-indigo-500/30'
+                      : 'border-[#263650] hover:bg-[#17243B] text-slate-300'
                   }`}
                 >
                   <input
@@ -393,18 +393,18 @@ export default function CoordinatorMembersPage() {
                     value={r.id}
                     checked={selectedRole === r.id}
                     onChange={() => setSelectedRole(r.id as MemberRole)}
-                    className="mt-1 text-brand-600 focus:ring-brand-500"
+                    className="mt-1 text-indigo-600 focus:ring-indigo-500"
                   />
                   <div>
                     <p className="text-sm font-semibold">{r.label}</p>
-                    <p className="text-xs text-slate-500">{r.desc}</p>
+                    <p className="text-xs text-slate-400">{r.desc}</p>
                   </div>
                 </label>
               ))}
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-3 border-t border-[#263650]/60">
             <Button variant="outline" onClick={() => setRoleModalMembership(null)}>
               Cancel
             </Button>
@@ -422,11 +422,11 @@ export default function CoordinatorMembersPage() {
         title="Remove Member from Club"
       >
         <div className="space-y-4 pt-2">
-          <p className="text-sm text-slate-600">
-            Are you sure you want to remove <strong className="text-slate-800">{removeMembershipId?.name}</strong> from {club.name}? They will lose member access and perks.
+          <p className="text-sm text-slate-300">
+            Are you sure you want to remove <strong className="text-slate-100">{removeMembershipId?.name}</strong> from {club.name}? They will lose member access and perks.
           </p>
 
-          <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-3 border-t border-[#263650]/60">
             <Button variant="outline" onClick={() => setRemoveMembershipId(null)}>
               Cancel
             </Button>

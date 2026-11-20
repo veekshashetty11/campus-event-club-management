@@ -38,8 +38,8 @@ export default function CancelRegistrationModal({
       }
       if (onSuccess) onSuccess();
       onClose();
-    } catch (err: any) {
-      setError(err?.message || 'Failed to cancel registration.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to cancel registration.');
     } finally {
       setIsSubmitting(false);
     }
@@ -52,19 +52,19 @@ export default function CancelRegistrationModal({
       title={isWaitlist ? 'Cancel Waitlist Entry' : 'Cancel Event Registration'}
       size="md"
     >
-      <div className="flex flex-col gap-4">
-        <div className="bg-red-50 border border-red-200 rounded-xl p-3.5 flex items-start gap-3">
-          <AlertTriangle size={18} className="text-red-600 shrink-0 mt-0.5" />
-          <div className="text-xs text-red-900 leading-relaxed">
+      <div className="flex flex-col gap-4 text-slate-200">
+        <div className="bg-rose-950/40 border border-rose-800/50 rounded-xl p-3.5 flex items-start gap-3">
+          <AlertTriangle size={18} className="text-rose-400 shrink-0 mt-0.5" />
+          <div className="text-xs text-rose-200 leading-relaxed">
             {isWaitlist ? (
               <span>
                 Are you sure you want to surrender your waitlist spot for{' '}
-                <strong className="font-semibold">{registration.eventTitle}</strong>?
+                <strong className="font-semibold text-white">{registration.eventTitle}</strong>?
               </span>
             ) : (
               <span>
                 Cancelling will release your reserved seat for{' '}
-                <strong className="font-semibold">{registration.eventTitle}</strong>. If there are students on
+                <strong className="font-semibold text-white">{registration.eventTitle}</strong>. If there are students on
                 the waitlist, the next student will be automatically promoted.
               </span>
             )}
@@ -73,13 +73,13 @@ export default function CancelRegistrationModal({
 
         {!isWaitlist && (
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
               Reason for cancellation (Optional)
             </label>
             <select
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="w-full text-sm rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-red-400"
+              className="w-full text-xs rounded-xl border border-[#263650] bg-[#17243B] px-3 py-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-rose-500/30"
             >
               <option value="Schedule conflict with coursework">Schedule conflict with coursework</option>
               <option value="Personal / Medical reasons">Personal / Medical reasons</option>
@@ -91,13 +91,13 @@ export default function CancelRegistrationModal({
         )}
 
         {error && (
-          <div className="text-xs text-red-600 bg-red-50 p-2.5 rounded-lg border border-red-200">
+          <div className="text-xs text-rose-300 bg-rose-950/40 p-2.5 rounded-lg border border-rose-800/50">
             {error}
           </div>
         )}
 
-        <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
-          <Button variant="outline" size="sm" onClick={onClose} disabled={isSubmitting}>
+        <div className="flex justify-end gap-2.5 pt-3 border-t border-[#263650]">
+          <Button variant="secondary" size="sm" onClick={onClose} disabled={isSubmitting}>
             Keep My Seat
           </Button>
           <Button

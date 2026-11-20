@@ -66,22 +66,22 @@ export default function StudentCertificatesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Verifiable Certificates</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <h1 className="text-2xl font-bold text-slate-100">Verifiable Certificates</h1>
+          <p className="text-sm text-slate-400 mt-0.5">
             Your earned credentials for hackathons, technical bootcamps, and career workshops.
           </p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg shadow-sm">
-          <ShieldCheck size={16} className="text-emerald-600" />
+        <div className="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-xl shadow-sm">
+          <ShieldCheck size={16} className="text-emerald-400" />
           <span>All certificates cryptographically verified</span>
         </div>
       </div>
 
       {/* Grid */}
       {certificates.length === 0 ? (
-        <Card className="text-center py-16 text-slate-400">
-          <Award size={40} className="mx-auto mb-2 text-slate-300" />
-          <p className="text-base font-semibold text-slate-700">No certificates issued yet.</p>
+        <Card className="text-center py-16 text-slate-400 bg-[#111C32] border-[#263650]">
+          <Award size={40} className="mx-auto mb-2 text-slate-500" />
+          <p className="text-base font-semibold text-slate-200">No certificates issued yet.</p>
           <p className="text-xs text-slate-400 mt-1 mb-4">
             Attend registered campus events and complete required check-in to earn verifiable participation certificates.
           </p>
@@ -92,10 +92,10 @@ export default function StudentCertificatesPage() {
             <Card
               key={cert.certificateId}
               padding="lg"
-              className="flex flex-col border-slate-200 hover:border-brand-400 hover:shadow-card transition-all"
+              className="flex flex-col bg-[#111C32] border-[#263650] hover:border-indigo-500/40 hover:shadow-xl transition-all"
             >
               <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-100 to-amber-200 text-amber-700 flex items-center justify-center shrink-0 shadow-sm">
+                <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 shadow-sm">
                   <Award size={30} />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -103,37 +103,37 @@ export default function StudentCertificatesPage() {
                     <Badge variant="amber" size="sm">
                       {cert.certificateType.charAt(0).toUpperCase() + cert.certificateType.slice(1)}
                     </Badge>
-                    <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                    <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
                       +{cert.pointsEarned} Pts Earned
                     </span>
                   </div>
-                  <h3 className="font-bold text-slate-900 text-base leading-snug line-clamp-2">
+                  <h3 className="font-bold text-slate-100 text-base leading-snug line-clamp-2">
                     {cert.eventTitle}
                   </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Issuing Club: <strong>{cert.clubName}</strong>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Issuing Club: <strong className="text-slate-300">{cert.clubName}</strong>
                   </p>
                 </div>
               </div>
 
               {/* Certificate Details */}
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 my-4 text-xs space-y-1.5 font-mono text-slate-600">
+              <div className="bg-[#17243B] border border-[#263650] rounded-xl p-3 my-4 text-xs space-y-1.5 font-mono text-slate-300">
                 <div className="flex justify-between">
                   <span className="text-slate-400 font-sans">Certificate ID:</span>
-                  <span className="font-semibold text-slate-800">{cert.certificateId}</span>
+                  <span className="font-semibold text-slate-200">{cert.certificateId}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400 font-sans">Issue Date:</span>
-                  <span className="text-slate-700">{cert.issueDateFormatted || formatDate(cert.issuedAt)}</span>
+                  <span className="text-slate-300">{cert.issueDateFormatted || formatDate(cert.issuedAt)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400 font-sans">Recipient:</span>
-                  <span className="text-slate-800 font-sans font-medium">{cert.studentName || 'Samara Jenkins'}</span>
+                  <span className="text-slate-200 font-sans font-medium">{cert.studentName || 'Samara Jenkins'}</span>
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="mt-auto pt-2 flex items-center justify-end gap-2 border-t border-slate-100">
+              <div className="mt-auto pt-2 flex items-center justify-end gap-2 border-t border-[#263650]/60">
                 <Button
                   variant="outline"
                   size="sm"

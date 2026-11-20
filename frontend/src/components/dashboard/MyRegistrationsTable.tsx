@@ -42,47 +42,51 @@ export default function MyRegistrationsTable({ registrations }: MyRegistrationsT
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 shadow-soft overflow-hidden">
+    <div className="rounded-2xl border border-[#263650] bg-[#111C32] shadow-xl overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-sm min-w-[560px]">
           <thead>
-            <tr className="bg-slate-50 border-b border-slate-200">
-              <th className="text-left px-4 py-3 font-semibold text-slate-600">Event</th>
-              <th className="text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap">Registered</th>
-              <th className="text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap">Event Date</th>
-              <th className="text-left px-4 py-3 font-semibold text-slate-600">Status</th>
-              <th className="text-left px-4 py-3 font-semibold text-slate-600">Attendance</th>
+            <tr className="bg-[#17243B] border-b border-[#263650]">
+              <th className="text-left px-4 py-3.5 text-xs font-bold text-slate-300 uppercase tracking-wider">Event</th>
+              <th className="text-left px-4 py-3.5 text-xs font-bold text-slate-300 uppercase tracking-wider whitespace-nowrap">Registered</th>
+              <th className="text-left px-4 py-3.5 text-xs font-bold text-slate-300 uppercase tracking-wider whitespace-nowrap">Event Date</th>
+              <th className="text-left px-4 py-3.5 text-xs font-bold text-slate-300 uppercase tracking-wider">Status</th>
+              <th className="text-left px-4 py-3.5 text-xs font-bold text-slate-300 uppercase tracking-wider">Attendance</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-[#263650]/50">
             {registrations.map((reg) => {
               const { label: sLabel, variant: sVariant } = statusBadge(reg.status);
               const attendance = attendanceBadge(reg.attendanceStatus);
               return (
-                <tr key={reg.registrationId} className="border-b border-slate-100 hover:bg-slate-50">
-                  <td className="px-4 py-3">
+                <tr key={reg.registrationId} className="hover:bg-[#17243B]/60 transition-colors">
+                  <td className="px-4 py-3.5">
                     <Link
                       to={`/student/events/${reg.eventId}`}
-                      className="font-medium text-slate-800 hover:text-brand-800 leading-tight line-clamp-1 transition-colors"
+                      className="font-semibold text-white hover:text-indigo-400 leading-tight line-clamp-1 transition-colors"
                     >
                       {reg.eventTitle}
                     </Link>
                     <p className="text-xs text-slate-400 mt-0.5">{reg.clubName}</p>
                   </td>
-                  <td className="px-4 py-3 text-slate-500 text-xs whitespace-nowrap">
-                    {formatDate(reg.registeredAt)}
+                  <td className="px-4 py-3.5 text-xs text-slate-400 whitespace-nowrap">
+                    {formatDate(reg.registrationDate || reg.registeredAt || '')}
                   </td>
-                  <td className="px-4 py-3 text-slate-500 text-xs whitespace-nowrap">
+                  <td className="px-4 py-3.5 text-xs text-slate-300 whitespace-nowrap font-medium">
                     {formatDate(reg.startTime)}
                   </td>
-                  <td className="px-4 py-3">
-                    <Badge variant={sVariant} size="sm">{sLabel}</Badge>
+                  <td className="px-4 py-3.5">
+                    <Badge variant={sVariant} size="sm">
+                      {sLabel}
+                    </Badge>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3.5">
                     {attendance ? (
-                      <Badge variant={attendance.variant} size="sm">{attendance.label}</Badge>
+                      <Badge variant={attendance.variant} size="sm" dot>
+                        {attendance.label}
+                      </Badge>
                     ) : (
-                      <span className="text-xs text-slate-300">—</span>
+                      <span className="text-xs text-slate-500 font-mono">—</span>
                     )}
                   </td>
                 </tr>

@@ -60,13 +60,13 @@ export default function CoordinatorEventsPage() {
       case 'pending_approval':
         return <Badge variant="warning">In Review</Badge>;
       case 'changes_requested':
-        return <Badge variant="warning" className="bg-amber-100 text-amber-900 border-amber-300">Changes Requested</Badge>;
+        return <Badge variant="warning" className="bg-amber-500/10 border-amber-500/20 text-amber-300">Changes Requested</Badge>;
       case 'rejected':
         return <Badge variant="danger">Rejected</Badge>;
       case 'completed':
         return <Badge variant="neutral">Completed</Badge>;
       case 'cancelled':
-        return <Badge variant="neutral" className="bg-slate-200 text-slate-700">Cancelled</Badge>;
+        return <Badge variant="neutral" className="bg-[#263650]/60 text-slate-300">Cancelled</Badge>;
       default:
         return <Badge variant="neutral">Draft</Badge>;
     }
@@ -100,7 +100,7 @@ export default function CoordinatorEventsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Club Events Directory</h1>
+          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">Club Events Directory</h1>
           <p className="text-sm text-slate-500">
             Create, manage, and track approval workflows for all your club events.
           </p>
@@ -117,8 +117,8 @@ export default function CoordinatorEventsPage() {
         <div
           className={`p-4 rounded-xl flex items-center justify-between border text-sm ${
             !message.isError
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-              : 'bg-rose-50 border-rose-200 text-rose-800'
+              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300'
+              : 'bg-rose-500/10 border-rose-500/20 text-rose-300'
           }`}
         >
           <div className="flex items-center gap-2">
@@ -141,7 +141,7 @@ export default function CoordinatorEventsPage() {
               placeholder="Search event title, venue..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-slate-200 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+              className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-[#263650] bg-[#17243B] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-200"
             />
           </div>
 
@@ -152,7 +152,7 @@ export default function CoordinatorEventsPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="text-xs font-medium rounded-lg border border-slate-200 bg-white py-1.5 px-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+              className="text-xs font-medium rounded-lg border border-[#263650] bg-[#17243B] py-1.5 px-3 text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
             >
               <option value="all">All Events ({clubEvents.length})</option>
               <option value="draft">Drafts</option>
@@ -168,11 +168,11 @@ export default function CoordinatorEventsPage() {
       </Card>
 
       {/* Events Table */}
-      <Card className="overflow-hidden border border-slate-200/80">
+      <Card className="overflow-hidden border border-[#263650]/80">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50/75 border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-500">
+              <tr className="bg-[#17243B] border-b border-[#263650] text-xs font-semibold uppercase tracking-wider text-slate-400">
                 <th className="py-3.5 px-5">Event</th>
                 <th className="py-3.5 px-4">Date & Time</th>
                 <th className="py-3.5 px-4">Venue</th>
@@ -181,12 +181,12 @@ export default function CoordinatorEventsPage() {
                 <th className="py-3.5 px-5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-sm">
+            <tbody className="divide-y divide-[#263650]/60 text-sm">
               {filteredEvents.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-12 text-center text-slate-400">
                     <Calendar size={32} className="mx-auto mb-2 opacity-50 text-slate-300" />
-                    <p className="font-medium text-slate-600">No events found</p>
+                    <p className="font-medium text-slate-400">No events found</p>
                     <p className="text-xs text-slate-400 mt-1">Create an event or clear your search criteria.</p>
                   </td>
                 </tr>
@@ -197,32 +197,32 @@ export default function CoordinatorEventsPage() {
                   const isDraft = evt.status === 'draft';
 
                   return (
-                    <tr key={evt.eventId} className="hover:bg-slate-50/60 transition-colors">
+                    <tr key={evt.eventId} className="hover:bg-[#17243B]/60 transition-colors">
                       <td className="py-3.5 px-5">
                         <div className="flex items-center gap-3">
                           <img
                             src={evt.bannerUrl}
                             alt=""
-                            className="w-12 h-10 rounded-lg object-cover bg-slate-100 shrink-0"
+                            className="w-12 h-10 rounded-lg object-cover bg-[#17243B] shrink-0"
                             onError={(e) => {
                               (e.currentTarget as HTMLImageElement).src =
                                 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=200&q=80';
                             }}
                           />
                           <div>
-                            <p className="font-semibold text-slate-900 line-clamp-1">{evt.title}</p>
+                            <p className="font-semibold text-slate-100 line-clamp-1">{evt.title}</p>
                             <span className="text-xs text-slate-400">{evt.category}</span>
                           </div>
                         </div>
                       </td>
-                      <td className="py-3.5 px-4 text-xs text-slate-600">
+                      <td className="py-3.5 px-4 text-xs text-slate-300">
                         <div className="flex items-center gap-1.5 font-medium">
                           <Clock size={13} className="text-slate-400 shrink-0" />
                           <span>{new Date(evt.startDate || evt.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                         </div>
                         <span className="text-[11px] text-slate-400">{evt.startTime} - {evt.endTime}</span>
                       </td>
-                      <td className="py-3.5 px-4 text-xs text-slate-600">
+                      <td className="py-3.5 px-4 text-xs text-slate-300">
                         <div className="flex items-center gap-1.5">
                           <MapPin size={13} className="text-slate-400 shrink-0" />
                           <span className="truncate max-w-[140px]">{evt.venueName || evt.venue?.name || 'TBD'}</span>
@@ -231,17 +231,17 @@ export default function CoordinatorEventsPage() {
                       <td className="py-3.5 px-4">
                         <div className="w-32">
                           <div className="flex justify-between text-xs mb-1">
-                            <span className="font-semibold text-slate-700">{evt.registeredCount}</span>
+                            <span className="font-semibold text-slate-300">{evt.registeredCount}</span>
                             <span className="text-slate-400">/ {cap}</span>
                           </div>
-                          <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                          <div className="w-full bg-[#263650] rounded-full h-1.5 overflow-hidden">
                             <div
                               className={`h-full rounded-full ${
                                 percentFilled >= 100
                                   ? 'bg-rose-500'
                                   : percentFilled >= 75
                                   ? 'bg-amber-500'
-                                  : 'bg-brand-600'
+                                  : 'bg-indigo-600'
                               }`}
                               style={{ width: `${Math.min(percentFilled, 100)}%` }}
                             />
@@ -254,7 +254,7 @@ export default function CoordinatorEventsPage() {
                           {/* Approval Timeline Inspector */}
                           <button
                             onClick={() => setSelectedEventForTimeline(evt)}
-                            className="p-1.5 rounded-lg text-slate-500 hover:text-brand-700 hover:bg-slate-100 transition-colors"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-400 hover:bg-[#17243B] transition-colors"
                             title="View Approval Timeline"
                           >
                             <Eye size={16} />
@@ -264,7 +264,7 @@ export default function CoordinatorEventsPage() {
                           {(isDraft || evt.status === 'changes_requested') && (
                             <button
                               onClick={() => navigate(`/coordinator/events/edit/${evt.eventId}`)}
-                              className="p-1.5 rounded-lg text-slate-500 hover:text-amber-700 hover:bg-amber-50 transition-colors"
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-amber-500/10 transition-colors"
                               title="Edit / Revise Event"
                             >
                               <Edit size={16} />
@@ -276,7 +276,7 @@ export default function CoordinatorEventsPage() {
                             <button
                               onClick={() => handleQuickSubmit(evt.eventId)}
                               disabled={submittingId === evt.eventId}
-                              className="p-1.5 rounded-lg text-brand-600 hover:text-brand-800 hover:bg-brand-50 transition-colors disabled:opacity-50"
+                              className="p-1.5 rounded-lg text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 transition-colors disabled:opacity-50"
                               title={evt.status === 'changes_requested' ? 'Resubmit Revisions' : 'Submit for Approval'}
                             >
                               <Send size={16} />
@@ -302,14 +302,14 @@ export default function CoordinatorEventsPage() {
         {selectedEventForTimeline && (
           <div className="space-y-6 pt-2">
             {/* Event Summary Pill */}
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+            <div className="p-3.5 rounded-xl bg-[#17243B] border border-[#263650]/80 flex items-center justify-between">
               <div>
                 <p className="text-xs text-slate-500">Current Status</p>
                 <div className="mt-0.5">{getStatusBadge(selectedEventForTimeline.status)}</div>
               </div>
               <div className="text-right">
                 <p className="text-xs text-slate-500">Proposed Budget</p>
-                <p className="text-sm font-bold text-slate-800">
+                <p className="text-sm font-bold text-slate-200">
                   ${selectedEventForTimeline.budget ? selectedEventForTimeline.budget.toLocaleString() : '0'}
                 </p>
               </div>
@@ -324,7 +324,7 @@ export default function CoordinatorEventsPage() {
               />
             </div>
 
-            <div className="flex justify-end pt-3 border-t border-slate-100">
+            <div className="flex justify-end pt-3 border-t border-[#263650]/60">
               <Button variant="outline" onClick={() => setSelectedEventForTimeline(null)}>
                 Close
               </Button>

@@ -36,7 +36,7 @@ export default function StudentClubsPage() {
   }, [clubs, search, selectedCategory]);
 
   return (
-    <div className="flex flex-col gap-6 max-w-7xl mx-auto">
+    <div className="flex flex-col gap-6 max-w-7xl mx-auto text-slate-100">
       <Breadcrumbs
         items={[{ label: 'Student', path: '/student/dashboard' }, { label: 'My Clubs & Organizations' }]}
       />
@@ -44,8 +44,8 @@ export default function StudentClubsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Campus Clubs & Societies</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <h1 className="text-2xl font-black text-white tracking-tight">Campus Clubs & Societies</h1>
+          <p className="text-sm text-slate-400 mt-0.5">
             Connect with technical chapters, cultural societies, sports federations, and campus leadership.
           </p>
         </div>
@@ -71,10 +71,10 @@ export default function StudentClubsPage() {
       {activeTab === 'my_clubs' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-slate-800">My Affiliated Clubs</h2>
+            <h2 className="text-lg font-bold text-white">My Affiliated Clubs</h2>
             <button
               onClick={() => setActiveTab('browse')}
-              className="text-xs font-semibold text-brand-700 hover:text-brand-900 flex items-center gap-1"
+              className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
             >
               <Plus size={14} /> Join a New Club
             </button>
@@ -82,8 +82,8 @@ export default function StudentClubsPage() {
 
           {memberships.length === 0 ? (
             <Card className="text-center py-16 text-slate-400">
-              <Users size={36} className="mx-auto mb-2 text-slate-300" />
-              <p className="text-base font-semibold text-slate-700">You haven't joined any clubs yet.</p>
+              <Users size={36} className="mx-auto mb-2 text-slate-500" />
+              <p className="text-base font-bold text-white">You haven't joined any clubs yet.</p>
               <p className="text-xs text-slate-400 mt-1 mb-4">
                 Explore campus technical chapters, cultural guilds, and athletic bodies to get involved.
               </p>
@@ -106,12 +106,12 @@ export default function StudentClubsPage() {
                   <Card
                     key={mem.membershipId}
                     padding="none"
-                    className="flex flex-col overflow-hidden hover:border-brand-300 hover:shadow-card transition-all"
+                    className="flex flex-col overflow-hidden hover:border-[#3B82F6]/50 transition-all"
                   >
                     {/* Header Strip */}
                     <div className="p-5 pb-3">
                       <div className="flex items-start justify-between gap-3 mb-2">
-                        <div className="w-12 h-12 rounded-xl bg-brand-800 text-white flex items-center justify-center font-bold text-base shadow-sm shrink-0">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#4F46E5] to-[#3B82F6] text-white flex items-center justify-center font-bold text-base shadow-sm shrink-0">
                           {mem.clubName.charAt(0)}
                         </div>
                         <Badge
@@ -127,32 +127,32 @@ export default function StudentClubsPage() {
                         </Badge>
                       </div>
 
-                      <h3 className="font-bold text-slate-900 text-base leading-snug">{mem.clubName}</h3>
-                      <p className="text-xs text-brand-700 font-medium">{mem.clubCategory}</p>
+                      <h3 className="font-bold text-white text-base leading-snug">{mem.clubName}</h3>
+                      <p className="text-xs text-indigo-400 font-semibold">{mem.clubCategory}</p>
 
-                      <p className="text-xs text-slate-600 mt-2 line-clamp-2">
+                      <p className="text-xs text-slate-300 mt-2 line-clamp-2 leading-relaxed">
                         {fullClub?.description || 'Active campus organization engaging students in collaborative activities.'}
                       </p>
                     </div>
 
                     {/* Stats & Schedule */}
-                    <div className="bg-slate-50 border-t border-slate-100 px-5 py-3 text-xs text-slate-500 space-y-1 mt-auto">
+                    <div className="bg-[#17243B] border-t border-[#263650] px-5 py-3 text-xs text-slate-400 space-y-1.5 mt-auto">
                       <div className="flex justify-between">
                         <span>Total Members:</span>
-                        <span className="font-semibold text-slate-800">{mem.memberCount}</span>
+                        <span className="font-semibold text-white">{mem.memberCount}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Upcoming Events:</span>
-                        <span className="font-semibold text-brand-800">{clubUpcomingEvents.length} active</span>
+                        <span className="font-semibold text-indigo-400">{clubUpcomingEvents.length} active</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Member Since:</span>
-                        <span className="text-slate-600">{mem.joinedAt}</span>
+                        <span className="text-slate-300">{mem.joinedAt}</span>
                       </div>
                     </div>
 
                     {/* Footer Actions */}
-                    <div className="p-3 border-t border-slate-100 flex justify-end">
+                    <div className="p-3 border-t border-[#263650] flex justify-end">
                       <Button
                         variant="outline"
                         size="xs"
@@ -177,13 +177,13 @@ export default function StudentClubsPage() {
           <Card padding="sm" className="space-y-3">
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   placeholder="Search clubs by name, keywords, or focus area..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-8 pr-3 py-2 text-xs rounded-lg border border-slate-300 bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-100 focus:border-brand-500"
+                  className="w-full pl-9 pr-3.5 py-2 text-xs rounded-xl border border-[#263650] bg-[#17243B] text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
                 />
               </div>
 
@@ -194,10 +194,10 @@ export default function StudentClubsPage() {
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
                     className={[
-                      'text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors whitespace-nowrap',
+                      'text-xs font-semibold px-3 py-1.5 rounded-xl border transition-all whitespace-nowrap',
                       selectedCategory === cat
-                        ? 'bg-brand-800 text-white border-brand-800'
-                        : 'bg-white text-slate-600 border-slate-200 hover:border-brand-300',
+                        ? 'bg-[#4F46E5] text-white border-[#4F46E5] shadow-[0_0_12px_rgba(79,70,229,0.4)]'
+                        : 'bg-[#17243B] text-slate-300 border-[#263650] hover:border-slate-500 hover:text-white',
                     ].join(' ')}
                   >
                     {cat}
@@ -218,11 +218,11 @@ export default function StudentClubsPage() {
                 <Card
                   key={club.clubId}
                   padding="none"
-                  className="flex flex-col overflow-hidden hover:border-brand-300 hover:shadow-card transition-all"
+                  className="flex flex-col overflow-hidden hover:border-[#3B82F6]/50 transition-all"
                 >
                   <div className="p-5 flex-1">
                     <div className="flex items-start justify-between gap-3 mb-2">
-                      <div className="w-12 h-12 rounded-xl bg-slate-900 text-teal-400 flex items-center justify-center font-bold text-base shadow-sm shrink-0">
+                      <div className="w-12 h-12 rounded-xl bg-[#17243B] border border-[#263650] text-cyan-400 flex items-center justify-center font-bold text-base shadow-sm shrink-0">
                         {club.shortName?.substring(0, 2) || club.name.charAt(0)}
                       </div>
                       <Badge variant="teal" size="sm">
@@ -230,32 +230,32 @@ export default function StudentClubsPage() {
                       </Badge>
                     </div>
 
-                    <h3 className="font-bold text-slate-900 text-base leading-snug">{club.name}</h3>
+                    <h3 className="font-bold text-white text-base leading-snug">{club.name}</h3>
                     <p className="text-xs text-slate-400 mt-0.5">{club.departmentName || 'Campus Wide'}</p>
 
-                    <p className="text-xs text-slate-600 mt-3 line-clamp-3 leading-relaxed">
+                    <p className="text-xs text-slate-300 mt-3 line-clamp-3 leading-relaxed">
                       {club.description}
                     </p>
                   </div>
 
-                  <div className="bg-slate-50 border-t border-slate-100 px-5 py-3 text-xs text-slate-500 space-y-1">
+                  <div className="bg-[#17243B] border-t border-[#263650] px-5 py-3 text-xs text-slate-400 space-y-1.5">
                     <div className="flex justify-between">
                       <span>Faculty Advisor:</span>
-                      <span className="font-medium text-slate-800">{club.facultyAdvisorName || 'Faculty Lead'}</span>
+                      <span className="font-semibold text-white">{club.facultyAdvisorName || 'Faculty Lead'}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Member Capacity:</span>
-                      <span className="font-medium text-slate-800">{club.memberCount} / {club.maxMembers || 200}</span>
+                      <span className="font-semibold text-white">{club.memberCount} / {club.maxMembers || 200}</span>
                     </div>
                   </div>
 
-                  <div className="p-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                  <div className="p-3 border-t border-[#263650] flex items-center justify-between gap-2">
                     {isJoined ? (
-                      <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+                      <span className="text-xs font-semibold text-emerald-300 bg-emerald-950/60 px-2.5 py-1 rounded-md border border-emerald-700/50">
                         ✓ Active Member
                       </span>
                     ) : isPending ? (
-                      <span className="text-xs font-semibold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">
+                      <span className="text-xs font-semibold text-amber-300 bg-amber-950/60 px-2.5 py-1 rounded-md border border-amber-700/50">
                         ⏳ Application Pending
                       </span>
                     ) : (

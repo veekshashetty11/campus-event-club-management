@@ -2,7 +2,7 @@ import type { EventRegistration } from '../../types/registration';
 import Modal from '../common/Modal';
 import Button from '../common/Button';
 import Badge from '../common/Badge';
-import { Calendar, Clock, MapPin, Printer } from 'lucide-react';
+import { Calendar, Clock, MapPin, Printer, ShieldCheck, Ticket as TicketIcon, CheckCircle2 } from 'lucide-react';
 import { formatDate, formatTime } from '../../utils';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -22,107 +22,137 @@ export default function TicketModal({ isOpen, onClose, registration }: TicketMod
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Digital Event Pass" size="md">
-      <div className="flex flex-col gap-4">
-        {/* Ticket Card */}
-        <div className="bg-white border-2 border-dashed border-slate-300 rounded-2xl p-5 shadow-sm relative overflow-hidden">
-          {/* Top colored strip */}
-          <div
-            className="absolute top-0 left-0 right-0 h-2"
-            style={{ backgroundColor: registration.eventCategoryColor || '#1b3b57' }}
-          />
-
-          <div className="flex justify-between items-start pt-1 mb-3">
-            <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                Official Campus Pass
-              </span>
-              <h3 className="text-lg font-bold text-slate-900 leading-snug">
-                {registration.eventTitle}
-              </h3>
-              <p className="text-xs text-brand-700 font-medium">{registration.clubName}</p>
+    <Modal isOpen={isOpen} onClose={onClose} title="Digital Boarding Pass" size="md">
+      <div className="flex flex-col gap-5 text-slate-100">
+        {/* Digital Boarding Pass Container */}
+        <div className="relative bg-[#17243B] border border-[#263650] rounded-2xl overflow-hidden shadow-2xl">
+          {/* Top Boarding Pass Header Banner */}
+          <div className="bg-gradient-to-r from-indigo-900/80 via-blue-900/70 to-indigo-950/90 p-4 border-b border-[#263650] flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-300">
+                <TicketIcon size={18} />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-300">
+                  Campus Digital E-Pass
+                </p>
+                <h4 className="text-xs font-bold text-white truncate max-w-[200px]">
+                  {registration.clubName}
+                </h4>
+              </div>
             </div>
-            <Badge variant="success" size="sm" dot>
+
+            <Badge variant="success" size="sm" dot glow>
               {registration.status.toUpperCase()}
             </Badge>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 py-3 border-y border-slate-100 text-xs">
+          {/* Main Pass Body */}
+          <div className="p-5 space-y-4">
             <div>
-              <span className="text-slate-400 block text-[11px]">Attendee</span>
-              <span className="font-semibold text-slate-800">{user?.fullName ?? 'Samara Jenkins'}</span>
-              <span className="text-slate-400 block text-[10px]">{user?.studentId ?? 'STU-2026-8841'}</span>
+              <p className="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Event</p>
+              <h3 className="text-base sm:text-lg font-black text-white leading-snug mt-0.5">
+                {registration.eventTitle}
+              </h3>
             </div>
-            <div>
-              <span className="text-slate-400 block text-[11px]">Department</span>
-              <span className="font-semibold text-slate-800">{user?.departmentCode ?? 'IT'} / Year 3</span>
-            </div>
-            <div>
-              <span className="text-slate-400 block text-[11px]">Date</span>
-              <span className="font-semibold text-slate-800 flex items-center gap-1">
-                <Calendar size={11} className="text-slate-400" />
-                {formatDate(registration.startTime)}
-              </span>
-            </div>
-            <div>
-              <span className="text-slate-400 block text-[11px]">Time</span>
-              <span className="font-semibold text-slate-800 flex items-center gap-1">
-                <Clock size={11} className="text-slate-400" />
-                {formatTime(registration.startTime)}
-              </span>
-            </div>
-            <div className="col-span-2">
-              <span className="text-slate-400 block text-[11px]">Venue</span>
-              <span className="font-semibold text-slate-800 flex items-center gap-1">
-                <MapPin size={11} className="text-slate-400 shrink-0" />
-                <span className="truncate">{registration.venueName ?? 'Campus Hall'}</span>
-              </span>
-            </div>
-          </div>
 
-          {/* QR Code Container */}
-          <div className="flex flex-col items-center justify-center pt-4 pb-1">
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col items-center shadow-inner">
-              {/* Simulated QR Pattern */}
-              <div className="w-32 h-32 bg-slate-900 rounded-lg p-2 flex flex-col justify-between">
-                <div className="flex justify-between">
-                  <div className="w-8 h-8 bg-white rounded-sm p-1">
-                    <div className="w-full h-full bg-slate-900" />
-                  </div>
-                  <div className="w-8 h-8 bg-white rounded-sm p-1">
-                    <div className="w-full h-full bg-slate-900" />
-                  </div>
-                </div>
-                <div className="flex justify-center items-center">
-                  <div className="text-[9px] font-mono text-white tracking-widest uppercase">
-                    CAMPUS
-                  </div>
-                </div>
-                <div className="flex justify-between">
-                  <div className="w-8 h-8 bg-white rounded-sm p-1">
-                    <div className="w-full h-full bg-slate-900" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-1 w-8 h-8">
-                    <div className="bg-white" />
-                    <div className="bg-white" />
-                    <div className="bg-white" />
-                    <div className="bg-white" />
-                  </div>
-                </div>
+            {/* Flight / Event Matrix Grid */}
+            <div className="grid grid-cols-2 gap-3 p-3.5 rounded-xl bg-[#111C32] border border-[#263650] text-xs">
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">Attendee</span>
+                <span className="font-bold text-white text-xs">{user?.fullName ?? 'Student Attendee'}</span>
+                <span className="text-[10px] text-indigo-300 font-mono block">{user?.studentId ?? user?.rollNumber ?? 'ID-VERIFIED'}</span>
               </div>
-              <p className="text-[11px] font-mono font-bold text-slate-700 tracking-wider mt-2">
-                {registration.ticketCode}
-              </p>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">Pass / Reg ID</span>
+                <span className="font-mono font-bold text-cyan-300 text-xs">
+                  {registration.ticketCode || `REG-${registration.registrationId}`}
+                </span>
+                <span className="text-[10px] text-slate-400 block">Single Admission</span>
+              </div>
+
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">Date</span>
+                <span className="font-semibold text-slate-200 flex items-center gap-1 mt-0.5">
+                  <Calendar size={12} className="text-indigo-400" />
+                  {formatDate(registration.startTime)}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">Time</span>
+                <span className="font-semibold text-slate-200 flex items-center gap-1 mt-0.5">
+                  <Clock size={12} className="text-blue-400" />
+                  {formatTime(registration.startTime)}
+                </span>
+              </div>
+
+              <div className="col-span-2 pt-1 border-t border-[#263650]">
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">Venue Location</span>
+                <span className="font-semibold text-slate-200 flex items-center gap-1 mt-0.5 truncate">
+                  <MapPin size={12} className="text-rose-400 shrink-0" />
+                  <span className="truncate">{registration.venueName ?? 'Campus Hall / Main Auditorium'}</span>
+                </span>
+              </div>
             </div>
-            <p className="text-[11px] text-slate-400 mt-2 text-center">
-              Scan this code at the registration desk for instant entry.
-            </p>
+
+            {/* Perforated Divider Line with Cutout Notches */}
+            <div className="relative py-2 flex items-center">
+              {/* Left cutout notch */}
+              <div className="absolute -left-7 w-5 h-5 rounded-full bg-[#111C32] border-r border-[#263650]" />
+              {/* Dashed line */}
+              <div className="w-full border-t border-dashed border-[#263650]" />
+              {/* Right cutout notch */}
+              <div className="absolute -right-7 w-5 h-5 rounded-full bg-[#111C32] border-l border-[#263650]" />
+            </div>
+
+            {/* QR Code Verification Section */}
+            <div className="flex flex-col items-center justify-center pt-1 pb-1">
+              <div className="bg-white p-3 rounded-2xl shadow-lg flex flex-col items-center">
+                {/* Visual QR Code pattern */}
+                <div className="w-32 h-32 bg-slate-950 rounded-xl p-2.5 flex flex-col justify-between">
+                  <div className="flex justify-between">
+                    <div className="w-8 h-8 bg-white rounded-md p-1">
+                      <div className="w-full h-full bg-slate-950" />
+                    </div>
+                    <div className="w-8 h-8 bg-white rounded-md p-1">
+                      <div className="w-full h-full bg-slate-950" />
+                    </div>
+                  </div>
+                  <div className="flex justify-center items-center">
+                    <div className="text-[9px] font-mono font-black text-indigo-400 tracking-widest uppercase">
+                      CAMPUS
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-end">
+                    <div className="w-8 h-8 bg-white rounded-md p-1">
+                      <div className="w-full h-full bg-slate-950" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-1 w-8 h-8">
+                      <div className="bg-white rounded-xs" />
+                      <div className="bg-white rounded-xs" />
+                      <div className="bg-white rounded-xs" />
+                      <div className="bg-white rounded-xs" />
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-[11px] font-mono font-bold text-slate-800 tracking-wider mt-2">
+                  {registration.ticketCode || `PASS-${registration.registrationId}`}
+                </p>
+              </div>
+
+              {/* Mock Label Notice */}
+              <div className="flex items-center gap-1.5 mt-3 text-[11px] text-amber-400/90 font-medium bg-amber-950/30 px-3 py-1 rounded-full border border-amber-800/40">
+                <ShieldCheck size={13} className="shrink-0" />
+                <span>Simulated verification pass · Mock ticket preview</span>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-2">
-          <Button variant="outline" size="sm" leftIcon={<Printer size={15} />} onClick={handlePrint}>
+        <div className="flex items-center justify-end gap-3 pt-1">
+          <Button variant="secondary" size="sm" leftIcon={<Printer size={15} />} onClick={handlePrint}>
             Print Pass
           </Button>
           <Button variant="primary" size="sm" onClick={onClose}>

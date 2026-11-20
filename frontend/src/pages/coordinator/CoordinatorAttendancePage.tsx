@@ -87,7 +87,7 @@ export default function CoordinatorAttendancePage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Event Attendance Tracking</h1>
+          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">Event Attendance Tracking</h1>
           <p className="text-sm text-slate-500">
             Check-in registered students in real time and monitor attendance rates.
           </p>

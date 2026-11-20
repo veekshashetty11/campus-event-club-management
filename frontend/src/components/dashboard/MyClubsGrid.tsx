@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import type { ClubMembership } from '../../types/club';
 import Badge from '../common/Badge';
-import Button from '../common/Button';
 import Card from '../common/Card';
 import { Users, ArrowRight } from 'lucide-react';
 
@@ -33,35 +32,37 @@ export default function MyClubsGrid({ clubs }: MyClubsGridProps) {
       {clubs.map((club) => (
         <div
           key={club.membershipId}
-          className="bg-white rounded-xl border border-slate-200 shadow-soft px-4 py-3.5 flex items-center gap-3 hover:border-brand-300 hover:shadow-card transition-all duration-150"
+          className="bg-[#111C32] rounded-xl border border-[#263650] shadow-md px-4 py-3.5 flex items-center gap-3 hover:border-[#3B82F6]/50 transition-all duration-150"
         >
           {/* Avatar */}
-          <div className="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center shrink-0">
-            <span className="text-sm font-bold text-brand-800">
+          <div className="w-10 h-10 rounded-xl bg-indigo-950/70 border border-indigo-700/50 flex items-center justify-center shrink-0">
+            <span className="text-sm font-black text-indigo-300">
               {club.clubName.charAt(0)}
             </span>
           </div>
 
           {/* Info */}
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-slate-800 truncate">{club.clubName}</p>
+            <p className="text-sm font-bold text-white truncate">{club.clubName}</p>
             <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-              <span className="text-xs text-slate-500">{club.clubCategory}</span>
+              <span className="text-xs text-slate-400">{club.clubCategory}</span>
               <Badge variant="primary" size="sm">{roleBadge(club.memberRole)}</Badge>
             </div>
           </div>
 
           {/* Member count */}
-          <div className="flex items-center gap-1 text-xs text-slate-400 shrink-0">
-            <Users size={12} />
-            {club.memberCount}
+          <div className="flex items-center gap-1.5 text-xs text-slate-400 shrink-0">
+            <Users size={13} className="text-slate-500" />
+            <span className="font-semibold text-slate-300">{club.memberCount}</span>
           </div>
 
           {/* Action */}
-          <Link to="/student/clubs">
-            <Button variant="ghost" size="xs" rightIcon={<ArrowRight size={12} />}>
-              View
-            </Button>
+          <Link
+            to="/student/clubs"
+            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-[#17243B] transition-colors shrink-0"
+            title="View Club details"
+          >
+            <ArrowRight size={14} />
           </Link>
         </div>
       ))}

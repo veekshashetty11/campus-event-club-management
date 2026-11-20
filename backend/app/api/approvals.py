@@ -21,7 +21,7 @@ from sqlalchemy.orm import Session
 from app.db.connection import get_db
 from app.api.deps import get_current_user, require_permissions
 from app.models.auth import User, Role
-from app.models.event import Event, Club, ClubMember, EventApproval
+from app.models.event import Event, Club, ClubMember, EventApproval, Venue, VenueBooking
 from app.schemas.approval import (
     ApprovalDecisionRequest,
     ApprovalItemResponse,
@@ -192,6 +192,28 @@ def process_approval_decision(
             error_msg = raw_result.get("message", "Approval processing failed") if raw_result else "Unknown error"
             db.rollback()
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg)
+
+        # After Administrator final approval (Level 3), ensure a pending venue booking exists for the Venue Manager queue
+        if decision == "approved" and expected_level == 3:
+            existing_booking = db.query(VenueBooking).filter(VenueBooking.event_id == event.event_id).first()
+            if not existing_booking:
+                target_venue_id = event.venue_id
+                if not target_venue_id:
+                    first_venue = db.query(Venue).filter(Venue.is_active == True).first()
+                    target_venue_id = first_venue.venue_id if first_venue else 1
+
+                pending_booking = VenueBooking(
+                    venue_id=target_venue_id,
+                    event_id=event.event_id,
+                    booked_by=event.created_by,
+                    start_time=event.start_time,
+                    end_time=event.end_time,
+                    status="pending",
+                    notes=f"Venue reservation requested for finally approved event: {event.title}",
+                )
+                db.add(pending_booking)
+            elif existing_booking.status != "confirmed":
+                existing_booking.status = "pending"
 
         db.commit()
     except HTTPException:

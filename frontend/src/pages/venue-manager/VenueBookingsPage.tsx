@@ -93,8 +93,8 @@ export default function VenueBookingsPage() {
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Facility Booking Requests</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">Facility Booking Requests</h1>
+          <p className="text-sm text-slate-400">
             Review event room reservation schedules, detect double-booking conflicts, and confirm hall allocations.
           </p>
         </div>
@@ -104,8 +104,8 @@ export default function VenueBookingsPage() {
         <div
           className={`p-4 rounded-xl flex items-center justify-between border text-sm ${
             !message.isError
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-              : 'bg-rose-50 border-rose-200 text-rose-800'
+              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300'
+              : 'bg-rose-500/10 border-rose-500/20 text-rose-300'
           }`}
         >
           <div className="flex items-center gap-2">
@@ -128,7 +128,7 @@ export default function VenueBookingsPage() {
               placeholder="Search event, club, venue..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-slate-200 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+              className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-[#263650] bg-[#17243B] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
             />
           </div>
 

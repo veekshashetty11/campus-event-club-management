@@ -253,11 +253,16 @@ class VenueBooking(Base):
     end_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     status: Mapped[str] = mapped_column(String(20), default="confirmed", nullable=False)
     notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    approved_by: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.user_id", ondelete="SET NULL"), nullable=True
+    )
+    approved_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     venue: Mapped[Venue] = relationship("Venue")
     event: Mapped[Optional[Event]] = relationship("Event")
     booker: Mapped[User] = relationship("User", foreign_keys=[booked_by])
+    approver: Mapped[Optional[User]] = relationship("User", foreign_keys=[approved_by])
 
 
 class Equipment(Base):
@@ -291,6 +296,10 @@ class EquipmentBooking(Base):
     end_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     status: Mapped[str] = mapped_column(String(20), default="confirmed", nullable=False)
     notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    approved_by: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.user_id", ondelete="SET NULL"), nullable=True
+    )
+    approved_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     equipment: Mapped[Equipment] = relationship("Equipment")

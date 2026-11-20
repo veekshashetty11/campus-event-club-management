@@ -23,15 +23,15 @@ export default function Table<T>({
   isLoading = false,
 }: TableProps<T>) {
   return (
-    <div className="w-full overflow-x-auto rounded-xl border border-slate-200 shadow-soft">
+    <div className="w-full overflow-x-auto rounded-2xl border border-[#263650] bg-[#111C32] shadow-xl">
       <table className="w-full text-sm">
         <thead>
-          <tr className="bg-slate-50 border-b border-slate-200">
+          <tr className="bg-[#17243B] border-b border-[#263650]">
             {columns.map((col) => (
               <th
                 key={col.key}
                 className={[
-                  'text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap',
+                  'text-left px-4 py-3.5 text-xs font-bold text-slate-300 uppercase tracking-wider whitespace-nowrap',
                   col.className ?? '',
                 ].join(' ')}
               >
@@ -40,13 +40,13 @@ export default function Table<T>({
             ))}
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-[#263650]/50">
           {isLoading ? (
             Array.from({ length: 4 }).map((_, i) => (
-              <tr key={i} className="border-b border-slate-100">
+              <tr key={i} className="hover:bg-[#17243B]/40">
                 {columns.map((col) => (
-                  <td key={col.key} className="px-4 py-3">
-                    <div className="h-4 bg-slate-100 rounded animate-pulse w-3/4" />
+                  <td key={col.key} className="px-4 py-3.5">
+                    <div className="h-4 bg-[#17243B] rounded-lg animate-pulse w-3/4" />
                   </td>
                 ))}
               </tr>
@@ -55,7 +55,7 @@ export default function Table<T>({
             <tr>
               <td
                 colSpan={columns.length}
-                className="text-center text-slate-400 py-10"
+                className="text-center text-slate-400 py-12"
               >
                 {emptyMessage}
               </td>
@@ -64,16 +64,17 @@ export default function Table<T>({
             data.map((row) => (
               <tr
                 key={keyExtractor(row)}
-                className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
+                className="hover:bg-[#17243B]/60 transition-colors duration-150"
               >
                 {columns.map((col) => (
                   <td
                     key={col.key}
-                    className={['px-4 py-3 text-slate-700', col.className ?? ''].join(' ')}
+                    className={[
+                      'px-4 py-3.5 text-slate-200 text-sm align-middle',
+                      col.className ?? '',
+                    ].join(' ')}
                   >
-                    {col.render
-                      ? col.render(row)
-                      : (row as Record<string, unknown>)[col.key] as React.ReactNode}
+                    {col.render ? col.render(row) : (row as Record<string, unknown>)[col.key] as React.ReactNode}
                   </td>
                 ))}
               </tr>

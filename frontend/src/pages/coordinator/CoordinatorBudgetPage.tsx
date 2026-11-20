@@ -17,12 +17,30 @@ import {
   AlertCircle,
   CheckCircle2,
   FileText,
+  PieChart as PieIcon,
+  BarChart3,
+  Sparkles,
 } from 'lucide-react';
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend,
+} from 'recharts';
 import type { ExpenseCategory } from '../../types/club';
+
+const CHART_COLORS = ['#4F46E5', '#06B6D4', '#10B981', '#F59E0B', '#F43F5E', '#8B5CF6'];
 
 export default function CoordinatorBudgetPage() {
   const { user } = useAuth();
-  const { clubs, expenses, addExpense, deleteExpense } = useManagement();
+  const { clubs, expenses, sponsors, addExpense, deleteExpense } = useManagement();
 
   const club = clubs.find((c) => c.clubId === user?.clubId) || clubs[0];
 
@@ -33,6 +51,44 @@ export default function CoordinatorBudgetPage() {
   const totalSpent = clubExpenses.reduce((sum, e) => sum + e.amount, 0);
   const remainingBudget = Math.max(0, club.allocatedBudget - totalSpent);
   const budgetUtilization = Math.round((totalSpent / club.allocatedBudget) * 100);
+
+  // 1. Budget utilization ring data
+  const utilizationRingData = useMemo(() => [
+    { name: 'Disbursed', value: totalSpent, color: '#4F46E5' },
+    { name: 'Remaining Balance', value: remainingBudget, color: '#10B981' },
+  ], [totalSpent, remainingBudget]);
+
+  // 2. Expense category breakdown
+  const categoryBreakdownData = useMemo(() => {
+    const cats: Record<string, number> = {};
+    clubExpenses.forEach((exp) => {
+      cats[exp.category] = (cats[exp.category] || 0) + exp.amount;
+    });
+    return Object.entries(cats).map(([name, value], idx) => ({
+      name: name.charAt(0).toUpperCase() + name.slice(1),
+      value,
+      color: CHART_COLORS[idx % CHART_COLORS.length],
+    }));
+  }, [clubExpenses]);
+
+  // 3. Sponsorship contribution data
+  const clubSponsorshipData = useMemo(() => {
+    return sponsors.map((s) => ({
+      name: s.name.length > 14 ? s.name.substring(0, 12) + '...' : s.name,
+      amount: s.amount,
+      tier: s.tier,
+    }));
+  }, [sponsors]);
+
+  // 4. Budget comparison data
+  const comparisonData = useMemo(() => [
+    {
+      category: 'Financial Ledger',
+      Allocated: club.allocatedBudget,
+      Disbursed: totalSpent,
+      Remaining: remainingBudget,
+    },
+  ], [club, totalSpent, remainingBudget]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -146,64 +202,224 @@ export default function CoordinatorBudgetPage() {
 
       {/* Financial Overview Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <Card className="p-5">
+        <Card className="p-5 bg-[#111C32] border-[#263650]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Annual Allocated Budget</p>
-              <p className="text-2xl font-bold text-slate-900 mt-1">${club.allocatedBudget.toLocaleString()}</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Annual Allocated Budget</p>
+              <p className="text-2xl font-black text-white mt-1">${club.allocatedBudget.toLocaleString()}</p>
             </div>
-            <div className="w-11 h-11 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center">
+            <div className="w-11 h-11 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center">
               <Wallet size={22} />
             </div>
           </div>
         </Card>
 
-        <Card className="p-5">
+        <Card className="p-5 bg-[#111C32] border-[#263650]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Disbursements</p>
-              <p className="text-2xl font-bold text-slate-800 mt-1">${totalSpent.toLocaleString()}</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Disbursements</p>
+              <p className="text-2xl font-black text-rose-400 mt-1">${totalSpent.toLocaleString()}</p>
             </div>
-            <div className="w-11 h-11 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+            <div className="w-11 h-11 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center">
               <TrendingDown size={22} />
             </div>
           </div>
         </Card>
 
-        <Card className="p-5">
+        <Card className="p-5 bg-[#111C32] border-[#263650]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Remaining Balance</p>
-              <p className="text-2xl font-bold text-emerald-700 mt-1">${remainingBudget.toLocaleString()}</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Remaining Balance</p>
+              <p className="text-2xl font-black text-emerald-400 mt-1">${remainingBudget.toLocaleString()}</p>
             </div>
-            <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <div className="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
               <DollarSign size={22} />
             </div>
           </div>
         </Card>
       </div>
 
-      {/* Utilization Progress Card */}
-      <Card className="p-5">
-        <div className="flex items-center justify-between text-sm font-semibold mb-2">
-          <span className="text-slate-700">Budget Utilization Rate</span>
-          <span className={`${budgetUtilization > 90 ? 'text-rose-600' : 'text-brand-800'}`}>
-            {budgetUtilization}% Used (${totalSpent} of ${club.allocatedBudget})
-          </span>
-        </div>
-        <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
-          <div
-            className={`h-full rounded-full transition-all duration-500 ${
-              budgetUtilization > 90
-                ? 'bg-rose-500'
-                : budgetUtilization > 75
-                ? 'bg-amber-500'
-                : 'bg-emerald-600'
-            }`}
-            style={{ width: `${Math.min(budgetUtilization, 100)}%` }}
-          />
-        </div>
-      </Card>
+      {/* ── Financial Analytics Bento Grid ─────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* A. Budget Utilization Ring */}
+        <Card className="p-6 bg-[#111C32] border-[#263650]">
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <PieIcon size={18} className="text-indigo-400" />
+                Budget Utilization Ring
+              </h3>
+              <p className="text-xs text-slate-400">Real-time expenditure vs remaining allocations</p>
+            </div>
+            <Badge variant={budgetUtilization > 90 ? 'danger' : 'success'} size="sm">
+              {budgetUtilization}% Utilized
+            </Badge>
+          </div>
+
+          <div className="h-56 w-full relative flex items-center justify-center">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={utilizationRingData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={65}
+                  outerRadius={85}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  <Cell fill="#4F46E5" />
+                  <Cell fill="#10B981" />
+                </Pie>
+                <Tooltip
+                  formatter={(val: number) => [`$${val.toLocaleString()}`, 'Amount']}
+                  contentStyle={{ backgroundColor: '#111C32', borderColor: '#263650', color: '#F1F5F9', borderRadius: '12px' }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+            {/* Center metric */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+              <span className="text-2xl font-black text-white">{budgetUtilization}%</span>
+              <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Spent</span>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-around pt-3 border-t border-[#263650] text-xs">
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-[#4F46E5]" />
+              <span className="text-slate-300 font-medium">Disbursed: ${totalSpent.toLocaleString()}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-[#10B981]" />
+              <span className="text-slate-300 font-medium">Available: ${remainingBudget.toLocaleString()}</span>
+            </div>
+          </div>
+        </Card>
+
+        {/* B. Expense Category Breakdown Donut */}
+        <Card className="p-6 bg-[#111C32] border-[#263650]">
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <BarChart3 size={18} className="text-cyan-400" />
+                Expense Breakdown by Category
+              </h3>
+              <p className="text-xs text-slate-400">Distribution across catering, AV equipment, and publicity</p>
+            </div>
+            <span className="text-xs text-slate-400 font-mono">{clubExpenses.length} entries</span>
+          </div>
+
+          {categoryBreakdownData.length === 0 ? (
+            <div className="h-56 flex flex-col items-center justify-center text-slate-500 text-xs">
+              No categorized expenses recorded yet.
+            </div>
+          ) : (
+            <div className="h-56 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={categoryBreakdownData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={50}
+                    outerRadius={80}
+                    paddingAngle={3}
+                    dataKey="value"
+                  >
+                    {categoryBreakdownData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(val: number) => [`$${val.toLocaleString()}`, 'Expenses']}
+                    contentStyle={{ backgroundColor: '#111C32', borderColor: '#263650', color: '#F1F5F9', borderRadius: '12px' }}
+                  />
+                  <Legend
+                    verticalAlign="bottom"
+                    iconType="circle"
+                    formatter={(val) => <span className="text-slate-300 text-xs">{val}</span>}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </Card>
+
+        {/* C. Sponsorship Contribution Chart */}
+        <Card className="p-6 bg-[#111C32] border-[#263650]">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <Sparkles size={18} className="text-amber-400" />
+                Corporate & Alumni Sponsorship Contributions
+              </h3>
+              <p className="text-xs text-slate-400">Direct event funding and corporate grants</p>
+            </div>
+            <Badge variant="amber" size="sm">
+              {clubSponsorshipData.length} Sponsors
+            </Badge>
+          </div>
+
+          {clubSponsorshipData.length === 0 ? (
+            <div className="h-56 flex flex-col items-center justify-center text-slate-500 text-xs">
+              No active sponsor grants recorded.
+            </div>
+          ) : (
+            <div className="h-56 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={clubSponsorshipData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#263650" />
+                  <XAxis dataKey="name" stroke="#94A3B8" fontSize={11} />
+                  <YAxis stroke="#94A3B8" fontSize={11} />
+                  <Tooltip
+                    formatter={(val: number) => [`$${val.toLocaleString()}`, 'Contribution']}
+                    contentStyle={{ backgroundColor: '#111C32', borderColor: '#263650', color: '#F1F5F9', borderRadius: '12px' }}
+                  />
+                  <Bar dataKey="amount" fill="#F59E0B" radius={[6, 6, 0, 0]} name="Funding ($)" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </Card>
+
+        {/* D. Budget Comparison Bar Chart */}
+        <Card className="p-6 bg-[#111C32] border-[#263650]">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <TrendingDown size={18} className="text-emerald-400" />
+                Annual Allocation vs Disbursements
+              </h3>
+              <p className="text-xs text-slate-400">Fiscal solvency and remaining balance comparison</p>
+            </div>
+            <span className="text-xs font-mono text-emerald-400 font-bold">
+              ${remainingBudget.toLocaleString()} Reserve
+            </span>
+          </div>
+
+          <div className="h-56 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={comparisonData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#263650" />
+                <XAxis dataKey="category" stroke="#94A3B8" fontSize={11} />
+                <YAxis stroke="#94A3B8" fontSize={11} />
+                <Tooltip
+                  formatter={(val: number) => [`$${val.toLocaleString()}`, 'Amount']}
+                  contentStyle={{ backgroundColor: '#111C32', borderColor: '#263650', color: '#F1F5F9', borderRadius: '12px' }}
+                />
+                <Legend
+                  verticalAlign="bottom"
+                  iconType="circle"
+                  formatter={(val) => <span className="text-slate-300 text-xs">{val}</span>}
+                />
+                <Bar dataKey="Allocated" fill="#3B82F6" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="Disbursed" fill="#F43F5E" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="Remaining" fill="#10B981" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      </div>
 
       {/* Expenses Table */}
       <Card className="overflow-hidden border border-slate-200/80">

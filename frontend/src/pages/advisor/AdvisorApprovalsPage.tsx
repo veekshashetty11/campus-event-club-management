@@ -49,10 +49,20 @@ export default function AdvisorApprovalsPage() {
 
   // Advisor-level approvals
   const advisorApprovals = useMemo(() => {
-    return approvals.filter(
-      (a) => a.stage === 'club_advisor' && a.clubId !== undefined && advisedClubIds.includes(a.clubId)
-    );
-  }, [approvals, advisedClubIds]);
+    const advisedClubNames = advisedClubs.map((c) => c.name.toLowerCase());
+    return approvals.filter((a) => {
+      if (a.stage !== 'club_advisor') return false;
+      const targetClubId =
+        a.clubId ??
+        events.find((e) => e.eventId === a.eventId)?.clubId ??
+        clubs.find((c) => c.name.toLowerCase() === (a.clubName || '').toLowerCase())?.clubId;
+
+      if (targetClubId !== undefined && advisedClubIds.includes(targetClubId)) {
+        return true;
+      }
+      return advisedClubNames.includes((a.clubName || '').toLowerCase());
+    });
+  }, [approvals, advisedClubIds, advisedClubs, events, clubs]);
 
   const filteredApprovals = useMemo(() => {
     if (filterStatus === 'all') return advisorApprovals;
@@ -104,7 +114,7 @@ export default function AdvisorApprovalsPage() {
       case 'pending':
         return <Badge variant="warning">Pending Review</Badge>;
       case 'changes_requested':
-        return <Badge variant="warning" className="bg-amber-100 text-amber-900 border-amber-300">Changes Requested</Badge>;
+        return <Badge variant="warning" className="bg-amber-500/10 text-amber-300 border-amber-500/20">Changes Requested</Badge>;
       case 'rejected':
         return <Badge variant="danger">Rejected</Badge>;
       default:
@@ -124,8 +134,8 @@ export default function AdvisorApprovalsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Level 1 Faculty Event Approvals</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">Level 1 Faculty Event Approvals</h1>
+          <p className="text-sm text-slate-400">
             Review proposed club event budgets, academic scheduling, and facility prerequisites.
           </p>
         </div>
@@ -139,7 +149,7 @@ export default function AdvisorApprovalsPage() {
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-colors ${
                 filterStatus === s
                   ? 'bg-brand-800 text-white shadow-xs'
-                  : 'text-slate-600 bg-white border border-slate-200 hover:bg-slate-50'
+                  : 'text-slate-300 bg-[#17243B] border border-[#263650] hover:bg-[#17243B]'
               }`}
             >
               {s.replace('_', ' ')}
@@ -152,8 +162,8 @@ export default function AdvisorApprovalsPage() {
         <div
           className={`p-4 rounded-xl flex items-center justify-between border text-sm ${
             !actionAlert.isError
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-              : 'bg-rose-50 border-rose-200 text-rose-800'
+              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300'
+              : 'bg-rose-500/10 border-rose-500/20 text-rose-300'
           }`}
         >
           <div className="flex items-center gap-2">
@@ -167,11 +177,11 @@ export default function AdvisorApprovalsPage() {
       )}
 
       {/* Table of Approvals */}
-      <Card className="overflow-hidden border border-slate-200/80">
+      <Card className="overflow-hidden border border-[#263650]">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50/75 border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-500">
+              <tr className="bg-[#17243B] border-b border-[#263650] text-xs font-semibold uppercase tracking-wider text-slate-400">
                 <th className="py-3.5 px-5">Proposed Event</th>
                 <th className="py-3.5 px-4">Club</th>
                 <th className="py-3.5 px-4">Submitted Date</th>
@@ -181,31 +191,31 @@ export default function AdvisorApprovalsPage() {
                 <th className="py-3.5 px-5 text-right">Review</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-sm">
+            <tbody className="divide-y divide-[#263650]/60 text-sm">
               {filteredApprovals.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="py-12 text-center text-slate-400">
                     <FileCheck2 size={32} className="mx-auto mb-2 opacity-50 text-slate-300" />
-                    <p className="font-medium text-slate-600">No approval records in this view</p>
+                    <p className="font-medium text-slate-300">No approval records in this view</p>
                   </td>
                 </tr>
               ) : (
                 filteredApprovals.map((appr) => {
                   const evt = events.find((e) => e.eventId === appr.eventId);
                   return (
-                    <tr key={appr.approvalId} className="hover:bg-slate-50/60 transition-colors">
+                    <tr key={appr.approvalId} className="hover:bg-[#17243B]/60 transition-colors">
                       <td className="py-3.5 px-5">
-                        <p className="font-semibold text-slate-900">{evt?.title || 'Unknown Event'}</p>
+                        <p className="font-semibold text-slate-100">{evt?.title || 'Unknown Event'}</p>
                         <p className="text-xs text-slate-400">{evt?.category}</p>
                       </td>
-                      <td className="py-3.5 px-4 text-xs font-medium text-slate-700">{appr.clubName}</td>
-                      <td className="py-3.5 px-4 text-xs text-slate-500">
+                      <td className="py-3.5 px-4 text-xs font-medium text-slate-300">{appr.clubName}</td>
+                      <td className="py-3.5 px-4 text-xs text-slate-400">
                         {new Date(appr.submittedAt).toLocaleDateString()}
                       </td>
-                      <td className="py-3.5 px-4 text-xs text-slate-600">
+                      <td className="py-3.5 px-4 text-xs text-slate-300">
                         {evt?.startDate ? new Date(evt.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'TBD'}
                       </td>
-                      <td className="py-3.5 px-4 text-xs font-bold text-slate-900">
+                      <td className="py-3.5 px-4 text-xs font-bold text-slate-100">
                         ${evt?.budget ? evt.budget.toLocaleString() : '0'}
                       </td>
                       <td className="py-3.5 px-4">{getStatusBadge(appr.status)}</td>
@@ -237,18 +247,18 @@ export default function AdvisorApprovalsPage() {
         {selectedEvent && selectedApproval && (
           <div className="space-y-5 pt-2 max-h-[75vh] overflow-y-auto pr-1">
             {/* Quick Summary Pill */}
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-wrap items-center justify-between gap-4">
+            <div className="p-4 rounded-xl bg-[#17243B] border border-[#263650] flex flex-wrap items-center justify-between gap-4">
               <div>
                 <p className="text-xs text-slate-400">Organizing Club</p>
-                <p className="text-sm font-bold text-slate-900">{selectedEvent.clubName}</p>
+                <p className="text-sm font-bold text-slate-100">{selectedEvent.clubName}</p>
               </div>
               <div>
                 <p className="text-xs text-slate-400">Venue</p>
-                <p className="text-sm font-semibold text-slate-800">{selectedEvent.venueName}</p>
+                <p className="text-sm font-semibold text-slate-100">{selectedEvent.venueName}</p>
               </div>
               <div>
                 <p className="text-xs text-slate-400">Requested Budget</p>
-                <p className="text-sm font-bold text-emerald-700">${selectedEvent.budget?.toLocaleString() || '0'}</p>
+                <p className="text-sm font-bold text-emerald-300">${selectedEvent.budget?.toLocaleString() || '0'}</p>
               </div>
               <div>
                 <p className="text-xs text-slate-400">Status</p>
@@ -258,29 +268,29 @@ export default function AdvisorApprovalsPage() {
 
             {/* Description & Objectives */}
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Description</h4>
-              <p className="text-sm text-slate-700 leading-relaxed bg-white p-3 rounded-xl border border-slate-200">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Description</h4>
+              <p className="text-sm text-slate-300 leading-relaxed bg-[#17243B] p-3 rounded-xl border border-[#263650]">
                 {selectedEvent.description || selectedEvent.shortDescription}
               </p>
             </div>
 
             {/* Logistics & Equipment */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div className="p-3 rounded-xl bg-[#17243B] border border-[#263650]">
                 <span className="text-slate-400 block mb-0.5">Capacity & Waitlist:</span>
-                <span className="font-semibold text-slate-800">
+                <span className="font-semibold text-slate-100">
                   {selectedEvent.capacity} seats ({selectedEvent.isWaitlistEnabled ? 'Waitlist Enabled' : 'No Waitlist'})
                 </span>
               </div>
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div className="p-3 rounded-xl bg-[#17243B] border border-[#263650]">
                 <span className="text-slate-400 block mb-0.5">Required Equipment:</span>
-                <span className="font-semibold text-slate-800">{selectedEvent.equipmentNeeded || 'Standard AV setup'}</span>
+                <span className="font-semibold text-slate-100">{selectedEvent.equipmentNeeded || 'Standard AV setup'}</span>
               </div>
             </div>
 
             {/* Approval Workflow Stepper */}
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Approval Pipeline</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Approval Pipeline</h4>
               <ApprovalTimeline
                 currentStatus={selectedEvent.status}
                 approvals={approvals.filter((a) => a.eventId === selectedEvent.eventId)}
@@ -289,13 +299,13 @@ export default function AdvisorApprovalsPage() {
 
             {/* Actions if currently pending */}
             {selectedApproval.status === 'pending' ? (
-              <div className="flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-slate-100">
+              <div className="flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-[#263650]/60">
                 <Button variant="outline" onClick={() => setSelectedApproval(null)}>
                   Close
                 </Button>
                 <Button
                   variant="outline"
-                  className="text-amber-700 border-amber-300 hover:bg-amber-50"
+                  className="text-amber-300 border-amber-500/20 hover:bg-amber-500/10"
                   onClick={() => setDecisionType('changes_requested')}
                 >
                   Request Changes
@@ -316,7 +326,7 @@ export default function AdvisorApprovalsPage() {
                 </Button>
               </div>
             ) : (
-              <div className="flex justify-end pt-3 border-t border-slate-100">
+              <div className="flex justify-end pt-3 border-t border-[#263650]/60">
                 <Button variant="outline" onClick={() => setSelectedApproval(null)}>
                   Close
                 </Button>
@@ -339,7 +349,7 @@ export default function AdvisorApprovalsPage() {
         }
       >
         <div className="space-y-4 pt-2">
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-slate-300">
             {decisionType === 'approved'
               ? 'Approving this event will advance it to Level 2 (Student Affairs & Dean Brody) for administrative review.'
               : decisionType === 'changes_requested'
@@ -348,7 +358,7 @@ export default function AdvisorApprovalsPage() {
           </p>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
               Reviewer Notes / Feedback
             </label>
             <textarea
@@ -360,11 +370,11 @@ export default function AdvisorApprovalsPage() {
                   ? 'Optional encouragement or faculty notes...'
                   : 'Required feedback for the coordinator...'
               }
-              className="w-full text-sm rounded-xl border border-slate-300 p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+              className="w-full text-sm rounded-xl border border-[#263650] bg-[#17243B] p-3 text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-3 border-t border-[#263650]/60">
             <Button variant="outline" onClick={() => setDecisionType(null)}>
               Back
             </Button>

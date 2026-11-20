@@ -29,6 +29,11 @@ export default function StudentEventsPage() {
 
     return events
       .filter((ev) => {
+        // Visibility guard: students only see published/ongoing/completed events
+        // Draft, pending_approval, approved (pending venue), and rejected events are hidden
+        const VISIBLE_STATUSES = ['published', 'ongoing', 'completed', 'cancelled'];
+        if (!VISIBLE_STATUSES.includes(ev.status)) return false;
+
         // Keyword Search
         const searchLower = search.toLowerCase();
         const matchSearch =
@@ -120,14 +125,14 @@ export default function StudentEventsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Campus Events Discovery</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <h1 className="text-2xl font-black text-white tracking-tight">Campus Events Discovery</h1>
+          <p className="text-sm text-slate-400 mt-0.5">
             Discover workshops, hackathons, seminars, and sports tournaments across college clubs.
           </p>
         </div>
-        <div className="flex items-center gap-2 self-start sm:self-auto text-xs text-slate-500 bg-white px-3 py-1.5 rounded-lg border border-slate-200">
-          <Sparkles size={14} className="text-brand-600" />
-          <span>Showing <strong>{filteredEvents.length}</strong> of {events.length} events</span>
+        <div className="flex items-center gap-2 self-start sm:self-auto text-xs text-slate-300 bg-[#17243B] px-3.5 py-1.5 rounded-xl border border-[#263650] shadow-sm">
+          <Sparkles size={14} className="text-indigo-400" />
+          <span>Showing <strong className="text-white">{filteredEvents.length}</strong> of {events.length} events</span>
         </div>
       </div>
 
@@ -136,25 +141,25 @@ export default function StudentEventsPage() {
         {/* Row 1: Search & Sort */}
         <div className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               placeholder="Search by event title, keywords, or topics..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 text-sm rounded-lg border border-slate-300 bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-100 focus:border-brand-500"
+              className="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl border border-[#263650] bg-[#17243B] text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
             />
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 whitespace-nowrap">
+            <div className="flex items-center gap-1.5 text-xs text-slate-400 whitespace-nowrap font-medium">
               <ArrowUpDown size={14} />
               <span>Sort By:</span>
             </div>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="text-xs rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-100 focus:border-brand-500"
+              className="text-xs rounded-xl border border-[#263650] bg-[#17243B] px-3 py-2.5 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
             >
               <option value="date">Upcoming Date (Earliest First)</option>
               <option value="popularity">Popularity (Most Registered)</option>
@@ -164,13 +169,13 @@ export default function StudentEventsPage() {
         </div>
 
         {/* Row 2: Secondary Dropdowns (Club, Date, Status) */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-slate-100 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-[#263650] text-xs">
           <div>
-            <label className="block text-slate-500 mb-1 font-medium">Organizing Club</label>
+            <label className="block text-slate-400 mb-1 font-semibold">Organizing Club</label>
             <select
               value={selectedClub}
               onChange={(e) => setSelectedClub(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-100"
+              className="w-full rounded-xl border border-[#263650] bg-[#17243B] px-3 py-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
             >
               <option value="All">All Clubs</option>
               {clubs.map((c) => (
@@ -182,11 +187,11 @@ export default function StudentEventsPage() {
           </div>
 
           <div>
-            <label className="block text-slate-500 mb-1 font-medium">Date Range</label>
+            <label className="block text-slate-400 mb-1 font-semibold">Date Range</label>
             <select
               value={selectedDateFilter}
               onChange={(e) => setSelectedDateFilter(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-100"
+              className="w-full rounded-xl border border-[#263650] bg-[#17243B] px-3 py-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
             >
               <option value="All">All Dates</option>
               <option value="Upcoming">Upcoming Only</option>
@@ -196,11 +201,11 @@ export default function StudentEventsPage() {
           </div>
 
           <div>
-            <label className="block text-slate-500 mb-1 font-medium">Registration Status</label>
+            <label className="block text-slate-400 mb-1 font-semibold">Registration Status</label>
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-100"
+              className="w-full rounded-xl border border-[#263650] bg-[#17243B] px-3 py-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
             >
               <option value="All">All Statuses</option>
               <option value="Open">Registration Open</option>
@@ -222,10 +227,10 @@ export default function StudentEventsPage() {
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
                 className={[
-                  'text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors',
+                  'text-xs font-semibold px-3 py-1.5 rounded-xl border transition-all whitespace-nowrap',
                   selectedCategory === cat
-                    ? 'bg-brand-800 text-white border-brand-800'
-                    : 'bg-white text-slate-600 border-slate-200 hover:border-brand-400 hover:text-brand-800',
+                    ? 'bg-[#4F46E5] text-white border-[#4F46E5] shadow-[0_0_12px_rgba(79,70,229,0.4)]'
+                    : 'bg-[#17243B] text-slate-300 border-[#263650] hover:border-slate-500 hover:text-white',
                 ].join(' ')}
               >
                 {cat}
@@ -236,7 +241,7 @@ export default function StudentEventsPage() {
           {hasActiveFilters && (
             <button
               onClick={clearAllFilters}
-              className="flex items-center gap-1 text-xs text-red-600 hover:text-red-700 font-medium py-1 px-2 rounded hover:bg-red-50 transition-colors"
+              className="flex items-center gap-1 text-xs text-rose-400 hover:text-rose-300 font-semibold py-1 px-2.5 rounded-lg hover:bg-rose-950/30 transition-colors"
             >
               <X size={13} />
               Reset All Filters

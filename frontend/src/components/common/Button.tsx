@@ -13,23 +13,23 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    'bg-gradient-to-r from-violet-600 to-blue-600 text-white hover:from-violet-700 hover:to-blue-700 shadow-sm hover:shadow-md focus-visible:ring-violet-500 disabled:from-violet-300 disabled:to-blue-300',
+    'bg-gradient-to-r from-[#4F46E5] to-[#3B82F6] text-white hover:from-[#4338CA] hover:to-[#2563EB] shadow-sm hover:shadow-[0_0_16px_rgba(79,70,229,0.4)] focus-visible:ring-[#4F46E5] disabled:opacity-50 active:scale-[0.98]',
   secondary:
-    'bg-gradient-to-r from-cyan-500 to-teal-500 text-white hover:from-cyan-600 hover:to-teal-600 shadow-sm hover:shadow-md focus-visible:ring-teal-500 disabled:opacity-50',
+    'bg-[#17243B] text-slate-200 border border-[#263650] hover:bg-[#263650] hover:text-white hover:border-slate-500 shadow-sm focus-visible:ring-[#4F46E5] disabled:opacity-50 active:scale-[0.98]',
   outline:
-    'border border-violet-200 bg-white/80 text-violet-700 hover:bg-violet-50 hover:border-violet-300 focus-visible:ring-violet-500 disabled:opacity-50',
+    'border border-[#263650] bg-[#111C32]/70 text-slate-200 hover:bg-[#17243B] hover:border-indigo-500/60 hover:text-white focus-visible:ring-[#4F46E5] disabled:opacity-50 active:scale-[0.98]',
   ghost:
-    'bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-800 focus-visible:ring-violet-500 disabled:opacity-50',
+    'bg-transparent text-slate-400 hover:bg-[#17243B] hover:text-white focus-visible:ring-[#4F46E5] disabled:opacity-50 active:scale-[0.98]',
   danger:
-    'bg-gradient-to-r from-red-500 to-rose-600 text-white hover:from-red-600 hover:to-rose-700 shadow-sm hover:shadow-md focus-visible:ring-red-500 disabled:opacity-50',
+    'bg-gradient-to-r from-rose-600 to-red-600 text-white hover:from-rose-700 hover:to-red-700 shadow-sm hover:shadow-[0_0_16px_rgba(244,63,94,0.4)] focus-visible:ring-rose-500 disabled:opacity-50 active:scale-[0.98]',
   gradient:
-    'bg-gradient-to-r from-violet-600 via-purple-600 to-blue-600 text-white hover:from-violet-700 hover:via-purple-700 hover:to-blue-700 shadow-md hover:shadow-lg focus-visible:ring-violet-500 disabled:opacity-50',
+    'bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#3B82F6] text-white hover:opacity-90 shadow-md hover:shadow-[0_0_20px_rgba(79,70,229,0.5)] focus-visible:ring-[#4F46E5] disabled:opacity-50 active:scale-[0.98]',
 };
 
 const sizeClasses: Record<Size, string> = {
-  xs: 'text-xs px-2.5 py-1.5 rounded-lg gap-1.5',
-  sm: 'text-sm px-3 py-2 rounded-xl gap-2',
-  md: 'text-sm px-4 py-2.5 rounded-xl gap-2',
+  xs: 'text-xs px-2.5 py-1.5 rounded-lg gap-1.5 font-medium',
+  sm: 'text-xs px-3.5 py-2 rounded-xl gap-2 font-semibold',
+  md: 'text-sm px-4 py-2.5 rounded-xl gap-2 font-semibold',
   lg: 'text-base px-5 py-3 rounded-xl gap-2.5 font-semibold',
 };
 
@@ -49,9 +49,10 @@ export default function Button({
       {...props}
       disabled={disabled || isLoading}
       className={[
-        'inline-flex items-center justify-center font-medium transition-all duration-200',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-        'disabled:cursor-not-allowed select-none',
+        'inline-flex items-center justify-center font-medium',
+        'transition-all duration-150 select-none cursor-pointer',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-[#080D1B]',
+        'disabled:cursor-not-allowed',
         variantClasses[variant],
         sizeClasses[size],
         className,
@@ -59,8 +60,7 @@ export default function Button({
     >
       {isLoading ? (
         <svg
-          className="animate-spin h-4 w-4 shrink-0"
-          xmlns="http://www.w3.org/2000/svg"
+          className="animate-spin -ml-1 mr-2 h-4 w-4 text-current"
           fill="none"
           viewBox="0 0 24 24"
         >
@@ -75,14 +75,14 @@ export default function Button({
           <path
             className="opacity-75"
             fill="currentColor"
-            d="M4 12a8 8 0 018-8v8z"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
           />
         </svg>
       ) : (
-        leftIcon && <span className="shrink-0">{leftIcon}</span>
+        leftIcon
       )}
-      <span>{children}</span>
-      {!isLoading && rightIcon && <span className="shrink-0">{rightIcon}</span>}
+      {children}
+      {!isLoading && rightIcon}
     </button>
   );
 }

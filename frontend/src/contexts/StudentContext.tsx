@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
+import React, { createContext, useContext, useState, useMemo, useCallback, useEffect } from 'react';
 import type { CampusEvent } from '../types/event';
 import type { Club, ClubMembership } from '../types/club';
 import type { EventRegistration, Certificate, DashboardStats } from '../types/registration';
@@ -56,7 +56,7 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
   // State initialized with centralized mock fixtures
   const [events, setEvents] = useState<CampusEvent[]>(() => {
     try {
-      const saved = sessionStorage.getItem(`${STORAGE_KEY_PREFIX}events`);
+      const saved = localStorage.getItem(`${STORAGE_KEY_PREFIX}events`);
       return saved ? JSON.parse(saved) : MOCK_EVENTS;
     } catch {
       return MOCK_EVENTS;
@@ -65,7 +65,7 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
 
   const [registrations, setRegistrations] = useState<EventRegistration[]>(() => {
     try {
-      const saved = sessionStorage.getItem(`${STORAGE_KEY_PREFIX}registrations`);
+      const saved = localStorage.getItem(`${STORAGE_KEY_PREFIX}registrations`);
       return saved ? JSON.parse(saved) : MOCK_REGISTRATIONS;
     } catch {
       return MOCK_REGISTRATIONS;
@@ -76,7 +76,7 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
 
   const [memberships, setMemberships] = useState<ClubMembership[]>(() => {
     try {
-      const saved = sessionStorage.getItem(`${STORAGE_KEY_PREFIX}memberships`);
+      const saved = localStorage.getItem(`${STORAGE_KEY_PREFIX}memberships`);
       return saved ? JSON.parse(saved) : MOCK_MEMBERSHIPS;
     } catch {
       return MOCK_MEMBERSHIPS;
@@ -87,7 +87,7 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
 
   const [notifications, setNotifications] = useState<Notification[]>(() => {
     try {
-      const saved = sessionStorage.getItem(`${STORAGE_KEY_PREFIX}notifications`);
+      const saved = localStorage.getItem(`${STORAGE_KEY_PREFIX}notifications`);
       return saved ? JSON.parse(saved) : MOCK_NOTIFICATIONS;
     } catch {
       return MOCK_NOTIFICATIONS;
@@ -96,12 +96,30 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
 
   const [activities, setActivities] = useState<ActivityItem[]>(() => {
     try {
-      const saved = sessionStorage.getItem(`${STORAGE_KEY_PREFIX}activities`);
+      const saved = localStorage.getItem(`${STORAGE_KEY_PREFIX}activities`);
       return saved ? JSON.parse(saved) : MOCK_ACTIVITIES;
     } catch {
       return MOCK_ACTIVITIES;
     }
   });
+
+  // ── Cross-context sync: listen for localStorage changes from ManagementContext ──
+  // When the Venue Manager approves a booking, ManagementContext writes to
+  // 'campus_event_student_state_events'. This listener picks that up so the
+  // student sees newly-published events without a full page reload.
+  useEffect(() => {
+    const handler = (e: StorageEvent) => {
+      if (e.key === `${STORAGE_KEY_PREFIX}events` && e.newValue) {
+        try {
+          setEvents(JSON.parse(e.newValue));
+        } catch {
+          // ignore parse errors
+        }
+      }
+    };
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
+  }, []);
 
   // Dynamically computed stats
   const stats: DashboardStats = useMemo(() => {
@@ -244,8 +262,8 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
       setActivities((prev) => [newActivity, ...prev]);
 
       try {
-        sessionStorage.setItem(`${STORAGE_KEY_PREFIX}events`, JSON.stringify(updatedEvents));
-        sessionStorage.setItem(`${STORAGE_KEY_PREFIX}registrations`, JSON.stringify(updatedRegistrations));
+        localStorage.setItem(`${STORAGE_KEY_PREFIX}events`, JSON.stringify(updatedEvents));
+        localStorage.setItem(`${STORAGE_KEY_PREFIX}registrations`, JSON.stringify(updatedRegistrations));
       } catch {
         // storage fallback
       }
@@ -397,8 +415,8 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
       setActivities((prev) => [...newActs, ...prev]);
 
       try {
-        sessionStorage.setItem(`${STORAGE_KEY_PREFIX}events`, JSON.stringify(updatedEvents));
-        sessionStorage.setItem(`${STORAGE_KEY_PREFIX}registrations`, JSON.stringify(updatedRegistrations));
+        localStorage.setItem(`${STORAGE_KEY_PREFIX}events`, JSON.stringify(updatedEvents));
+        localStorage.setItem(`${STORAGE_KEY_PREFIX}registrations`, JSON.stringify(updatedRegistrations));
       } catch {
         // fallback
       }
@@ -486,8 +504,8 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
       setActivities((prev) => [newActivity, ...prev]);
 
       try {
-        sessionStorage.setItem(`${STORAGE_KEY_PREFIX}events`, JSON.stringify(updatedEvents));
-        sessionStorage.setItem(`${STORAGE_KEY_PREFIX}registrations`, JSON.stringify(updatedRegistrations));
+        localStorage.setItem(`${STORAGE_KEY_PREFIX}events`, JSON.stringify(updatedEvents));
+        localStorage.setItem(`${STORAGE_KEY_PREFIX}registrations`, JSON.stringify(updatedRegistrations));
       } catch {
         // fallback
       }
@@ -684,7 +702,7 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
       setActivities((prev) => [newActivity, ...prev]);
 
       try {
-        sessionStorage.setItem(`${STORAGE_KEY_PREFIX}memberships`, JSON.stringify(updatedMemberships));
+        localStorage.setItem(`${STORAGE_KEY_PREFIX}memberships`, JSON.stringify(updatedMemberships));
       } catch {
         // fallback
       }
@@ -713,15 +731,12 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
     async (data: Partial<User>) => {
       await new Promise((r) => setTimeout(r, 500));
 
-      // Update in localStorage / session
-      const stored = sessionStorage.getItem('user') || localStorage.getItem('user');
+      // Update in localStorage
+      const stored = localStorage.getItem('user');
       if (stored) {
         const parsed = JSON.parse(stored);
         const updated = { ...parsed, ...data };
-        sessionStorage.setItem('user', JSON.stringify(updated));
-        if (localStorage.getItem('user')) {
-          localStorage.setItem('user', JSON.stringify(updated));
-        }
+        localStorage.setItem('user', JSON.stringify(updated));
       }
 
       // Add activity

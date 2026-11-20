@@ -1,24 +1,21 @@
-import React, { useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useManagement } from '../../contexts/ManagementContext';
 import Breadcrumbs from '../../components/common/Breadcrumbs';
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import Badge from '../../components/common/Badge';
+import CampusActivityHeatmap from '../../components/dashboard/CampusActivityHeatmap';
 import {
-  LayoutDashboard,
-  Users,
-  Building2,
-  Calendar,
   FileCheck2,
-  MapPin,
-  DollarSign,
   ShieldAlert,
   ArrowRight,
-  TrendingUp,
-  Clock,
   CheckCircle2,
+  Activity,
+  Layers,
+  Sparkles,
+  TrendingUp,
 } from 'lucide-react';
 import {
   BarChart,
@@ -32,16 +29,11 @@ import {
 
 export default function AdministratorDashboard() {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const { users, clubs, events, approvals, venueBookings, auditLogs } = useManagement();
 
-  // Dual role check: is user Student Affairs or Administrator?
   const isAffairs = user?.role === 'student_affairs';
   const isAdmin = user?.role === 'administrator';
 
-  // Pending approvals relevant to current role:
-  // If student affairs, stage === 'student_affairs'
-  // If administrator, stage === 'administrator' (or both if viewing high-level)
   const pendingApprovals = useMemo(() => {
     return approvals.filter((a) => {
       if (isAffairs) return a.stage === 'student_affairs' && a.status === 'pending';
@@ -56,7 +48,6 @@ export default function AdministratorDashboard() {
   const activeBookings = venueBookings.filter((b) => b.status === 'approved').length;
   const totalCampusBudget = clubs.reduce((sum, c) => sum + c.allocatedBudget, 0);
 
-  // Category counts for Recharts
   const categoryData = useMemo(() => {
     const counts: Record<string, number> = {};
     events.forEach((e) => {
@@ -66,7 +57,7 @@ export default function AdministratorDashboard() {
   }, [events]);
 
   return (
-    <div className="flex flex-col gap-6 max-w-7xl mx-auto w-full">
+    <div className="flex flex-col gap-6 max-w-7xl mx-auto w-full text-slate-100">
       <Breadcrumbs
         items={[
           { label: 'Administrator', path: '/admin/dashboard' },
@@ -75,38 +66,27 @@ export default function AdministratorDashboard() {
       />
 
       {/* Hero Welcome Banner */}
-      <div className="relative p-6 md:p-8 rounded-2xl bg-gradient-to-br from-slate-900 via-red-950 to-slate-900 text-white shadow-xl overflow-hidden">
-        {/* Animated background orbs */}
-        <div className="absolute -top-10 -right-10 w-44 h-44 rounded-full bg-rose-700/20 blur-2xl animate-pulse-slow" />
-        <div className="absolute -bottom-8 right-28 w-36 h-36 rounded-full bg-red-500/15 blur-2xl animate-float" />
-        <div className="absolute top-6 left-1/3 w-24 h-24 rounded-full bg-rose-900/20 blur-xl" />
+      <div className="relative p-6 md:p-8 rounded-2xl bg-gradient-to-br from-[#111C32] via-[#17243B] to-[#0D1426] border border-[#263650] text-white shadow-2xl overflow-hidden">
+        {/* Glow accents */}
+        <div className="absolute -top-10 -right-10 w-60 h-60 rounded-full bg-rose-600/15 blur-3xl animate-pulse-slow pointer-events-none" />
+        <div className="absolute -bottom-8 right-28 w-48 h-48 rounded-full bg-[#4F46E5]/15 blur-3xl animate-float pointer-events-none" />
 
-        {/* Grid overlay */}
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage: 'linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)',
-            backgroundSize: '32px 32px',
-          }}
-        />
-
-        <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6 z-10">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-bold backdrop-blur mb-3 border border-white/10">
-              <ShieldAlert size={14} className="text-rose-300" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#17243B] text-xs font-bold mb-3 border border-rose-500/30 text-rose-300">
+              <ShieldAlert size={14} className="text-rose-400" />
               {isAffairs ? 'Student Affairs Administration' : 'Campus Systems Governance'}
             </div>
-            <h1 className="text-2xl md:text-3xl font-black tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white">
               Welcome, {user?.fullName || 'Administrator'}
             </h1>
-            <p className="text-sm text-slate-200/80 mt-2 max-w-2xl leading-relaxed">
-              Overview of university extracurricular activities, multi-stage approval pipelines, facility allocations, and student memberships.
+            <p className="text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed">
+              University-wide overview of extracurricular activities, multi-stage approval pipelines, facility allocations, and student memberships.
             </p>
           </div>
 
           <Link to="/admin/approvals">
-            <Button variant="secondary" className="bg-white text-slate-900 hover:bg-rose-50 shadow-sm shrink-0 font-bold">
-              <FileCheck2 size={16} className="mr-2 text-rose-600" />
+            <Button variant="primary" className="shadow-lg shrink-0 font-bold" leftIcon={<FileCheck2 size={16} />}>
               View Approval Queue ({pendingApprovals.length})
             </Button>
           </Link>
@@ -115,35 +95,35 @@ export default function AdministratorDashboard() {
 
       {/* 6 Key Campus Scorecards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5">
-        <Card className="p-3.5 bg-slate-50 border border-slate-200/80">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Students</p>
-          <p className="text-xl font-bold text-slate-900 mt-1">{totalStudents}</p>
-        </Card>
+        <div className="p-3.5 bg-[#111C32] border border-[#263650] rounded-xl shadow-md">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Students</p>
+          <p className="text-xl font-black text-white mt-1">{totalStudents}</p>
+        </div>
 
-        <Card className="p-3.5 bg-slate-50 border border-slate-200/80">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Clubs</p>
-          <p className="text-xl font-bold text-slate-900 mt-1">{totalClubs}</p>
-        </Card>
+        <div className="p-3.5 bg-[#111C32] border border-[#263650] rounded-xl shadow-md">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Clubs</p>
+          <p className="text-xl font-black text-white mt-1">{totalClubs}</p>
+        </div>
 
-        <Card className="p-3.5 bg-slate-50 border border-slate-200/80">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Total Events</p>
-          <p className="text-xl font-bold text-brand-800 mt-1">{totalEvents}</p>
-        </Card>
+        <div className="p-3.5 bg-[#111C32] border border-[#263650] rounded-xl shadow-md">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total Events</p>
+          <p className="text-xl font-black text-indigo-400 mt-1">{totalEvents}</p>
+        </div>
 
-        <Card className="p-3.5 bg-amber-50/70 border border-amber-200/80">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-amber-800">Pending Review</p>
-          <p className="text-xl font-bold text-amber-900 mt-1">{pendingApprovals.length}</p>
-        </Card>
+        <div className="p-3.5 bg-amber-950/40 border border-amber-700/50 rounded-xl shadow-md">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-amber-300">Pending Review</p>
+          <p className="text-xl font-black text-amber-400 mt-1">{pendingApprovals.length}</p>
+        </div>
 
-        <Card className="p-3.5 bg-slate-50 border border-slate-200/80">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Active Bookings</p>
-          <p className="text-xl font-bold text-slate-900 mt-1">{activeBookings}</p>
-        </Card>
+        <div className="p-3.5 bg-[#111C32] border border-[#263650] rounded-xl shadow-md">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Active Bookings</p>
+          <p className="text-xl font-black text-cyan-400 mt-1">{activeBookings}</p>
+        </div>
 
-        <Card className="p-3.5 bg-emerald-50/70 border border-emerald-200/80">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-emerald-800">Campus Budget</p>
-          <p className="text-xl font-bold text-emerald-900 mt-1">${(totalCampusBudget / 1000).toFixed(0)}k</p>
-        </Card>
+        <div className="p-3.5 bg-emerald-950/40 border border-emerald-700/50 rounded-xl shadow-md">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-emerald-300">Campus Budget</p>
+          <p className="text-xl font-black text-emerald-400 mt-1">${(totalCampusBudget / 1000).toFixed(0)}k</p>
+        </div>
       </div>
 
       {/* Main Grid: Pending Approvals & Quick Audit Log */}
@@ -151,51 +131,51 @@ export default function AdministratorDashboard() {
         {/* Pending Approvals Table */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <FileCheck2 size={20} className="text-brand-700" />
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <FileCheck2 size={20} className="text-indigo-400" />
               {isAffairs ? 'Level 2: Student Affairs Pending Reviews' : 'Administrative Approval Pipeline'}
             </h2>
-            <Link to="/admin/approvals" className="text-xs font-semibold text-brand-700 hover:underline flex items-center gap-1">
+            <Link to="/admin/approvals" className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
               View All Queue <ArrowRight size={13} />
             </Link>
           </div>
 
-          <Card className="overflow-hidden border border-slate-200/80">
+          <Card padding="none" className="overflow-hidden">
             {pendingApprovals.length === 0 ? (
               <div className="p-10 text-center text-slate-400">
-                <CheckCircle2 size={32} className="mx-auto mb-2 text-emerald-500 opacity-80" />
-                <p className="font-semibold text-slate-700">No pending requests</p>
-                <p className="text-xs text-slate-400 mt-1">All proposed events have been processed.</p>
+                <CheckCircle2 size={32} className="mx-auto mb-2 text-emerald-400 opacity-80" />
+                <p className="font-semibold text-slate-200">No pending requests</p>
+                <p className="text-xs text-slate-500 mt-1">All proposed events have been processed.</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-sm">
                   <thead>
-                    <tr className="bg-slate-50/80 border-b border-slate-200 text-xs font-semibold uppercase text-slate-500">
-                      <th className="py-3 px-4">Event</th>
-                      <th className="py-3 px-4">Club</th>
-                      <th className="py-3 px-4">Current Stage</th>
-                      <th className="py-3 px-4 text-right">Action</th>
+                    <tr className="bg-[#17243B] border-b border-[#263650] text-xs font-bold uppercase text-slate-300">
+                      <th className="py-3.5 px-4">Event</th>
+                      <th className="py-3.5 px-4">Club</th>
+                      <th className="py-3.5 px-4">Current Stage</th>
+                      <th className="py-3.5 px-4 text-right">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-[#263650]/50">
                     {pendingApprovals.map((appr) => {
                       const evt = events.find((e) => e.eventId === appr.eventId);
                       return (
-                        <tr key={appr.approvalId} className="hover:bg-slate-50/50">
-                          <td className="py-3 px-4">
-                            <p className="font-semibold text-slate-900">{evt?.title}</p>
-                            <span className="text-xs text-slate-400">{evt?.startDate} • ${evt?.budget}</span>
+                        <tr key={appr.approvalId} className="hover:bg-[#17243B]/60 transition-colors">
+                          <td className="py-3.5 px-4">
+                            <p className="font-semibold text-white">{evt?.title}</p>
+                            <span className="text-xs text-slate-400">{evt?.startDate || evt?.eventDate} • ${evt?.budget}</span>
                           </td>
-                          <td className="py-3 px-4 text-xs font-medium text-slate-700">{appr.clubName}</td>
-                          <td className="py-3 px-4">
-                            <Badge variant="warning" className="text-[11px] capitalize">
+                          <td className="py-3.5 px-4 text-xs font-medium text-slate-300">{appr.clubName}</td>
+                          <td className="py-3.5 px-4">
+                            <Badge variant="warning" size="sm" className="capitalize">
                               {appr.stage.replace('_', ' ')}
                             </Badge>
                           </td>
-                          <td className="py-3 px-4 text-right">
+                          <td className="py-3.5 px-4 text-right">
                             <Link to="/admin/approvals">
-                              <Button variant="outline" size="sm">
+                              <Button variant="outline" size="xs">
                                 Review
                               </Button>
                             </Link>
@@ -211,21 +191,23 @@ export default function AdministratorDashboard() {
 
           {/* Event Distribution Chart */}
           <Card className="p-6">
-            <h3 className="text-base font-bold text-slate-900 mb-1">Campus Event Distribution by Category</h3>
-            <p className="text-xs text-slate-500 mb-6">Activity concentration across diverse student interest domains.</p>
+            <h3 className="text-base font-bold text-white mb-1">Campus Event Distribution by Category</h3>
+            <p className="text-xs text-slate-400 mb-6">Activity concentration across diverse student interest domains.</p>
             <div className="h-64 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={categoryData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                  <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} />
-                  <YAxis stroke="#94a3b8" fontSize={11} allowDecimals={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#263650" />
+                  <XAxis dataKey="name" stroke="#94A3B8" fontSize={11} />
+                  <YAxis stroke="#94A3B8" fontSize={11} allowDecimals={false} />
                   <Tooltip
                     contentStyle={{
+                      backgroundColor: '#111C32',
+                      borderColor: '#263650',
+                      color: '#F1F5F9',
                       borderRadius: '12px',
-                      border: '1px solid #e2e8f0',
                     }}
                   />
-                  <Bar dataKey="count" fill="#1b3b57" radius={[4, 4, 0, 0]} name="Events" />
+                  <Bar dataKey="count" fill="#4F46E5" radius={[6, 6, 0, 0]} name="Events" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -235,33 +217,47 @@ export default function AdministratorDashboard() {
         {/* Right Column: Recent Audit Trail */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <ShieldAlert size={20} className="text-brand-700" />
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <ShieldAlert size={20} className="text-indigo-400" />
               Recent Audit Log
             </h2>
-            <Link to="/admin/audit" className="text-xs font-semibold text-brand-700 hover:underline">
+            <Link to="/admin/audit" className="text-xs font-semibold text-indigo-400 hover:text-indigo-300">
               View Log
             </Link>
           </div>
 
-          <Card className="p-4 border border-slate-200/80">
-            <div className="space-y-3.5">
+          <Card className="p-4">
+            <div className="space-y-3">
               {auditLogs.slice(0, 6).map((log) => (
-                <div key={log.id} className="pb-3 border-b border-slate-100 last:border-0 last:pb-0 text-xs">
+                <div key={log.id} className="pb-3 border-b border-[#263650]/50 last:border-0 last:pb-0 text-xs">
                   <div className="flex items-center justify-between text-slate-400 mb-1">
-                    <span className="font-semibold text-slate-700">{log.performedBy}</span>
-                    <span>{new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    <span className="font-semibold text-slate-200">{log.performedBy}</span>
+                    <span className="text-[11px] font-mono text-slate-500">{new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
-                  <Badge variant="neutral" className="text-[10px] uppercase font-mono mb-1">
+                  <Badge variant="neutral" size="sm" className="text-[10px] uppercase font-mono mb-1.5">
                     {log.action.replace(/_/g, ' ')}
                   </Badge>
-                  <p className="text-slate-600 leading-snug">{log.details}</p>
+                  <p className="text-slate-300 leading-snug">{log.details}</p>
                 </div>
               ))}
             </div>
           </Card>
         </div>
       </div>
+
+      {/* ── Institutional Bento Cell: Campus Activity Heatmap ─── */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            <Activity size={20} className="text-cyan-400" />
+            Extracurricular Density Heatmap
+          </h2>
+          <span className="text-xs text-slate-400 font-mono">
+            {events.length} Live Institutional Events Tracked
+          </span>
+        </div>
+        <CampusActivityHeatmap events={events} />
+      </section>
     </div>
   );
 }

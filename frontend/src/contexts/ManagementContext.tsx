@@ -97,10 +97,11 @@ const STORAGE_PREFIX = 'campus_mgmt_state_v1_';
 export function ManagementProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
 
-  // Helper to load session state or fallback to fixtures
+  // Helper to load persisted state or fallback to fixtures
+  // Uses localStorage so data is shared across role switches in the same browser
   const loadState = <T,>(key: string, fallback: T): T => {
     try {
-      const saved = sessionStorage.getItem(`${STORAGE_PREFIX}${key}`);
+      const saved = localStorage.getItem(`${STORAGE_PREFIX}${key}`);
       return saved ? JSON.parse(saved) : fallback;
     } catch {
       return fallback;
@@ -123,10 +124,10 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
   const [activities, setActivities] = useState<ActivityItem[]>(() => loadState('activities', MOCK_ACTIVITIES));
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(() => loadState('audit_logs', MOCK_AUDIT_LOGS));
 
-  // Sync to sessionStorage
+  // Sync to localStorage (shared across all roles in this browser)
   const saveState = (key: string, data: any) => {
     try {
-      sessionStorage.setItem(`${STORAGE_PREFIX}${key}`, JSON.stringify(data));
+      localStorage.setItem(`${STORAGE_PREFIX}${key}`, JSON.stringify(data));
     } catch {
       // storage quota or fallback
     }
@@ -172,6 +173,7 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
           approvalId: Date.now() + 1,
           eventId: newEventId,
           eventTitle: data.title || 'Untitled Event',
+          clubId: club.clubId,
           clubName: club.name,
           level: 1,
           stage: 'club_advisor',
@@ -287,6 +289,7 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
     async (eventId: number, data: Partial<CampusEvent>, submitNow: boolean) => {
       await new Promise((r) => setTimeout(r, 500));
       let updatedEventTitle = '';
+      const currentEv = events.find((ev) => ev.eventId === eventId);
 
       setEvents((prev) => {
         const updated = prev.map((ev) => {
@@ -312,7 +315,8 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
           approvalId: Date.now(),
           eventId,
           eventTitle: updatedEventTitle,
-          clubName: data.clubName || 'CodeCraft Society',
+          clubId: data.clubId || currentEv?.clubId || 1,
+          clubName: data.clubName || currentEv?.clubName || 'CodeCraft Society',
           level: 1,
           stage: 'club_advisor',
           stageDisplayName: 'Club Advisor',
@@ -332,12 +336,13 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
         message: submitNow ? 'Event submitted to Club Advisor!' : 'Event draft updated.',
       };
     },
-    [addAuditLog]
+    [events, addAuditLog]
   );
 
   const resubmitEvent = useCallback(
     async (eventId: number, data: Partial<CampusEvent>) => {
       await new Promise((r) => setTimeout(r, 600));
+      const targetEv = events.find((ev) => ev.eventId === eventId);
 
       setEvents((prev) => {
         const updated = prev.map((ev) => {
@@ -362,8 +367,9 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
       const freshApproval: EventApproval = {
         approvalId: Date.now(),
         eventId,
-        eventTitle: data.title || 'Resubmitted Event',
-        clubName: 'CodeCraft Society',
+        eventTitle: data.title || targetEv?.title || 'Resubmitted Event',
+        clubId: targetEv?.clubId || data.clubId || 1,
+        clubName: targetEv?.clubName || data.clubName || 'CodeCraft Society',
         level: 1,
         stage: 'club_advisor',
         stageDisplayName: 'Club Advisor',
@@ -382,7 +388,7 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
 
       return { success: true, message: 'Event successfully resubmitted for Level 1 review!' };
     },
-    [addAuditLog]
+    [events, addAuditLog]
   );
 
   // ── 2. COORDINATOR: Club Details & Membership Management ────────────────────
@@ -612,6 +618,17 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
       const targetEventId = approval.eventId;
       const targetEvent = events.find((e) => e.eventId === targetEventId);
 
+      // Security & RBAC Checks
+      if (user?.role === 'event_coordinator' || user?.role === 'student') {
+        throw new Error('Unauthorized: Coordinators and students cannot approve events.');
+      }
+      if (
+        targetEvent?.coordinatorEmail &&
+        targetEvent.coordinatorEmail === user?.email
+      ) {
+        throw new Error('Self-approval forbidden: Event creator cannot approve their own event.');
+      }
+
       // 1. Update current approval record
       const updatedApprovals = approvals.map((a) => {
         if (a.approvalId === approvalId) {
@@ -649,6 +666,7 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
             approvalId: Date.now() + 10,
             eventId: targetEventId,
             eventTitle: approval.eventTitle,
+            clubId: approval.clubId || targetEvent?.clubId,
             clubName: approval.clubName,
             level: 2,
             stage: 'student_affairs',
@@ -664,6 +682,7 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
             approvalId: Date.now() + 11,
             eventId: targetEventId,
             eventTitle: approval.eventTitle,
+            clubId: approval.clubId || targetEvent?.clubId,
             clubName: approval.clubName,
             level: 3,
             stage: 'administrator',
@@ -672,15 +691,46 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
             submittedAt: new Date().toISOString(),
           };
         } else if (approval.level === 3) {
-          // Level 3 (Administrator) Approved -> FINAL APPROVAL! Event is published!
+          // Level 3 (Administrator) Approved -> Event is finally approved!
+          // Next step: Awaiting Venue Manager allocation / confirmation before public publishing
           newEventStage = 'final_approved';
-          newEventStatus = 'published';
+          newEventStatus = 'approved';
 
-          // If there's an attached venue booking, auto-confirm it
+          // Ensure a pending venue booking request is queued for Venue Manager
           setVenueBookings((prev) => {
-            const updated = prev.map((b) => (b.eventId === targetEventId ? { ...b, status: 'approved' as const } : b));
-            saveState('venue_bookings', updated);
-            return updated;
+            const existing = prev.find((b) => b.eventId === targetEventId);
+            if (existing) {
+              const updated = prev.map((b) =>
+                b.eventId === targetEventId ? { ...b, status: 'pending' as const } : b
+              );
+              saveState('venue_bookings', updated);
+              return updated;
+            } else {
+              const vId = targetEvent?.venueId || targetEvent?.preferredVenueId;
+              const vObj = venues.find((v) => v.venueId === vId) || venues[0];
+              const newBooking: VenueBooking = {
+                bookingId: Date.now() + 2,
+                venueId: vObj.venueId,
+                venueName: vObj.name,
+                eventId: targetEventId,
+                eventTitle: targetEvent?.title || approval.eventTitle,
+                eventName: targetEvent?.title || approval.eventTitle,
+                clubName: targetEvent?.clubName || approval.clubName,
+                bookedBy: user?.userId || 'usr-coordinator-001',
+                bookedByName: targetEvent?.coordinatorName || 'Chris Martinez',
+                date: targetEvent?.startTime ? targetEvent.startTime.split('T')[0] : new Date().toISOString().split('T')[0],
+                bookingDate: targetEvent?.startTime ? targetEvent.startTime.split('T')[0] : new Date().toISOString().split('T')[0],
+                startTime: targetEvent?.startTime ? (targetEvent.startTime.split('T')[1]?.slice(0, 5) || '10:00') : '10:00',
+                endTime: targetEvent?.endTime ? (targetEvent.endTime.split('T')[1]?.slice(0, 5) || '14:00') : '14:00',
+                expectedAttendance: targetEvent?.maxCapacity || 100,
+                purpose: `Venue reservation for ${targetEvent?.title || approval.eventTitle}`,
+                status: 'pending',
+                createdAt: new Date().toISOString(),
+              };
+              const updated = [newBooking, ...prev];
+              saveState('venue_bookings', updated);
+              return updated;
+            }
           });
         }
       }
@@ -846,17 +896,45 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
         return updated;
       });
 
+      // When venue booking is approved, update the linked event: assign venue and publish!
+      if (decision === 'approved' && booking.eventId) {
+        const targetVenue = venues.find((v) => v.venueId === booking.venueId);
+        setEvents((prev) => {
+          const updated = prev.map((ev) => {
+            if (ev.eventId === booking.eventId) {
+              return {
+                ...ev,
+                venueId: booking.venueId,
+                venue: targetVenue,
+                preferredVenueId: booking.venueId,
+                status: 'published' as const, // Venue confirmed by Venue Manager -> event is published!
+              };
+            }
+            return ev;
+          });
+          saveState('events', updated);
+          try {
+            localStorage.setItem('campus_event_student_state_events', JSON.stringify(updated));
+          } catch {
+            // fallback
+          }
+          return updated;
+        });
+      }
+
       addAuditLog(
         decision === 'approved' ? 'VENUE_BOOKING_APPROVED' : 'VENUE_BOOKING_REJECTED',
         'booking',
         bookingId,
         booking.venueName,
-        `Venue Manager decided ${decision.toUpperCase()} for "${booking.eventTitle}" on ${booking.date}.`
+        `Venue Manager decided ${decision.toUpperCase()} for "${booking.eventTitle || booking.eventName}" on ${booking.date || booking.bookingDate}.`
       );
 
       return {
         success: true,
-        message: `Venue booking request ${decision}.`,
+        message: decision === 'approved'
+          ? `Venue booking approved! Event "${booking.eventTitle || booking.eventName}" is now published and open for student registration.`
+          : `Venue booking request rejected.`,
       };
     },
     [venueBookings, venues, user, addAuditLog]

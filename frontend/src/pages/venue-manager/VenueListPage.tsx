@@ -135,8 +135,8 @@ export default function VenueListPage() {
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Campus Facility Directory</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">Campus Facility Directory</h1>
+          <p className="text-sm text-slate-400">
             Configure room seating capacities, technical amenities, and active booking availability.
           </p>
         </div>
@@ -150,8 +150,8 @@ export default function VenueListPage() {
         <div
           className={`p-4 rounded-xl flex items-center justify-between border text-sm ${
             !message.isError
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-              : 'bg-rose-50 border-rose-200 text-rose-800'
+              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300'
+              : 'bg-rose-500/10 border-rose-500/20 text-rose-300'
           }`}
         >
           <div className="flex items-center gap-2">
@@ -167,23 +167,23 @@ export default function VenueListPage() {
       {/* Venues Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {filteredVenues.map((v) => (
-          <Card key={v.venueId} className="p-5 flex flex-col justify-between border border-slate-200/80 hover:shadow-md transition-shadow">
+          <Card key={v.venueId} className="p-5 flex flex-col justify-between border border-[#263650] hover:shadow-md transition-shadow">
             <div>
               <div className="flex items-start justify-between gap-2 mb-2">
-                <h3 className="font-bold text-slate-900 text-base">{v.name}</h3>
+                <h3 className="font-bold text-slate-100 text-base">{v.name}</h3>
                 <Badge variant={v.status === 'active' ? 'success' : 'neutral'} className="capitalize">
                   {v.status}
                 </Badge>
               </div>
 
-              <p className="text-xs text-slate-500 flex items-center gap-1.5 mb-3">
+              <p className="text-xs text-slate-400 flex items-center gap-1.5 mb-3">
                 <MapPin size={14} className="text-teal-600 shrink-0" />
                 <span>{v.building}, Floor {v.floor}</span>
               </p>
 
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 mb-3 flex justify-between text-xs">
-                <span className="text-slate-500">Maximum Capacity:</span>
-                <span className="font-bold text-slate-900">{v.capacity} seats</span>
+              <div className="p-3 rounded-xl bg-[#17243B] border border-[#263650] mb-3 flex justify-between text-xs">
+                <span className="text-slate-400">Maximum Capacity:</span>
+                <span className="font-bold text-slate-100">{v.capacity} seats</span>
               </div>
 
               <div>
@@ -192,7 +192,7 @@ export default function VenueListPage() {
                   {v.amenities.map((item, idx) => (
                     <span
                       key={idx}
-                      className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-medium"
+                      className="px-2 py-0.5 rounded-md bg-[#17243B] text-slate-300 text-[11px] font-medium"
                     >
                       {item}
                     </span>
@@ -201,13 +201,13 @@ export default function VenueListPage() {
               </div>
             </div>
 
-            <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+            <div className="pt-4 mt-4 border-t border-[#263650]/60 flex items-center justify-between">
               <button
                 onClick={() => handleToggle(v.venueId)}
                 className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg transition-colors ${
                   v.status === 'active'
-                    ? 'text-rose-600 hover:bg-rose-50'
-                    : 'text-emerald-700 hover:bg-emerald-50'
+                    ? 'text-rose-600 hover:bg-rose-500/10'
+                    : 'text-emerald-400 hover:bg-emerald-500/10'
                 }`}
               >
                 <Power size={13} />
@@ -265,13 +265,13 @@ export default function VenueListPage() {
               required
             />
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
                 Facility Status
               </label>
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                className="w-full text-sm rounded-xl border border-slate-300 p-2.5 bg-white text-slate-800"
+                className="w-full text-sm rounded-xl border border-[#263650] p-2.5 bg-[#17243B] text-slate-100"
               >
                 <option value="active">Active (Available)</option>
                 <option value="maintenance">Under Maintenance</option>
@@ -281,7 +281,7 @@ export default function VenueListPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
               Amenities (Comma-separated)
             </label>
             <textarea
@@ -289,11 +289,11 @@ export default function VenueListPage() {
               value={formData.amenities}
               onChange={(e) => setFormData({ ...formData, amenities: e.target.value })}
               placeholder="Projector, PA System, Wi-Fi, Stage Lighting"
-              className="w-full text-sm rounded-xl border border-slate-300 p-2.5 text-slate-800"
+              className="w-full text-sm rounded-xl border border-[#263650] p-2.5 text-slate-100 bg-[#17243B]"
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-3 border-t border-[#263650]/60">
             <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
               Cancel
             </Button>

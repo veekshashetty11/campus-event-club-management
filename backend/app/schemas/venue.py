@@ -49,14 +49,23 @@ class VenueBookingResponse(BaseModel):
     venue_id: int
     venue_name: Optional[str] = None
     event_id: Optional[int] = None
+    event_title: Optional[str] = None
+    club_name: Optional[str] = None
     booked_by: UUID
+    booked_by_name: Optional[str] = None
     start_time: datetime
     end_time: datetime
+    expected_attendance: Optional[int] = None
     status: str
     notes: Optional[str] = None
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class VenueAllocationRequest(BaseModel):
+    venue_id: int = Field(..., ge=1, description="Target venue ID to allocate")
+    notes: Optional[str] = Field(default=None, max_length=500)
 
 
 class VenueAvailabilityResponse(BaseModel):

@@ -7,6 +7,23 @@ export default {
   theme: {
     extend: {
       colors: {
+        dark: {
+          bg: '#080D1B',
+          sidebar: '#0D1426',
+          card: '#111C32',
+          elevated: '#17243B',
+          border: '#263650',
+          muted: '#94A3B8',
+          text: '#F1F5F9',
+        },
+        primary: {
+          indigo: '#4F46E5',
+          royal: '#3B82F6',
+          emerald: '#10B981',
+          cyan: '#06B6D4',
+          amber: '#F59E0B',
+          rose: '#F43F5E',
+        },
         brand: {
           50: '#eef4ff',
           100: '#d9e8ff',

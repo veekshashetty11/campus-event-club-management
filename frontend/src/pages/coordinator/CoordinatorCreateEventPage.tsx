@@ -145,10 +145,10 @@ export default function CoordinatorCreateEventPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-2xl font-bold text-white tracking-tight">
             {isEditMode ? `Edit Event: ${existingEvent?.title || ''}` : 'Create Campus Event'}
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-400">
             {isEditMode
               ? 'Update event details and resubmit for approval if changes were requested.'
               : 'Fill in event specifications to save a draft or submit directly to your Club Advisor.'}
@@ -158,17 +158,17 @@ export default function CoordinatorCreateEventPage() {
 
       {/* Requested Changes Banner if applicable */}
       {latestApproval && latestApproval.requestedChanges && (
-        <div className="p-4 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 space-y-1">
-          <div className="flex items-center gap-2 font-bold text-sm">
-            <AlertCircle size={18} className="text-amber-700" />
+        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 space-y-1">
+          <div className="flex items-center gap-2 font-bold text-sm text-amber-400">
+            <AlertCircle size={18} className="text-amber-400" />
             <span>Revision Required by {latestApproval.reviewerRole === 'club_advisor' ? 'Club Advisor' : 'Student Affairs'}</span>
           </div>
-          <p className="text-sm text-amber-800 pl-6.5 font-medium">{latestApproval.requestedChanges}</p>
+          <p className="text-sm text-amber-300/90 pl-6.5 font-medium">{latestApproval.requestedChanges}</p>
         </div>
       )}
 
       {errorMessage && (
-        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 flex items-center gap-2 text-sm">
+        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 flex items-center gap-2 text-sm">
           <AlertCircle size={18} />
           <span>{errorMessage}</span>
         </div>
@@ -177,9 +177,9 @@ export default function CoordinatorCreateEventPage() {
       {/* Form sections */}
       <div className="space-y-6">
         {/* 1. Basic Information */}
-        <Card className="p-6">
-          <h2 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
-            <Sparkles size={18} className="text-brand-600" />
+        <Card className="p-6 bg-[#111C32] border-[#263650]">
+          <h2 className="text-base font-bold text-white mb-4 flex items-center gap-2">
+            <Sparkles size={18} className="text-indigo-400" />
             1. Basic Information
           </h2>
 
@@ -194,13 +194,13 @@ export default function CoordinatorCreateEventPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
                   Category
                 </label>
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full text-sm rounded-xl border border-slate-300 p-2.5 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                  className="w-full text-sm rounded-xl border border-[#263650] p-2.5 bg-[#0D1426] text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500"
                 >
                   <option value="Technical">Technical</option>
                   <option value="Cultural">Cultural</option>
@@ -229,7 +229,7 @@ export default function CoordinatorCreateEventPage() {
             />
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
                 Full Description & Agenda
               </label>
               <textarea
@@ -237,16 +237,16 @@ export default function CoordinatorCreateEventPage() {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Detailed objectives, itinerary, guest speakers..."
-                className="w-full text-sm rounded-xl border border-slate-300 p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                className="w-full text-sm rounded-xl border border-[#263650] p-3 bg-[#0D1426] text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500"
               />
             </div>
           </div>
         </Card>
 
         {/* 2. Schedule & Venue Selection */}
-        <Card className="p-6">
-          <h2 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
-            <Calendar size={18} className="text-brand-600" />
+        <Card className="p-6 bg-[#111C32] border-[#263650]">
+          <h2 className="text-base font-bold text-white mb-4 flex items-center gap-2">
+            <Calendar size={18} className="text-indigo-400" />
             2. Date, Time & Venue
           </h2>
 
@@ -283,26 +283,26 @@ export default function CoordinatorCreateEventPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
                 Campus Venue
               </label>
               <select
                 value={formData.venueId}
                 onChange={(e) => setFormData({ ...formData, venueId: Number(e.target.value) })}
-                className="w-full text-sm rounded-xl border border-slate-300 p-2.5 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                className="w-full text-sm rounded-xl border border-[#263650] p-2.5 bg-[#0D1426] text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500"
               >
                 {venues.map((v) => (
-                  <option key={v.venueId} value={v.venueId}>
+                  <option key={v.venueId} value={v.venueId} className="bg-[#0D1426] text-slate-100">
                     {v.name} (Max Capacity: {v.capacity} pax | {v.building})
                   </option>
                 ))}
               </select>
-              <div className="mt-2 p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between text-xs text-slate-600">
+              <div className="mt-2 p-3 rounded-xl bg-[#0D1426] border border-[#263650] flex items-center justify-between text-xs text-slate-400">
                 <span className="flex items-center gap-1.5">
-                  <MapPin size={14} className="text-brand-600" />
+                  <MapPin size={14} className="text-indigo-400" />
                   {selectedVenue.building}, Floor {selectedVenue.floor}
                 </span>
-                <span className="font-semibold text-slate-800">
+                <span className="font-semibold text-slate-200">
                   Venue Seating Capacity: {selectedVenue.capacity}
                 </span>
               </div>
@@ -311,9 +311,9 @@ export default function CoordinatorCreateEventPage() {
         </Card>
 
         {/* 3. Capacity & Waitlist */}
-        <Card className="p-6">
-          <h2 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
-            <Users size={18} className="text-brand-600" />
+        <Card className="p-6 bg-[#111C32] border-[#263650]">
+          <h2 className="text-base font-bold text-white mb-4 flex items-center gap-2">
+            <Users size={18} className="text-indigo-400" />
             3. Capacity & Registration
           </h2>
 
@@ -337,15 +337,15 @@ export default function CoordinatorCreateEventPage() {
               />
             </div>
 
-            <div className="pt-2 border-t border-slate-100">
+            <div className="pt-2 border-t border-[#263650]">
               <label className="flex items-center gap-3 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={formData.isWaitlistEnabled}
                   onChange={(e) => setFormData({ ...formData, isWaitlistEnabled: e.target.checked })}
-                  className="rounded text-brand-600 focus:ring-brand-500 w-4 h-4"
+                  className="rounded text-indigo-500 focus:ring-indigo-400 w-4 h-4 bg-[#0D1426] border-[#263650]"
                 />
-                <span className="text-sm font-semibold text-slate-800">
+                <span className="text-sm font-semibold text-slate-200">
                   Enable automatic waitlist once registration reaches maximum capacity
                 </span>
               </label>
@@ -366,9 +366,9 @@ export default function CoordinatorCreateEventPage() {
         </Card>
 
         {/* 4. Budget & Equipment */}
-        <Card className="p-6">
-          <h2 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
-            <DollarSign size={18} className="text-brand-600" />
+        <Card className="p-6 bg-[#111C32] border-[#263650]">
+          <h2 className="text-base font-bold text-white mb-4 flex items-center gap-2">
+            <DollarSign size={18} className="text-indigo-400" />
             4. Budget, Logistics & Guidelines
           </h2>
 
@@ -383,7 +383,7 @@ export default function CoordinatorCreateEventPage() {
             />
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
                 Required Equipment & AV Support
               </label>
               <textarea
@@ -391,12 +391,12 @@ export default function CoordinatorCreateEventPage() {
                 value={formData.equipmentNeeded}
                 onChange={(e) => setFormData({ ...formData, equipmentNeeded: e.target.value })}
                 placeholder="Microphones, projector, stage lighting, power strips..."
-                className="w-full text-sm rounded-xl border border-slate-300 p-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                className="w-full text-sm rounded-xl border border-[#263650] p-2.5 bg-[#0D1426] text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
                 Prerequisites & Participant Rules
               </label>
               <textarea
@@ -404,7 +404,7 @@ export default function CoordinatorCreateEventPage() {
                 value={formData.rules}
                 onChange={(e) => setFormData({ ...formData, rules: e.target.value })}
                 placeholder="ID requirement, laptop requirement, dress code..."
-                className="w-full text-sm rounded-xl border border-slate-300 p-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                className="w-full text-sm rounded-xl border border-[#263650] p-2.5 bg-[#0D1426] text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500"
               />
             </div>
           </div>
@@ -412,7 +412,7 @@ export default function CoordinatorCreateEventPage() {
       </div>
 
       {/* Action Footer */}
-      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm sticky bottom-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-[#111C32]/95 backdrop-blur-md border border-[#263650] shadow-xl sticky bottom-4">
         <Button variant="outline" onClick={() => navigate('/coordinator/events')}>
           Cancel
         </Button>
@@ -422,7 +422,7 @@ export default function CoordinatorCreateEventPage() {
             variant="secondary"
             onClick={() => handleSubmit(false)}
             disabled={isSubmitting}
-            className="border border-slate-300"
+            className="border border-[#263650]"
           >
             <Save size={16} className="mr-2" />
             Save as Draft
@@ -432,7 +432,7 @@ export default function CoordinatorCreateEventPage() {
             variant="primary"
             onClick={() => handleSubmit(true)}
             disabled={isSubmitting}
-            className="shadow-sm"
+            className="shadow-sm bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white border-none"
           >
             <Send size={16} className="mr-2" />
             {isEditMode && existingEvent?.status === 'changes_requested'

@@ -10,70 +10,96 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    color-scheme: dark;
   }
 
   body {
-    background: #f8faff;
+    background-color: #080D1B;
+    color: #F1F5F9;
+    overflow-x: hidden;
   }
 
-  /* Custom scrollbar — dark sleek */
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 999px; }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.6); }
+  /* Custom dark scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #080D1B; }
+  ::-webkit-scrollbar-thumb { background: #263650; border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: #4F46E5; }
 }
 
 @layer components {
-  /* ── Glassmorphism card ── */
+  /* ── Dark Glassmorphism ── */
   .glass {
-    @apply bg-white/70 backdrop-blur-md border border-white/50 shadow-card;
-  }
-  .glass-dark {
-    background: rgba(13,21,38,0.7);
+    background: rgba(17, 28, 50, 0.75);
     backdrop-filter: blur(16px);
-    border: 1px solid rgba(255,255,255,0.08);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(38, 54, 80, 0.8);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  }
+
+  .glass-elevated {
+    background: rgba(23, 36, 59, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(79, 70, 229, 0.25);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+  }
+
+  .glass-dark {
+    background: rgba(13, 20, 38, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid #263650;
   }
 
   /* ── Gradient text ── */
   .gradient-text {
-    @apply bg-gradient-to-r from-violet-400 via-brand-400 to-cyber-400 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-indigo-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent;
   }
   .gradient-text-gold {
-    @apply bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 bg-clip-text text-transparent;
+  }
+  .gradient-text-emerald {
+    @apply bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent;
   }
 
-  /* ── Neon border ── */
-  .neon-border {
-    border: 1px solid rgba(139,92,246,0.4);
-    box-shadow: 0 0 12px rgba(139,92,246,0.15), inset 0 0 12px rgba(139,92,246,0.05);
-  }
-
-  /* ── Stat card shimmer ── */
-  .shimmer-bg {
-    background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.08) 50%, transparent 75%);
-    background-size: 200% 100%;
-    animation: shimmer 2.5s infinite;
-  }
-
-  /* ── Sidebar nav active ── */
-  .nav-active {
-    background: linear-gradient(135deg, rgba(139,92,246,0.25), rgba(59,110,240,0.15));
-    border: 1px solid rgba(139,92,246,0.3);
-    box-shadow: 0 0 12px rgba(139,92,246,0.15);
-  }
-
-  /* ── Hover card lift ── */
+  /* ── Card hover lift ── */
   .card-lift {
-    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-glow;
+    @apply transition-all duration-300 hover:-translate-y-1;
+  }
+  .card-lift:hover {
+    box-shadow: 0 12px 30px -10px rgba(79, 70, 229, 0.25), 0 0 1px 1px rgba(59, 130, 246, 0.3);
   }
 
-  /* ── Badge pill glow ── */
-  .badge-glow {
-    box-shadow: 0 0 8px currentColor;
+  /* ── Sidebar active glow ── */
+  .nav-active {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.28) 0%, rgba(59, 130, 246, 0.15) 100%);
+    border: 1px solid rgba(79, 70, 229, 0.45);
+    box-shadow: 0 0 16px -2px rgba(79, 70, 229, 0.35);
+  }
+
+  /* ── Celebration Confetti Animation ── */
+  @keyframes celebration-pop {
+    0% { transform: scale(0.6) rotate(-10deg); opacity: 0; }
+    50% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  .celebration-badge {
+    animation: celebration-pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+
+  /* ── Shimmer Effect ── */
+  .shimmer-dark {
+    background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.04) 50%, transparent 75%);
+    background-size: 200% 100%;
+    animation: shimmer 3s infinite;
   }
 }
 
 @layer utilities {
-  .text-shadow-sm { text-shadow: 0 1px 3px rgba(0,0,0,0.3); }
-  .text-glow { text-shadow: 0 0 20px rgba(139,92,246,0.6); }
+  .text-shadow-sm { text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+  .text-glow { text-shadow: 0 0 16px rgba(79, 70, 229, 0.6); }
+  .glow-indigo { box-shadow: 0 0 20px rgba(79, 70, 229, 0.35); }
+  .glow-blue { box-shadow: 0 0 20px rgba(59, 130, 246, 0.35); }
+  .glow-emerald { box-shadow: 0 0 20px rgba(16, 185, 129, 0.35); }
 }

@@ -21,15 +21,15 @@ export default function Card({
 }: CardProps) {
   const paddingClass = {
     none: '',
-    sm: 'p-4',
+    sm: 'p-3.5',
     md: 'p-5',
     lg: 'p-6',
   }[padding];
 
   const variantClass = {
-    default: 'bg-white border border-slate-200/80 shadow-sm',
-    glass: 'bg-white/70 backdrop-blur-md border border-white/50 shadow-sm',
-    gradient: `bg-gradient-to-br ${gradient ?? 'from-violet-50 to-blue-50'} border border-violet-100/80 shadow-sm`,
+    default: 'bg-[#111C32] border border-[#263650] shadow-md text-slate-100',
+    glass: 'bg-[#111C32]/80 backdrop-blur-xl border border-[#263650] shadow-xl text-slate-100',
+    gradient: `bg-gradient-to-br ${gradient ?? 'from-[#111C32] to-[#17243B]'} border border-[#263650] shadow-md text-slate-100`,
   }[variant];
 
   return (
@@ -43,13 +43,13 @@ export default function Card({
           : undefined
       }
       className={[
-        'rounded-2xl',
+        'rounded-2xl transition-all duration-200',
         variantClass,
         paddingClass,
         hover
-          ? 'cursor-pointer hover:border-violet-300 hover:shadow-lg transition-all duration-200 card-lift'
+          ? 'cursor-pointer hover:border-[#3B82F6]/50 hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)] card-lift'
           : '',
-        onClick ? 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500' : '',
+        onClick ? 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]' : '',
         className,
       ].join(' ')}
     >

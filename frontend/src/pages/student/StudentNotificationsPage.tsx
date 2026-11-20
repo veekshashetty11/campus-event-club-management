@@ -68,8 +68,8 @@ export default function StudentNotificationsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Notification Center</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <h1 className="text-2xl font-bold text-slate-100">Notification Center</h1>
+          <p className="text-sm text-slate-400 mt-0.5">
             Real-time updates regarding event registrations, waitlist status, certificates, and club memberships.
           </p>
         </div>
@@ -89,7 +89,7 @@ export default function StudentNotificationsPage() {
       </div>
 
       {/* Filter Tabs */}
-      <Card padding="sm">
+      <Card padding="sm" className="bg-[#111C32] border-[#263650]">
         <div className="flex items-center gap-2 overflow-x-auto text-xs font-medium pb-1 sm:pb-0">
           {[
             { id: 'all', label: 'All Alerts', count: notifications.length },
@@ -104,8 +104,8 @@ export default function StudentNotificationsPage() {
               className={[
                 'px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap flex items-center gap-1.5',
                 filterType === tab.id
-                  ? 'bg-brand-800 text-white font-semibold'
-                  : 'text-slate-600 hover:bg-slate-100',
+                  ? 'bg-indigo-600 text-white font-semibold shadow-xs'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-[#17243B]',
               ].join(' ')}
             >
               <span>{tab.label}</span>
@@ -113,7 +113,7 @@ export default function StudentNotificationsPage() {
                 <span
                   className={[
                     'text-[10px] px-1.5 py-0.2 rounded-full font-bold',
-                    filterType === tab.id ? 'bg-brand-900 text-white' : 'bg-slate-200 text-slate-600',
+                    filterType === tab.id ? 'bg-indigo-800 text-indigo-100' : 'bg-[#17243B] text-slate-400 border border-[#263650]',
                   ].join(' ')}
                 >
                   {tab.count}
@@ -126,16 +126,16 @@ export default function StudentNotificationsPage() {
 
       {/* Notifications List */}
       {filteredNotifications.length === 0 ? (
-        <Card className="text-center py-16 text-slate-400">
-          <Bell size={36} className="mx-auto mb-2 text-slate-300" />
-          <p className="text-base font-semibold text-slate-700">No notifications in this filter.</p>
+        <Card className="text-center py-16 text-slate-400 bg-[#111C32] border-[#263650]">
+          <Bell size={36} className="mx-auto mb-2 text-slate-500" />
+          <p className="text-base font-semibold text-slate-200">No notifications in this filter.</p>
           <p className="text-xs text-slate-400 mt-1">
             You're all caught up with your latest event and club activities!
           </p>
         </Card>
       ) : (
-        <Card padding="none">
-          <ul className="divide-y divide-slate-100">
+        <Card padding="none" className="bg-[#111C32] border-[#263650] overflow-hidden">
+          <ul className="divide-y divide-[#263650]/60">
             {filteredNotifications.map((notif) => (
               <li
                 key={notif.notificationId}
@@ -144,23 +144,23 @@ export default function StudentNotificationsPage() {
                 }}
                 className={[
                   'flex items-start gap-4 px-5 py-4 transition-colors cursor-pointer',
-                  !notif.isRead ? 'bg-brand-50/50 hover:bg-brand-50' : 'hover:bg-slate-50',
+                  !notif.isRead ? 'bg-indigo-500/10 hover:bg-indigo-500/15' : 'hover:bg-[#17243B]/60',
                 ].join(' ')}
               >
                 {/* Icon Circle */}
-                <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-10 h-10 rounded-xl bg-[#17243B] border border-[#263650] shadow-sm flex items-center justify-center shrink-0 mt-0.5">
                   {getIconForType(notif.type)}
                 </div>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                    <h3 className="text-sm font-bold text-slate-900">{notif.title}</h3>
+                    <h3 className="text-sm font-bold text-slate-100">{notif.title}</h3>
                     {!notif.isRead && (
-                      <span className="h-2 w-2 rounded-full bg-brand-600 shrink-0" />
+                      <span className="h-2 w-2 rounded-full bg-indigo-500 shrink-0" />
                     )}
                   </div>
-                  <p className="text-xs text-slate-600 leading-relaxed">{notif.message}</p>
+                  <p className="text-xs text-slate-300 leading-relaxed">{notif.message}</p>
 
                   <div className="flex items-center gap-4 mt-2">
                     <span className="text-[11px] text-slate-400 font-medium">
@@ -170,7 +170,7 @@ export default function StudentNotificationsPage() {
                     {notif.actionUrl && (
                       <Link
                         to={notif.actionUrl}
-                        className="text-[11px] font-semibold text-brand-700 hover:text-brand-900 flex items-center gap-1"
+                        className="text-[11px] font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
                         onClick={(e) => e.stopPropagation()}
                       >
                         View Details <ArrowRight size={11} />
@@ -186,7 +186,7 @@ export default function StudentNotificationsPage() {
                       e.stopPropagation();
                       markNotificationAsRead(notif.notificationId);
                     }}
-                    className="p-1 rounded-md text-slate-400 hover:text-brand-700 hover:bg-white text-xs shrink-0"
+                    className="p-1 rounded-md text-slate-400 hover:text-indigo-400 hover:bg-[#17243B] text-xs shrink-0 transition-colors"
                     title="Mark as read"
                   >
                     <CheckCheck size={16} />

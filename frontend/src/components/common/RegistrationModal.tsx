@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import type { CampusEvent } from '../../types/event';
 import Modal from '../common/Modal';
 import Button from '../common/Button';
-import { Calendar, MapPin, Users, AlertCircle, CheckCircle2, Ticket } from 'lucide-react';
+import { Calendar, MapPin, Users, CheckCircle2, Ticket, Sparkles, PartyPopper } from 'lucide-react';
 import { formatDate, formatTime } from '../../utils';
 import { useStudent } from '../../contexts/StudentContext';
 import { Link } from 'react-router-dom';
@@ -46,8 +46,8 @@ export default function RegistrationModal({
       });
       setSuccessTicket(res.ticketCode ?? 'TKT-CONFIRMED');
       if (onSuccess) onSuccess();
-    } catch (err: any) {
-      setError(err?.message || 'Failed to complete registration.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to complete registration.');
     } finally {
       setIsSubmitting(false);
     }
@@ -65,129 +65,141 @@ export default function RegistrationModal({
     <Modal
       isOpen={isOpen}
       onClose={handleModalClose}
-      title={successTicket ? 'Registration Successful!' : 'Confirm Event Registration'}
+      title={successTicket ? 'Registration Confirmed!' : 'Confirm Event Registration'}
       size="lg"
     >
       {successTicket ? (
-        <div className="flex flex-col items-center text-center py-4">
-          <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-4">
-            <CheckCircle2 size={36} />
+        <div className="flex flex-col items-center text-center py-4 relative overflow-hidden">
+          {/* Subtle Confetti & Celebration Glow Animation */}
+          <div className="relative mb-5">
+            <div className="absolute inset-0 bg-emerald-500/20 blur-2xl rounded-full scale-150 animate-pulse" />
+            <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30 celebration-badge">
+              <PartyPopper size={40} className="animate-bounce" />
+            </div>
+            {/* Sparkle elements */}
+            <Sparkles size={20} className="absolute -top-2 -right-2 text-yellow-400 animate-spin" style={{ animationDuration: '4s' }} />
+            <Sparkles size={16} className="absolute -bottom-1 -left-2 text-cyan-300 animate-pulse" />
           </div>
-          <h3 className="text-xl font-bold text-slate-800 mb-1">You're All Set!</h3>
-          <p className="text-sm text-slate-600 max-w-md mb-5">
-            Your seat for <strong className="text-slate-800">{event.title}</strong> has been secured.
+
+          <h3 className="text-2xl font-black text-white mb-1.5 tracking-tight">
+            You're Confirmed!
+          </h3>
+          <p className="text-sm text-slate-300 max-w-md mb-6 leading-relaxed">
+            Your admission seat for <strong className="text-white font-bold">{event.title}</strong> has been secured and registered in the system.
           </p>
 
-          <div className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6 flex flex-col items-center">
-            <span className="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">
+          <div className="w-full bg-[#17243B] border border-[#263650] rounded-2xl p-5 mb-6 flex flex-col items-center shadow-lg">
+            <span className="text-[11px] uppercase tracking-widest text-indigo-400 font-bold mb-1.5">
               Digital E-Ticket Pass
             </span>
-            <span className="text-lg font-mono font-bold text-brand-900 tracking-wider bg-white px-4 py-1.5 rounded-lg border border-slate-200 shadow-sm">
+            <span className="text-xl font-mono font-black text-white tracking-widest bg-[#111C32] px-5 py-2 rounded-xl border border-indigo-500/40 shadow-inner">
               {successTicket}
             </span>
-            <p className="text-xs text-slate-500 mt-2">
-              Present this code or QR pass at the venue entrance during check-in.
+            <p className="text-xs text-slate-400 mt-2.5">
+              Available instantly under "My Registrations" with your mobile check-in QR pass.
             </p>
           </div>
 
           <div className="flex gap-3 w-full sm:w-auto">
-            <Button variant="outline" onClick={handleModalClose} className="flex-1 sm:flex-initial">
+            <Button variant="secondary" onClick={handleModalClose} className="flex-1 sm:flex-initial">
               Close
             </Button>
             <Link to="/student/registrations" className="flex-1 sm:flex-initial">
               <Button variant="primary" leftIcon={<Ticket size={16} />} className="w-full">
-                View My Registrations
+                View My Passes
               </Button>
             </Link>
           </div>
         </div>
       ) : (
-        <form onSubmit={handleRegister} className="flex flex-col gap-4">
+        <form onSubmit={handleRegister} className="flex flex-col gap-4 text-slate-200">
           {/* Event Quick Overview */}
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col gap-2">
-            <span className="text-xs font-semibold uppercase text-brand-700 tracking-wider">
+          <div className="bg-[#17243B] border border-[#263650] rounded-xl p-4 flex flex-col gap-2">
+            <span className="text-[11px] font-bold uppercase text-indigo-400 tracking-wider">
               {event.category}
             </span>
-            <h4 className="font-bold text-slate-900 text-base">{event.title}</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-600 mt-1">
-              <div className="flex items-center gap-1.5">
-                <Calendar size={13} className="text-slate-400 shrink-0" />
+            <h4 className="font-bold text-white text-base leading-snug">{event.title}</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-slate-300 mt-1">
+              <div className="flex items-center gap-2">
+                <Calendar size={14} className="text-indigo-400 shrink-0" />
                 <span>
                   {formatDate(event.startTime)} · {formatTime(event.startTime)}
                 </span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <MapPin size={13} className="text-slate-400 shrink-0" />
-                <span className="truncate">{event.isOnline ? 'Online Event' : (event.venue?.name ?? 'TBD')}</span>
+              <div className="flex items-center gap-2">
+                <MapPin size={14} className="text-blue-400 shrink-0" />
+                <span className="truncate">{event.isOnline ? '🌐 Online Event' : (event.venue?.name ?? 'Venue TBD')}</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <Users size={13} className="text-slate-400 shrink-0" />
-                <span className="truncate">Organized by {event.clubName}</span>
+              <div className="flex items-center gap-2">
+                <Users size={14} className="text-emerald-400 shrink-0" />
+                <span className="truncate">By {event.clubName}</span>
               </div>
-              <div className="flex items-center gap-1.5 font-medium text-emerald-700">
-                <span>{event.maxCapacity - event.registeredCount} spots available</span>
+              <div className="flex items-center gap-2 font-semibold text-emerald-400">
+                <CheckCircle2 size={14} className="shrink-0" />
+                <span>{event.maxCapacity - event.registeredCount} seats remaining</span>
               </div>
             </div>
           </div>
 
-          {error && (
-            <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-3">
-              <AlertCircle size={16} className="mt-0.5 shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
-
           {/* Form Options */}
-          <div className="flex flex-col gap-3">
+          <div className="space-y-3.5 pt-1">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Dietary Preference (for event refreshments)
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                Dietary Preference (if refreshments served)
               </label>
               <select
                 value={dietary}
                 onChange={(e) => setDietary(e.target.value)}
-                className="w-full text-sm rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-100 focus:border-brand-500"
+                className="w-full text-xs rounded-xl border border-[#263650] bg-[#17243B] text-slate-100 p-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
               >
-                <option value="Standard">Standard</option>
+                <option value="Standard">Standard / No preference</option>
                 <option value="Vegetarian">Vegetarian</option>
                 <option value="Vegan">Vegan</option>
+                <option value="Halal">Halal</option>
+                <option value="Kosher">Kosher</option>
                 <option value="Gluten-Free">Gluten-Free</option>
-                <option value="Not Applicable">Not Applicable</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Special Requirements or Questions (Optional)
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                Special Requests or Accessibility Accommodations
               </label>
               <textarea
+                rows={2}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="E.g., Accessibility needs, bringing specialized hardware..."
-                rows={2}
-                className="w-full text-sm rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-100 focus:border-brand-500"
+                placeholder="Let the club coordinators know if you require special seating, wheelchair access, or audio assistance..."
+                className="w-full text-xs rounded-xl border border-[#263650] bg-[#17243B] text-slate-100 p-2.5 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 resize-none"
               />
             </div>
 
-            <label className="flex items-start gap-2.5 cursor-pointer select-none mt-1">
+            <div className="flex items-start gap-2.5 pt-1">
               <input
+                id="agree-rules"
                 type="checkbox"
                 checked={agreeRules}
                 onChange={(e) => setAgreeRules(e.target.checked)}
-                className="mt-1 h-4 w-4 rounded border-slate-300 text-brand-700 focus:ring-brand-500"
+                className="mt-0.5 h-4 w-4 rounded border-[#263650] bg-[#17243B] text-indigo-600 focus:ring-indigo-500/40 accent-indigo-600"
               />
-              <span className="text-xs text-slate-600 leading-snug">
-                I agree to the campus conduct code and understand that attendance will be recorded via my student ID.
-              </span>
-            </label>
+              <label htmlFor="agree-rules" className="text-xs text-slate-400 select-none cursor-pointer">
+                I understand that attendance will be recorded via QR pass, and I agree to adhere to university campus code of conduct during this event.
+              </label>
+            </div>
+
+            {error && (
+              <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-700/50 text-xs text-rose-300 flex items-center gap-2">
+                <span>{error}</span>
+              </div>
+            )}
           </div>
 
-          {/* Footer buttons */}
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
-            <Button type="button" variant="outline" size="sm" onClick={handleModalClose} disabled={isSubmitting}>
+          {/* Form Actions */}
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#263650]">
+            <Button variant="secondary" size="sm" type="button" onClick={handleModalClose}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" size="sm" isLoading={isSubmitting}>
+            <Button variant="primary" size="sm" type="submit" isLoading={isSubmitting}>
               Confirm Registration
             </Button>
           </div>

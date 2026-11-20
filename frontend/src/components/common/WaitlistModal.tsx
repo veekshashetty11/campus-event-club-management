@@ -30,8 +30,8 @@ export default function WaitlistModal({ isOpen, onClose, event, onSuccess }: Wai
       const res = await joinWaitlist(event.eventId);
       setJoinedPosition(res.position ?? targetPosition);
       if (onSuccess) onSuccess();
-    } catch (err: any) {
-      setError(err?.message || 'Failed to join waitlist.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to join waitlist.');
     } finally {
       setIsSubmitting(false);
     }
@@ -51,21 +51,20 @@ export default function WaitlistModal({ isOpen, onClose, event, onSuccess }: Wai
       size="md"
     >
       {joinedPosition ? (
-        <div className="flex flex-col items-center text-center py-4">
-          <div className="w-14 h-14 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mb-3">
+        <div className="flex flex-col items-center text-center py-4 text-slate-200">
+          <div className="w-14 h-14 rounded-2xl bg-amber-950/60 text-amber-400 border border-amber-700/50 flex items-center justify-center mb-3 shadow-lg shadow-amber-950/50">
             <CheckCircle2 size={32} />
           </div>
-          <h3 className="text-lg font-bold text-slate-800">You're on the Waitlist!</h3>
-          <p className="text-sm text-slate-600 mt-1 max-w-sm">
-            You hold position <strong className="text-brand-900 font-bold">#{joinedPosition}</strong> for{' '}
-            <strong className="text-slate-800">{event.title}</strong>.
+          <h3 className="text-xl font-bold text-white">You're on the Waitlist!</h3>
+          <p className="text-sm text-slate-300 mt-1 max-w-sm leading-relaxed">
+            You hold queue position <strong className="text-amber-400 font-bold">#{joinedPosition}</strong> for{' '}
+            <strong className="text-white">{event.title}</strong>.
           </p>
 
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800 mt-4 mb-5 text-left flex items-start gap-2">
-            <AlertTriangle size={15} className="shrink-0 mt-0.5 text-amber-600" />
-            <div>
-              <strong>Automated Promotion:</strong> If an active attendee cancels their registration, the
-              system will automatically promote the next waitlisted student and notify you.
+          <div className="bg-[#17243B] border border-amber-800/40 rounded-xl p-3.5 text-xs text-amber-300 mt-4 mb-5 text-left flex items-start gap-2.5">
+            <AlertTriangle size={16} className="shrink-0 mt-0.5 text-amber-400" />
+            <div className="leading-relaxed">
+              <strong className="text-amber-200">Automated Promotion:</strong> If an active registered attendee cancels their reservation, the system will automatically promote the next student in queue and notify you via email.
             </div>
           </div>
 
@@ -74,46 +73,46 @@ export default function WaitlistModal({ isOpen, onClose, event, onSuccess }: Wai
           </Button>
         </div>
       ) : (
-        <div className="flex flex-col gap-4">
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 flex items-start gap-3">
-            <AlertTriangle size={18} className="text-amber-600 shrink-0 mt-0.5" />
-            <div className="text-xs text-amber-900 leading-relaxed">
-              <strong>Event is at Maximum Capacity:</strong> All {event.maxCapacity} seats for{' '}
-              <span className="font-semibold">{event.title}</span> are currently occupied. You may join the waitlist queue below.
+        <div className="flex flex-col gap-4 text-slate-200">
+          <div className="bg-amber-950/40 border border-amber-800/50 rounded-xl p-3.5 flex items-start gap-3">
+            <AlertTriangle size={18} className="text-amber-400 shrink-0 mt-0.5" />
+            <div className="text-xs text-amber-200 leading-relaxed">
+              <strong className="text-amber-300">Event is at Maximum Capacity:</strong> All {event.maxCapacity} seats for{' '}
+              <span className="font-semibold text-white">{event.title}</span> are currently occupied. You may join the waitlist queue below.
             </div>
           </div>
 
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs space-y-2">
+          <div className="bg-[#17243B] border border-[#263650] rounded-xl p-4 text-xs space-y-2.5">
             <div className="flex justify-between">
-              <span className="text-slate-500">Total Event Capacity:</span>
-              <span className="font-semibold text-slate-800">{event.maxCapacity} Seats</span>
+              <span className="text-slate-400">Total Event Capacity:</span>
+              <span className="font-semibold text-white">{event.maxCapacity} Seats</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500">Currently Registered:</span>
-              <span className="font-semibold text-slate-800">{event.registeredCount} (Full)</span>
+              <span className="text-slate-400">Currently Registered:</span>
+              <span className="font-semibold text-white">{event.registeredCount} (Full)</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500">Current Waitlist Queue:</span>
-              <span className="font-semibold text-amber-700">{currentQueue} Students waiting</span>
+              <span className="text-slate-400">Current Waitlist Queue:</span>
+              <span className="font-semibold text-amber-400">{currentQueue} Students waiting</span>
             </div>
-            <div className="flex justify-between pt-2 border-t border-slate-200 text-sm">
-              <span className="font-medium text-slate-700">Your Projected Position:</span>
-              <span className="font-bold text-brand-900">#{targetPosition}</span>
+            <div className="flex justify-between pt-2.5 border-t border-[#263650] text-sm">
+              <span className="font-medium text-slate-300">Your Projected Position:</span>
+              <span className="font-bold text-amber-400">#{targetPosition}</span>
             </div>
           </div>
 
           {error && (
-            <div className="text-xs text-red-600 bg-red-50 p-2.5 rounded-lg border border-red-200">
+            <div className="text-xs text-rose-300 bg-rose-950/40 p-2.5 rounded-lg border border-rose-800/50">
               {error}
             </div>
           )}
 
-          <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
-            <Button variant="outline" size="sm" onClick={handleClose} disabled={isSubmitting}>
+          <div className="flex justify-end gap-2.5 pt-3 border-t border-[#263650]">
+            <Button variant="secondary" size="sm" onClick={handleClose} disabled={isSubmitting}>
               Cancel
             </Button>
             <Button
-              variant="secondary"
+              variant="primary"
               size="sm"
               leftIcon={<Users size={15} />}
               onClick={handleJoin}

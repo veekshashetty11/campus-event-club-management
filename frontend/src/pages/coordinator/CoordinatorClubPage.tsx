@@ -67,10 +67,10 @@ export default function CoordinatorClubPage() {
       />
 
       {/* Top Banner / Hero Card */}
-      <Card className="p-6 md:p-8 border border-slate-200/80 bg-gradient-to-r from-brand-900 via-brand-800 to-brand-700 text-white rounded-2xl shadow-sm">
+      <Card className="p-6 md:p-8 border border-[#263650] bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-900 text-white rounded-2xl shadow-xl">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="flex items-center gap-5">
-            <div className="w-20 h-20 rounded-2xl bg-white/10 backdrop-blur border border-white/20 p-2 flex items-center justify-center shrink-0">
+            <div className="w-20 h-20 rounded-2xl bg-[#111C32]/80 backdrop-blur border border-[#263650] p-2 flex items-center justify-center shrink-0">
               <img
                 src={club.logoUrl}
                 alt={club.name}
@@ -84,14 +84,14 @@ export default function CoordinatorClubPage() {
             <div>
               <div className="flex flex-wrap items-center gap-2.5 mb-1.5">
                 <h1 className="text-2xl font-bold tracking-tight text-white">{club.name}</h1>
-                <Badge variant="neutral" className="bg-white/20 text-white border-transparent">
+                <Badge variant="neutral" className="bg-white/10 text-slate-200 border-[#263650]">
                   {club.category}
                 </Badge>
                 <Badge variant={club.status === 'active' ? 'success' : 'neutral'} className="capitalize">
                   {club.status}
                 </Badge>
               </div>
-              <p className="text-sm text-slate-200 line-clamp-2 max-w-2xl">{club.tagline || club.description}</p>
+              <p className="text-sm text-slate-300 line-clamp-2 max-w-2xl">{club.tagline || club.description}</p>
             </div>
           </div>
 
@@ -99,7 +99,7 @@ export default function CoordinatorClubPage() {
             <Button
               variant={isEditing ? 'outline' : 'secondary'}
               onClick={() => setIsEditing(!isEditing)}
-              className={isEditing ? 'bg-white/10 text-white border-white/30 hover:bg-white/20' : 'bg-white text-brand-900 hover:bg-slate-100'}
+              className={isEditing ? 'bg-transparent text-slate-200 border-[#263650] hover:bg-[#17243B]' : 'bg-indigo-600 text-white hover:bg-indigo-700'}
             >
               <Edit3 size={16} className="mr-2" />
               {isEditing ? 'Cancel Edit' : 'Edit Club Profile'}
@@ -112,8 +112,8 @@ export default function CoordinatorClubPage() {
         <div
           className={`p-4 rounded-xl flex items-center gap-3 border text-sm ${
             saveStatus.includes('success')
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-              : 'bg-rose-50 border-rose-200 text-rose-800'
+              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300'
+              : 'bg-rose-500/10 border-rose-500/20 text-rose-300'
           }`}
         >
           {saveStatus.includes('success') ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
@@ -125,16 +125,16 @@ export default function CoordinatorClubPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Editable Information */}
         <div className="lg:col-span-2 space-y-6">
-          <Card className="p-6">
-            <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-              <Building2 size={20} className="text-brand-700" />
+          <Card className="p-6 bg-[#111C32] border-[#263650]">
+            <h2 className="text-lg font-bold text-slate-100 mb-4 flex items-center gap-2">
+              <Building2 size={20} className="text-indigo-400" />
               Club Information
             </h2>
 
             {isEditing ? (
               <form onSubmit={handleSave} className="space-y-5">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
                     Club Description
                   </label>
                   <textarea
@@ -142,7 +142,7 @@ export default function CoordinatorClubPage() {
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     required
-                    className="w-full text-sm rounded-xl border border-slate-300 p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                    className="w-full text-sm rounded-xl border border-[#263650] p-3 bg-[#17243B] text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
                   />
                 </div>
 
@@ -171,7 +171,7 @@ export default function CoordinatorClubPage() {
                   required
                 />
 
-                <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
+                <div className="flex justify-end gap-3 pt-3 border-t border-[#263650]/60">
                   <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
                     Cancel
                   </Button>
@@ -185,43 +185,43 @@ export default function CoordinatorClubPage() {
               <div className="space-y-6">
                 <div>
                   <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">About the Club</h3>
-                  <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-line">{club.description}</p>
+                  <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-line">{club.description}</p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-100">
-                  <div className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
-                    <Mail size={18} className="text-brand-600 mt-0.5 shrink-0" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-[#263650]/60">
+                  <div className="flex items-start gap-3 p-3.5 rounded-xl bg-[#17243B] border border-[#263650]">
+                    <Mail size={18} className="text-indigo-400 mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-xs text-slate-500">Contact Email</p>
-                      <p className="text-sm font-semibold text-slate-800 break-all">{club.contactEmail}</p>
+                      <p className="text-xs text-slate-400">Contact Email</p>
+                      <p className="text-sm font-semibold text-slate-200 break-all">{club.contactEmail}</p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
-                    <Clock size={18} className="text-brand-600 mt-0.5 shrink-0" />
+                  <div className="flex items-start gap-3 p-3.5 rounded-xl bg-[#17243B] border border-[#263650]">
+                    <Clock size={18} className="text-indigo-400 mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-xs text-slate-500">Meeting Schedule</p>
-                      <p className="text-sm font-semibold text-slate-800">
+                      <p className="text-xs text-slate-400">Meeting Schedule</p>
+                      <p className="text-sm font-semibold text-slate-200">
                         {club.meetingSchedule || 'Wednesdays at 5:00 PM'}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
-                    <MapPin size={18} className="text-brand-600 mt-0.5 shrink-0" />
+                  <div className="flex items-start gap-3 p-3.5 rounded-xl bg-[#17243B] border border-[#263650]">
+                    <MapPin size={18} className="text-indigo-400 mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-xs text-slate-500">Meeting Room</p>
-                      <p className="text-sm font-semibold text-slate-800">
+                      <p className="text-xs text-slate-400">Meeting Room</p>
+                      <p className="text-sm font-semibold text-slate-200">
                         {club.roomLocation || 'Engineering Block B, 204'}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
-                    <Calendar size={18} className="text-brand-600 mt-0.5 shrink-0" />
+                  <div className="flex items-start gap-3 p-3.5 rounded-xl bg-[#17243B] border border-[#263650]">
+                    <Calendar size={18} className="text-indigo-400 mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-xs text-slate-500">Founded</p>
-                      <p className="text-sm font-semibold text-slate-800">
+                      <p className="text-xs text-slate-400">Founded</p>
+                      <p className="text-sm font-semibold text-slate-200">
                         {club.foundedYear || 2024}
                       </p>
                     </div>
@@ -235,51 +235,51 @@ export default function CoordinatorClubPage() {
         {/* Right Column: Key Details & Stats */}
         <div className="space-y-6">
           {/* Key Figures */}
-          <Card className="p-6">
-            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4">Club Snapshot</h3>
+          <Card className="p-6 bg-[#111C32] border-[#263650]">
+            <h3 className="text-sm font-bold text-slate-200 uppercase tracking-wider mb-4">Club Snapshot</h3>
             <div className="space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <span className="text-sm text-slate-600 flex items-center gap-2">
+              <div className="flex items-center justify-between pb-3 border-b border-[#263650]/60">
+                <span className="text-sm text-slate-400 flex items-center gap-2">
                   <Users size={16} className="text-slate-400" /> Total Active Members
                 </span>
-                <span className="text-base font-bold text-slate-900">{clubMembers.length}</span>
+                <span className="text-base font-bold text-slate-100">{clubMembers.length}</span>
               </div>
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <span className="text-sm text-slate-600">Faculty Advisor</span>
-                <span className="text-sm font-semibold text-slate-800">{club.advisorName}</span>
+              <div className="flex items-center justify-between pb-3 border-b border-[#263650]/60">
+                <span className="text-sm text-slate-400">Faculty Advisor</span>
+                <span className="text-sm font-semibold text-slate-200">{club.advisorName}</span>
               </div>
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <span className="text-sm text-slate-600">Club President</span>
-                <span className="text-sm font-semibold text-slate-800">{club.presidentName}</span>
+              <div className="flex items-center justify-between pb-3 border-b border-[#263650]/60">
+                <span className="text-sm text-slate-400">Club President</span>
+                <span className="text-sm font-semibold text-slate-200">{club.presidentName}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-600">Annual Budget</span>
-                <span className="text-sm font-bold text-emerald-700">${club.allocatedBudget.toLocaleString()}</span>
+                <span className="text-sm text-slate-400">Annual Budget</span>
+                <span className="text-sm font-bold text-emerald-400">${club.allocatedBudget.toLocaleString()}</span>
               </div>
             </div>
           </Card>
 
           {/* Quick Actions */}
-          <Card className="p-6 bg-slate-50/50 border border-slate-200/80">
-            <h3 className="text-sm font-bold text-slate-800 mb-3">Quick Navigation</h3>
+          <Card className="p-6 bg-[#111C32] border border-[#263650]">
+            <h3 className="text-sm font-bold text-slate-200 mb-3">Quick Navigation</h3>
             <div className="space-y-2">
               <a
                 href="/coordinator/members"
-                className="flex items-center justify-between p-2.5 rounded-lg bg-white border border-slate-200 text-sm font-medium text-slate-700 hover:text-brand-700 hover:border-brand-200 transition-colors"
+                className="flex items-center justify-between p-2.5 rounded-xl bg-[#17243B] border border-[#263650] text-sm font-medium text-slate-300 hover:text-indigo-400 hover:border-indigo-500/40 transition-colors"
               >
                 <span>Manage Club Members</span>
                 <ExternalLink size={14} className="text-slate-400" />
               </a>
               <a
                 href="/coordinator/events"
-                className="flex items-center justify-between p-2.5 rounded-lg bg-white border border-slate-200 text-sm font-medium text-slate-700 hover:text-brand-700 hover:border-brand-200 transition-colors"
+                className="flex items-center justify-between p-2.5 rounded-xl bg-[#17243B] border border-[#263650] text-sm font-medium text-slate-300 hover:text-indigo-400 hover:border-indigo-500/40 transition-colors"
               >
                 <span>View Club Events</span>
                 <ExternalLink size={14} className="text-slate-400" />
               </a>
               <a
                 href="/coordinator/budget"
-                className="flex items-center justify-between p-2.5 rounded-lg bg-white border border-slate-200 text-sm font-medium text-slate-700 hover:text-brand-700 hover:border-brand-200 transition-colors"
+                className="flex items-center justify-between p-2.5 rounded-xl bg-[#17243B] border border-[#263650] text-sm font-medium text-slate-300 hover:text-indigo-400 hover:border-indigo-500/40 transition-colors"
               >
                 <span>Budget & Expense Tracker</span>
                 <ExternalLink size={14} className="text-slate-400" />

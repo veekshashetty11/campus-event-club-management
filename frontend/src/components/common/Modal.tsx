@@ -49,36 +49,38 @@ export default function Modal({
       ref={overlayRef}
       onClick={(e) => e.target === overlayRef.current && onClose()}
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(8px)' }}
+      style={{ background: 'rgba(8, 13, 27, 0.75)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
         className={[
-          'w-full bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl',
+          'w-full bg-[#111C32] border border-[#263650] rounded-2xl shadow-2xl text-slate-100',
           'flex flex-col max-h-[90vh]',
-          'border border-slate-200/50',
-          'animate-fade-in',
+          'animate-fade-in overflow-hidden',
           sizeClasses[size],
         ].join(' ')}
       >
         {/* Header */}
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 shrink-0">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-[#263650] bg-[#17243B]/60">
             <div className="flex items-center gap-3">
               {icon && (
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-white shrink-0">
+                <div className="w-8 h-8 rounded-xl bg-indigo-950/70 text-indigo-300 border border-indigo-700/50 flex items-center justify-center shrink-0">
                   {icon}
                 </div>
               )}
-              <h2 id="modal-title" className="text-lg font-bold text-slate-800">
+              <h3
+                id="modal-title"
+                className="text-base font-bold text-white tracking-tight"
+              >
                 {title}
-              </h2>
+              </h3>
             </div>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+              className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-[#263650] transition-colors"
               aria-label="Close modal"
             >
               <X size={18} />
@@ -87,11 +89,11 @@ export default function Modal({
         )}
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-6 py-4">{children}</div>
+        <div className="flex-1 overflow-y-auto px-6 py-5 text-slate-200">{children}</div>
 
         {/* Footer */}
         {footer && (
-          <div className="shrink-0 px-6 py-4 border-t border-slate-100 flex items-center justify-end gap-3 bg-slate-50/50 rounded-b-2xl">
+          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#263650] bg-[#0D1426]/60">
             {footer}
           </div>
         )}
