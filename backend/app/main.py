@@ -20,6 +20,20 @@ from app.api.registrations import (
     users_registration_router,
     maintenance_router,
 )
+from app.api.venues import router as venues_router
+from app.api.equipment import router as equipment_router
+from app.api.attendance import router as attendance_router
+from app.api.feedback import router as feedback_router
+from app.api.certificates import (
+    events_router as certificates_events_router,
+    certificates_router,
+    users_router as certificates_users_router,
+)
+from app.api.budgets import clubs_budget_router, expenses_router, sponsors_router
+from app.api.notifications import router as notifications_router
+from app.api.badges import router as badges_router
+from app.api.analytics import router as analytics_router
+from app.api.recommendations import router as recommendations_router
 from app.api.router import api_router
 from app.services.waitlist_worker import start_waitlist_worker, stop_waitlist_worker
 
@@ -80,6 +94,20 @@ def create_app() -> FastAPI:
     app.include_router(events_registration_router)
     app.include_router(users_registration_router)
     app.include_router(maintenance_router)
+    app.include_router(venues_router)
+    app.include_router(equipment_router)
+    app.include_router(attendance_router)
+    app.include_router(feedback_router)
+    app.include_router(certificates_events_router)
+    app.include_router(certificates_router)
+    app.include_router(certificates_users_router)
+    app.include_router(clubs_budget_router)
+    app.include_router(expenses_router)
+    app.include_router(sponsors_router)
+    app.include_router(notifications_router)
+    app.include_router(badges_router)
+    app.include_router(analytics_router)
+    app.include_router(recommendations_router)
 
     # Mount API v1 router for versioned routes (/api/v1/...)
     app.include_router(api_router, prefix=settings.API_V1_PREFIX)
