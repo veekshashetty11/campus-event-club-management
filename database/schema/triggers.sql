@@ -234,8 +234,10 @@ BEGIN
     END IF;
 
     -- ── Mark this waitlist entry as promoted ──────────────────
+    -- Vacate queue position to avoid uq_waitlist_position collision with renumbered queue
     UPDATE event_waitlist
     SET    status       = 'promoted',
+           position     = 1000000 + v_waitlist.waitlist_id,
            promoted_at  = NOW(),
            expires_at   = NOW() + INTERVAL '24 hours'
     WHERE  waitlist_id = v_waitlist.waitlist_id;

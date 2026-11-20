@@ -1,7 +1,7 @@
 """FastAPI Application Entry Point.
 
 Initializes the FastAPI application, mounts middleware (CORS),
-registers versioned routers and health endpoints, and manages engine lifecycles.
+registers versioned routers and health endpoints, and manages engine and background worker lifecycles.
 """
 
 import logging
@@ -13,14 +13,22 @@ from app.core.config import settings
 from app.db.connection import engine, check_db_connectivity
 from app.api.health import router as health_router
 from app.api.auth import router as auth_router
+from app.api.events import router as events_router
+from app.api.approvals import router as approvals_router, events_approval_router
+from app.api.registrations import (
+    events_registration_router,
+    users_registration_router,
+    maintenance_router,
+)
 from app.api.router import api_router
+from app.services.waitlist_worker import start_waitlist_worker, stop_waitlist_worker
 
 logger = logging.getLogger("uvicorn.error")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Application lifespan manager: verifies DB readiness on boot and disposes pool on shutdown."""
+    """Application lifespan manager: verifies DB readiness, starts worker on boot, and disposes on shutdown."""
     logger.info(f"Starting {settings.APP_NAME} in '{settings.APP_ENV}' mode...")
     logger.info(f"Configured CORS origins: {settings.cors_origins_list}")
 
@@ -28,12 +36,16 @@ async def lifespan(app: FastAPI):
     connected, error = check_db_connectivity()
     if connected:
         logger.info(f"Database connection verified successfully -> target: {settings.database_name}")
+        # Spawn waitlist expiration background worker if not in unit testing mode
+        if settings.APP_ENV != "test":
+            start_waitlist_worker(interval_seconds=60)
     else:
         logger.warning(f"Database connection warning on startup: {error}")
 
     yield
 
-    logger.info("Shutting down application and disposing database connection pool...")
+    logger.info("Shutting down application, background workers, and connection pool...")
+    stop_waitlist_worker()
     engine.dispose()
     logger.info("Database connection pool cleanly closed.")
 
@@ -59,11 +71,15 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    # Mount health router at root for direct /health and /health/ready access
+    # Mount routers at root for direct unversioned access
     app.include_router(health_router)
-
-    # Mount auth router at root for direct /auth/login and /auth/me access
     app.include_router(auth_router)
+    app.include_router(events_router)
+    app.include_router(approvals_router)
+    app.include_router(events_approval_router)
+    app.include_router(events_registration_router)
+    app.include_router(users_registration_router)
+    app.include_router(maintenance_router)
 
     # Mount API v1 router for versioned routes (/api/v1/...)
     app.include_router(api_router, prefix=settings.API_V1_PREFIX)
