@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,19 +12,68 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Custom scrollbar (subtle, light theme) */
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+  body {
+    background: #f8faff;
   }
-  ::-webkit-scrollbar-track {
-    background: transparent;
+
+  /* Custom scrollbar — dark sleek */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.6); }
+}
+
+@layer components {
+  /* ── Glassmorphism card ── */
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/50 shadow-card;
   }
-  ::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 999px;
+  .glass-dark {
+    background: rgba(13,21,38,0.7);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.08);
   }
-  ::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+
+  /* ── Gradient text ── */
+  .gradient-text {
+    @apply bg-gradient-to-r from-violet-400 via-brand-400 to-cyber-400 bg-clip-text text-transparent;
   }
+  .gradient-text-gold {
+    @apply bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent;
+  }
+
+  /* ── Neon border ── */
+  .neon-border {
+    border: 1px solid rgba(139,92,246,0.4);
+    box-shadow: 0 0 12px rgba(139,92,246,0.15), inset 0 0 12px rgba(139,92,246,0.05);
+  }
+
+  /* ── Stat card shimmer ── */
+  .shimmer-bg {
+    background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.08) 50%, transparent 75%);
+    background-size: 200% 100%;
+    animation: shimmer 2.5s infinite;
+  }
+
+  /* ── Sidebar nav active ── */
+  .nav-active {
+    background: linear-gradient(135deg, rgba(139,92,246,0.25), rgba(59,110,240,0.15));
+    border: 1px solid rgba(139,92,246,0.3);
+    box-shadow: 0 0 12px rgba(139,92,246,0.15);
+  }
+
+  /* ── Hover card lift ── */
+  .card-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-glow;
+  }
+
+  /* ── Badge pill glow ── */
+  .badge-glow {
+    box-shadow: 0 0 8px currentColor;
+  }
+}
+
+@layer utilities {
+  .text-shadow-sm { text-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+  .text-glow { text-shadow: 0 0 20px rgba(139,92,246,0.6); }
 }

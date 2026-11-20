@@ -75,26 +75,42 @@ export default function AdministratorDashboard() {
       />
 
       {/* Hero Welcome Banner */}
-      <div className="p-6 md:p-8 rounded-2xl bg-gradient-to-r from-slate-900 via-brand-900 to-brand-800 text-white shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-semibold backdrop-blur mb-3">
-            <ShieldAlert size={14} className="text-brand-300" />
-            {isAffairs ? 'Student Affairs Administration' : 'Campus Systems Governance'}
-          </div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-            Welcome, {user?.fullName || 'Administrator'}
-          </h1>
-          <p className="text-sm text-slate-200 mt-1 max-w-2xl">
-            Overview of university extracurricular activities, multi-stage approval pipelines, facility allocations, and student memberships.
-          </p>
-        </div>
+      <div className="relative p-6 md:p-8 rounded-2xl bg-gradient-to-br from-slate-900 via-red-950 to-slate-900 text-white shadow-xl overflow-hidden">
+        {/* Animated background orbs */}
+        <div className="absolute -top-10 -right-10 w-44 h-44 rounded-full bg-rose-700/20 blur-2xl animate-pulse-slow" />
+        <div className="absolute -bottom-8 right-28 w-36 h-36 rounded-full bg-red-500/15 blur-2xl animate-float" />
+        <div className="absolute top-6 left-1/3 w-24 h-24 rounded-full bg-rose-900/20 blur-xl" />
 
-        <Link to="/admin/approvals">
-          <Button variant="secondary" className="bg-white text-brand-900 hover:bg-slate-100 shadow-sm shrink-0">
-            <FileCheck2 size={16} className="mr-2 text-brand-600" />
-            View Approval Queue ({pendingApprovals.length})
-          </Button>
-        </Link>
+        {/* Grid overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: 'linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)',
+            backgroundSize: '32px 32px',
+          }}
+        />
+
+        <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-bold backdrop-blur mb-3 border border-white/10">
+              <ShieldAlert size={14} className="text-rose-300" />
+              {isAffairs ? 'Student Affairs Administration' : 'Campus Systems Governance'}
+            </div>
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight">
+              Welcome, {user?.fullName || 'Administrator'}
+            </h1>
+            <p className="text-sm text-slate-200/80 mt-2 max-w-2xl leading-relaxed">
+              Overview of university extracurricular activities, multi-stage approval pipelines, facility allocations, and student memberships.
+            </p>
+          </div>
+
+          <Link to="/admin/approvals">
+            <Button variant="secondary" className="bg-white text-slate-900 hover:bg-rose-50 shadow-sm shrink-0 font-bold">
+              <FileCheck2 size={16} className="mr-2 text-rose-600" />
+              View Approval Queue ({pendingApprovals.length})
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* 6 Key Campus Scorecards */}

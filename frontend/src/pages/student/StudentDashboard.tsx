@@ -63,28 +63,43 @@ export default function StudentDashboard() {
       />
 
       {/* ── A. Welcome Section ─────────────────────────────────── */}
-      <div className="bg-gradient-to-r from-brand-900 via-brand-800 to-teal-800 rounded-2xl px-6 py-7 text-white shadow-card">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+      <div className="relative bg-gradient-to-br from-violet-900 via-blue-900 to-cyan-900 rounded-2xl px-6 py-8 text-white shadow-xl overflow-hidden">
+        {/* Animated background orbs */}
+        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-violet-500/20 blur-2xl animate-pulse-slow" />
+        <div className="absolute -bottom-6 right-20 w-32 h-32 rounded-full bg-cyan-400/20 blur-2xl animate-float" />
+        <div className="absolute top-4 left-1/2 w-24 h-24 rounded-full bg-blue-500/10 blur-xl" />
+
+        {/* Grid overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: 'linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)',
+            backgroundSize: '32px 32px',
+          }}
+        />
+
+        <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-5">
           <div>
-            <span className="text-brand-200 text-xs font-semibold uppercase tracking-wider">
-              {todayFriendly()}
-            </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold mt-1 tracking-tight">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold bg-white/15 text-cyan-200 px-3 py-1 rounded-full border border-white/10">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                {todayFriendly()}
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black mt-1 tracking-tight">
               Welcome back, {firstName(user?.fullName ?? 'Student')}! 👋
             </h1>
-            <p className="text-brand-100 text-sm mt-1.5 max-w-xl leading-relaxed">
-              You are currently registered for <strong>{stats.upcomingEvents} upcoming events</strong>. Check
-              in on time to maintain eligibility for verifiable credentials and activity points.
+            <p className="text-blue-100/80 text-sm mt-2 max-w-xl leading-relaxed">
+              You have <span className="font-bold text-cyan-300">{stats.upcomingEvents} upcoming events</span> registered. Check in on time to earn activity points and verifiable certificates.
             </p>
 
             {/* Quick Actions Bar */}
-            <div className="flex items-center gap-2.5 mt-4 flex-wrap">
+            <div className="flex items-center gap-2.5 mt-5 flex-wrap">
               <Link to="/student/events">
                 <Button
-                  variant="secondary"
                   size="xs"
-                  leftIcon={<Compass size={14} />}
-                  className="bg-teal-500 hover:bg-teal-600 text-white font-semibold"
+                  className="bg-cyan-500 hover:bg-cyan-400 text-white font-bold border-0 shadow-lg"
+                  leftIcon={<Compass size={13} />}
                 >
                   Browse Events
                 </Button>
@@ -93,8 +108,8 @@ export default function StudentDashboard() {
                 <Button
                   variant="outline"
                   size="xs"
-                  leftIcon={<Ticket size={14} />}
-                  className="bg-white/10 hover:bg-white/20 text-white border-white/20"
+                  leftIcon={<Ticket size={13} />}
+                  className="bg-white/10 hover:bg-white/20 text-white border-white/20 backdrop-blur-sm"
                 >
                   My Passes
                 </Button>
@@ -103,25 +118,41 @@ export default function StudentDashboard() {
                 <Button
                   variant="outline"
                   size="xs"
-                  leftIcon={<Users size={14} />}
-                  className="bg-white/10 hover:bg-white/20 text-white border-white/20"
+                  leftIcon={<Users size={13} />}
+                  className="bg-white/10 hover:bg-white/20 text-white border-white/20 backdrop-blur-sm"
                 >
                   Campus Clubs
                 </Button>
               </Link>
+              {unreadNotificationsCount > 0 && (
+                <Link to="/student/notifications">
+                  <Button
+                    variant="outline"
+                    size="xs"
+                    leftIcon={<Bell size={13} />}
+                    className="bg-red-500/80 hover:bg-red-500 text-white border-red-400/50"
+                  >
+                    {unreadNotificationsCount} Alerts
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
 
-          {/* Right points badge */}
-          <div className="flex items-center gap-4 bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl px-5 py-4 shrink-0 self-start md:self-auto">
-            <div className="w-12 h-12 rounded-xl bg-amber-400/20 text-amber-300 flex items-center justify-center">
-              <Star size={24} className="fill-amber-300" />
-            </div>
-            <div>
-              <p className="text-xs text-brand-200 uppercase font-semibold tracking-wider">Activity Points</p>
-              <p className="text-3xl font-black tracking-tight">{stats.totalPoints}</p>
-              <p className="text-[11px] text-teal-200">Across {stats.eventsAttended} attended events</p>
-            </div>
+          {/* Stats pills */}
+          <div className="grid grid-cols-2 gap-2.5 shrink-0">
+            {[
+              { label: 'Events Attended', value: stats.eventsAttended, emoji: '✅', color: 'bg-emerald-500/20 border-emerald-400/30' },
+              { label: 'Activity Points', value: stats.totalPoints, emoji: '⭐', color: 'bg-amber-500/20 border-amber-400/30' },
+              { label: 'Clubs Joined', value: stats.clubMemberships, emoji: '🏛️', color: 'bg-cyan-500/20 border-cyan-400/30' },
+              { label: 'Certificates', value: stats.certificatesEarned, emoji: '🎓', color: 'bg-violet-500/20 border-violet-400/30' },
+            ].map((s) => (
+              <div key={s.label} className={`flex flex-col gap-0.5 p-3 rounded-xl border ${s.color} backdrop-blur-sm text-center min-w-[90px]`}>
+                <span className="text-xl">{s.emoji}</span>
+                <span className="text-xl font-black text-white">{s.value ?? 0}</span>
+                <span className="text-[10px] font-semibold text-white/60 leading-tight">{s.label}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -162,7 +193,7 @@ export default function StudentDashboard() {
       <section className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h2 className="text-lg font-bold text-slate-800">Upcoming Campus Events</h2>
+            <h2 className="text-lg font-black text-slate-800">Upcoming Campus Events</h2>
             <p className="text-xs text-slate-500">Discover and register for open workshops, labs, and hackathons</p>
           </div>
           <Link
@@ -224,7 +255,7 @@ export default function StudentDashboard() {
         <section className="space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-bold text-slate-800">My Registrations</h2>
+              <h2 className="text-lg font-black text-slate-800">My Registrations</h2>
               <p className="text-xs text-slate-500">Your recent event bookings and pass status</p>
             </div>
             <Link
@@ -242,7 +273,7 @@ export default function StudentDashboard() {
         <section className="space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-bold text-slate-800">My Clubs</h2>
+              <h2 className="text-lg font-black text-slate-800">My Clubs</h2>
               <p className="text-xs text-slate-500">Student societies you belong to</p>
             </div>
             <Link
@@ -263,7 +294,7 @@ export default function StudentDashboard() {
         <div className="lg:col-span-2 space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-bold text-slate-800">Recent Student Activity</h2>
+              <h2 className="text-lg font-black text-slate-800">Recent Student Activity</h2>
               <p className="text-xs text-slate-500">Live log of event sign-ups, attendance, and certifications</p>
             </div>
           </div>

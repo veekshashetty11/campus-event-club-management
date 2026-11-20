@@ -105,26 +105,42 @@ export default function CoordinatorDashboard() {
       />
 
       {/* Hero Welcome Banner */}
-      <div className="bg-gradient-to-r from-brand-900 via-brand-800 to-teal-800 rounded-2xl p-6 sm:p-7 text-white shadow-card">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+      <div className="relative bg-gradient-to-br from-violet-900 via-purple-900 to-blue-900 rounded-2xl p-6 sm:p-7 text-white shadow-xl overflow-hidden">
+        {/* Animated background orbs */}
+        <div className="absolute -top-10 -right-10 w-44 h-44 rounded-full bg-violet-500/20 blur-2xl animate-pulse-slow" />
+        <div className="absolute -bottom-8 right-24 w-36 h-36 rounded-full bg-purple-400/20 blur-2xl animate-float" />
+        <div className="absolute top-4 left-1/3 w-24 h-24 rounded-full bg-blue-500/10 blur-xl" />
+
+        {/* Grid overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: 'linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)',
+            backgroundSize: '32px 32px',
+          }}
+        />
+
+        <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-5">
           <div>
-            <span className="text-teal-300 text-xs font-bold uppercase tracking-wider">
-              {club.name} · Leadership Portal
-            </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold mt-1">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold bg-white/15 text-purple-200 px-3 py-1 rounded-full border border-white/10">
+                <Sparkles size={11} className="text-purple-300" />
+                {club.name} · Leadership Portal
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black mt-1 tracking-tight">
               Welcome, {user?.fullName || 'Chris Martinez'}! 👋
             </h1>
-            <p className="text-slate-200 text-xs sm:text-sm mt-1 max-w-xl leading-relaxed">
+            <p className="text-purple-100/80 text-xs sm:text-sm mt-2 max-w-xl leading-relaxed">
               Manage your club profile, submit multi-level event proposals, book campus venues, and monitor
               budget allocation in real time.
             </p>
-            <div className="flex items-center gap-2 mt-4 flex-wrap">
+            <div className="flex items-center gap-2 mt-5 flex-wrap">
               <Link to="/coordinator/events/create">
                 <Button
-                  variant="secondary"
                   size="xs"
-                  leftIcon={<PlusCircle size={14} />}
-                  className="bg-teal-500 hover:bg-teal-600 text-white font-semibold"
+                  leftIcon={<PlusCircle size={13} />}
+                  className="bg-purple-500 hover:bg-purple-400 text-white font-bold border-0 shadow-lg"
                 >
                   Create New Event
                 </Button>
@@ -133,18 +149,18 @@ export default function CoordinatorDashboard() {
                 <Button
                   variant="outline"
                   size="xs"
-                  leftIcon={<Users size={14} />}
-                  className="bg-white/10 hover:bg-white/20 text-white border-white/20"
+                  leftIcon={<Users size={13} />}
+                  className="bg-white/10 hover:bg-white/20 text-white border-white/20 backdrop-blur-sm"
                 >
-                  Review Member Requests ({pendingMemberRequests.length})
+                  Member Requests ({pendingMemberRequests.length})
                 </Button>
               </Link>
               <Link to="/coordinator/budget">
                 <Button
                   variant="outline"
                   size="xs"
-                  leftIcon={<DollarSign size={14} />}
-                  className="bg-white/10 hover:bg-white/20 text-white border-white/20"
+                  leftIcon={<DollarSign size={13} />}
+                  className="bg-white/10 hover:bg-white/20 text-white border-white/20 backdrop-blur-sm"
                 >
                   Manage Budget
                 </Button>
@@ -154,9 +170,9 @@ export default function CoordinatorDashboard() {
 
           {/* Quick Budget Health Pill */}
           <div className="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl p-4 shrink-0 text-right self-start md:self-auto min-w-[200px]">
-            <p className="text-xs text-brand-200 uppercase font-semibold">Remaining Budget</p>
+            <p className="text-xs text-purple-200 uppercase font-semibold">Remaining Budget</p>
             <p className="text-2xl sm:text-3xl font-black mt-0.5">₹{club.remainingBudget.toLocaleString()}</p>
-            <p className="text-[11px] text-teal-200 mt-1">
+            <p className="text-[11px] text-purple-200/70 mt-1">
               {Math.round((club.totalExpenses / club.allocatedBudget) * 100)}% utilized of ₹{club.allocatedBudget.toLocaleString()}
             </p>
           </div>

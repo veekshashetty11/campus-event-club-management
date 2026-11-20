@@ -77,27 +77,43 @@ export default function AdvisorDashboard() {
       <Breadcrumbs items={[{ label: 'Advisor', path: '/advisor/dashboard' }, { label: 'Dashboard' }]} />
 
       {/* Greeting Banner */}
-      <div className="p-6 md:p-8 rounded-2xl bg-gradient-to-r from-brand-900 via-brand-800 to-teal-900 text-white shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-semibold backdrop-blur mb-3">
-            <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
-            Faculty Advisor Portal
-          </div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-            Welcome back, {user?.fullName || 'Prof. Finch'}
-          </h1>
-          <p className="text-sm text-slate-200 mt-1 max-w-2xl">
-            You are overseeing {advisedClubs.length} campus student clubs. There are currently{' '}
-            <strong className="text-white underline">{pendingApprovals.length} events</strong> awaiting your Level 1 faculty review.
-          </p>
-        </div>
+      <div className="relative p-6 md:p-8 rounded-2xl bg-gradient-to-br from-emerald-900 via-teal-900 to-cyan-900 text-white shadow-xl overflow-hidden">
+        {/* Animated background orbs */}
+        <div className="absolute -top-10 -right-10 w-44 h-44 rounded-full bg-emerald-500/20 blur-2xl animate-pulse-slow" />
+        <div className="absolute -bottom-8 right-24 w-36 h-36 rounded-full bg-teal-400/20 blur-2xl animate-float" />
+        <div className="absolute top-4 left-1/3 w-24 h-24 rounded-full bg-cyan-500/10 blur-xl" />
 
-        <Link to="/advisor/approvals">
-          <Button variant="secondary" className="bg-white text-brand-900 hover:bg-slate-100 shadow-sm shrink-0">
-            <FileCheck2 size={16} className="mr-2 text-teal-600" />
-            Review Pending Queue ({pendingApprovals.length})
-          </Button>
-        </Link>
+        {/* Grid overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: 'linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)',
+            backgroundSize: '32px 32px',
+          }}
+        />
+
+        <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-bold backdrop-blur mb-3 border border-white/10">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              Faculty Advisor Portal
+            </div>
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight">
+              Welcome back, {user?.fullName || 'Prof. Finch'}
+            </h1>
+            <p className="text-sm text-emerald-100/80 mt-2 max-w-2xl leading-relaxed">
+              You are overseeing <span className="font-bold text-cyan-300">{advisedClubs.length} campus student clubs</span>. There are currently{' '}
+              <span className="font-bold text-white">{pendingApprovals.length} events</span> awaiting your Level 1 faculty review.
+            </p>
+          </div>
+
+          <Link to="/advisor/approvals">
+            <Button variant="secondary" className="bg-white text-emerald-900 hover:bg-emerald-50 shadow-sm shrink-0 font-bold">
+              <FileCheck2 size={16} className="mr-2 text-emerald-600" />
+              Review Pending Queue ({pendingApprovals.length})
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Statistics Cards */}
