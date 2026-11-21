@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, MapPin, Users, Clock, ArrowRight, Zap } from 'lucide-react';
+import { Calendar, MapPin, Users, Clock, ArrowRight, Zap, Sparkles } from 'lucide-react';
 import type { CampusEvent } from '../../types/event';
 import Button from '../common/Button';
 import { formatDate, formatTime, capacityPercent } from '../../utils';
@@ -7,6 +7,11 @@ import { useNavigate } from 'react-router-dom';
 
 interface UpcomingEventCardProps {
   event: CampusEvent;
+  aiRecommendation?: {
+    matchPercentage: number;
+    reasonTag: string;
+    matchReason?: string;
+  };
 }
 
 const categoryConfig: Record<string, { gradient: string; emoji: string }> = {
@@ -19,7 +24,7 @@ const categoryConfig: Record<string, { gradient: string; emoji: string }> = {
   Social:    { gradient: 'from-[#EC4899] to-[#8B5CF6]', emoji: '🎉' },
 };
 
-export default function UpcomingEventCard({ event }: UpcomingEventCardProps) {
+export default function UpcomingEventCard({ event, aiRecommendation }: UpcomingEventCardProps) {
   const navigate = useNavigate();
   const filled = capacityPercent(event.registeredCount, event.maxCapacity);
   const spotsLeft = event.maxCapacity - event.registeredCount;
@@ -42,7 +47,13 @@ export default function UpcomingEventCard({ event }: UpcomingEventCardProps) {
         <div className="absolute top-3 left-4 text-3xl">{catCfg.emoji}</div>
 
         {/* Status badge in top right */}
-        <div className="absolute top-3 right-3">
+        <div className="absolute top-3 right-3 flex items-center gap-1.5">
+          {aiRecommendation && (
+            <span className="text-[11px] font-extrabold bg-[#0D1426]/95 text-cyan-300 px-2 py-0.5 rounded-full border border-cyan-500/50 flex items-center gap-1 shadow-sm">
+              <Sparkles size={11} className="text-cyan-400" />
+              {aiRecommendation.matchPercentage}%
+            </span>
+          )}
           {event.isRegistered ? (
             event.registrationStatus === 'waitlisted' ? (
               <span className="text-[11px] font-bold bg-[#0D1426]/90 text-amber-300 px-2.5 py-0.5 rounded-full border border-amber-500/40 shadow-sm">
@@ -74,6 +85,14 @@ export default function UpcomingEventCard({ event }: UpcomingEventCardProps) {
       </div>
 
       <div className="p-4 flex flex-col flex-1 gap-3">
+        {/* AI Reason badge if present */}
+        {aiRecommendation && (
+          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-indigo-300 bg-indigo-500/10 border border-indigo-500/25 px-2 py-0.5 rounded-md -mb-1 w-fit">
+            <Sparkles size={10} className="text-cyan-400 shrink-0" />
+            <span className="truncate">{aiRecommendation.reasonTag}</span>
+          </div>
+        )}
+
         {/* Title */}
         <h3 className="text-sm font-bold text-white leading-snug line-clamp-2 group-hover:text-indigo-400 transition-colors">
           {event.title}

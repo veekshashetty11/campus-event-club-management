@@ -2,11 +2,12 @@
 
 from datetime import datetime
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class RecommendedEventResponse(BaseModel):
     """A single recommended event with its relevance score."""
+    model_config = ConfigDict(from_attributes=True)
 
     event_id: int
     title: str
@@ -27,9 +28,6 @@ class RecommendedEventResponse(BaseModel):
     banner_url: Optional[str] = None
     score: int = Field(description="Relevance score used for ranking")
 
-    class Config:
-        from_attributes = True
-
 
 class RecommendedEventsResponse(BaseModel):
     """Paginated list of recommended events."""
@@ -40,6 +38,7 @@ class RecommendedEventsResponse(BaseModel):
 
 class SimilarEventResponse(BaseModel):
     """A single similar event with its similarity score."""
+    model_config = ConfigDict(from_attributes=True)
 
     event_id: int
     title: str
@@ -59,9 +58,6 @@ class SimilarEventResponse(BaseModel):
     banner_url: Optional[str] = None
     score: int = Field(description="Similarity score used for ranking")
 
-    class Config:
-        from_attributes = True
-
 
 class SimilarEventsResponse(BaseModel):
     """List of similar events for a given source event."""
@@ -73,6 +69,7 @@ class SimilarEventsResponse(BaseModel):
 
 class RecommendedClubResponse(BaseModel):
     """A single recommended club with its relevance score."""
+    model_config = ConfigDict(from_attributes=True)
 
     club_id: int
     name: str
@@ -83,9 +80,6 @@ class RecommendedClubResponse(BaseModel):
     status: str
     member_count: Optional[int] = None
     score: int = Field(description="Relevance score used for ranking")
-
-    class Config:
-        from_attributes = True
 
 
 class RecommendedClubsResponse(BaseModel):

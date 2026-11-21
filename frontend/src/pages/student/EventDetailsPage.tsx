@@ -9,6 +9,7 @@ import RegistrationModal from '../../components/common/RegistrationModal';
 import WaitlistModal from '../../components/common/WaitlistModal';
 import CancelRegistrationModal from '../../components/common/CancelRegistrationModal';
 import TicketModal from '../../components/common/TicketModal';
+import SimilarEventsSection from '../../components/events/SimilarEventsSection';
 import {
   Calendar,
   Clock,
@@ -35,7 +36,7 @@ import { formatDate, formatTime, capacityPercent } from '../../utils';
 
 export default function EventDetailsPage() {
   const { eventId } = useParams<{ eventId: string }>();
-  const { getEvent, getRegistrationForEvent } = useStudent();
+  const { getEvent, getRegistrationForEvent, events } = useStudent();
 
   const [isRegModalOpen, setIsRegModalOpen] = useState(false);
   const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
@@ -538,6 +539,9 @@ export default function EventDetailsPage() {
           </Card>
         </div>
       </div>
+
+      {/* AI Similar Events Recommendations */}
+      <SimilarEventsSection currentEvent={event} allEvents={events} />
 
       {/* Modals */}
       <RegistrationModal

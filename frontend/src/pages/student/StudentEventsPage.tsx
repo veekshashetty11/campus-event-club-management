@@ -1,20 +1,41 @@
 import { useState, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Search, Calendar, X, ArrowUpDown, Sparkles } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 import { useStudent } from '../../contexts/StudentContext';
+import { computeClientEventRecommendations } from '../../services/recommendationService';
 import UpcomingEventCard from '../../components/dashboard/UpcomingEventCard';
 import Breadcrumbs from '../../components/common/Breadcrumbs';
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 
 export default function StudentEventsPage() {
-  const { events, clubs } = useStudent();
+  const { user } = useAuth();
+  const { events, clubs, registrations, memberships } = useStudent();
+  const [searchParams] = useSearchParams();
 
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedClub, setSelectedClub] = useState('All');
   const [selectedDateFilter, setSelectedDateFilter] = useState('All'); // All, This Week, This Month, Upcoming
-  const [selectedStatus, setSelectedStatus] = useState('All'); // All, Open, Filling Fast, Full, Registered, Waitlisted, Completed
-  const [sortBy, setSortBy] = useState<'date' | 'popularity' | 'seats'>('date');
+  const [selectedStatus, setSelectedStatus] = useState('All'); // All, Open, Filling Fast, Full, Registered, Waitlisted, Completed, AI Picks
+  const [sortBy, setSortBy] = useState<'date' | 'popularity' | 'seats' | 'ai_match'>(
+    (searchParams.get('sort') as any) === 'ai_match' ? 'ai_match' : 'date'
+  );
+
+  // Compute AI recommendation scores for events
+  const recMap = useMemo(() => {
+    const recs = computeClientEventRecommendations(user, events, registrations, memberships);
+    const map = new Map<number, { matchPercentage: number; reasonTag: string; matchReason?: string }>();
+    recs.forEach((r) => {
+      map.set(r.eventId, {
+        matchPercentage: r.matchPercentage,
+        reasonTag: r.reasonTag,
+        matchReason: r.matchReason,
+      });
+    });
+    return map;
+  }, [user, events, registrations, memberships]);
 
   // Unique categories
   const categories = useMemo(() => {
@@ -67,7 +88,9 @@ export default function StudentEventsPage() {
         const isCompleted = ev.status === 'completed' || now > new Date(ev.endTime);
 
         let matchStatus = true;
-        if (selectedStatus === 'Registered') {
+        if (selectedStatus === 'AI Picks') {
+          matchStatus = (recMap.get(ev.eventId)?.matchPercentage ?? 0) >= 85;
+        } else if (selectedStatus === 'Registered') {
           matchStatus = ev.isRegistered === true && ev.registrationStatus !== 'waitlisted';
         } else if (selectedStatus === 'Waitlisted') {
           matchStatus = ev.registrationStatus === 'waitlisted';
@@ -86,7 +109,11 @@ export default function StudentEventsPage() {
         return matchSearch && matchCategory && matchClub && matchDate && matchStatus;
       })
       .sort((a, b) => {
-        if (sortBy === 'date') {
+        if (sortBy === 'ai_match') {
+          const scoreA = recMap.get(a.eventId)?.matchPercentage ?? 70;
+          const scoreB = recMap.get(b.eventId)?.matchPercentage ?? 70;
+          return scoreB - scoreA;
+        } else if (sortBy === 'date') {
           return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
         } else if (sortBy === 'popularity') {
           return b.registeredCount - a.registeredCount;
@@ -97,7 +124,7 @@ export default function StudentEventsPage() {
         }
         return 0;
       });
-  }, [events, search, selectedCategory, selectedClub, selectedDateFilter, selectedStatus, sortBy]);
+  }, [events, search, selectedCategory, selectedClub, selectedDateFilter, selectedStatus, sortBy, recMap]);
 
   const hasActiveFilters =
     search !== '' ||
@@ -158,8 +185,9 @@ export default function StudentEventsPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="text-xs rounded-xl border border-[#263650] bg-[#17243B] px-3 py-2.5 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+              className="text-xs rounded-xl border border-[#263650] bg-[#17243B] px-3 py-2.5 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 font-semibold"
             >
+              <option value="ai_match">✨ AI Best Match (Personalized)</option>
               <option value="date">Upcoming Date (Earliest First)</option>
               <option value="popularity">Popularity (Most Registered)</option>
               <option value="seats">Available Seats (Most Remaining)</option>
@@ -207,6 +235,7 @@ export default function StudentEventsPage() {
               className="w-full rounded-xl border border-[#263650] bg-[#17243B] px-3 py-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
             >
               <option value="All">All Statuses</option>
+              <option value="AI Picks">🤖 AI Recommended Picks (≥ 85% Match)</option>
               <option value="Open">Registration Open</option>
               <option value="Filling Fast">Filling Fast (≥ 80%)</option>
               <option value="Full">Full (Waitlist Available)</option>
@@ -264,7 +293,11 @@ export default function StudentEventsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
           {filteredEvents.map((event) => (
-            <UpcomingEventCard key={event.eventId} event={event} />
+            <UpcomingEventCard
+              key={event.eventId}
+              event={event}
+              aiRecommendation={recMap.get(event.eventId)}
+            />
           ))}
         </div>
       )}

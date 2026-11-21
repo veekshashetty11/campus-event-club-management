@@ -19,6 +19,7 @@ import Breadcrumbs from '../../components/common/Breadcrumbs';
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import UpcomingEventCard from '../../components/dashboard/UpcomingEventCard';
+import AiRecommendedSection from '../../components/dashboard/AiRecommendedSection';
 import ActivityFeed from '../../components/dashboard/ActivityFeed';
 import MyRegistrationsTable from '../../components/dashboard/MyRegistrationsTable';
 import MyClubsGrid from '../../components/dashboard/MyClubsGrid';
@@ -215,6 +216,9 @@ export default function StudentDashboard() {
           </div>
         </div>
       </div>
+
+      {/* ── AI Recommendation Engine Section ───────────────────── */}
+      <AiRecommendedSection />
 
       {/* ── C. Upcoming Events Section ─────────────────────────── */}
       <section className="space-y-4">
