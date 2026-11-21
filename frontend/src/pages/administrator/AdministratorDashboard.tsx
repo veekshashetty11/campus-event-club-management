@@ -75,7 +75,7 @@ export default function AdministratorDashboard() {
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#17243B] text-xs font-bold mb-3 border border-rose-500/30 text-rose-300">
               <ShieldAlert size={14} className="text-rose-400" />
-              {isAffairs ? 'Student Affairs Administration' : 'Campus Systems Governance'}
+              {isAffairs ? 'Office of the Dean' : 'Campus Systems Governance'}
             </div>
             <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white">
               Welcome, {user?.fullName || 'Administrator'}
@@ -133,7 +133,7 @@ export default function AdministratorDashboard() {
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-bold text-white flex items-center gap-2">
               <FileCheck2 size={20} className="text-indigo-400" />
-              {isAffairs ? 'Level 2: Student Affairs Pending Reviews' : 'Administrative Approval Pipeline'}
+              {isAffairs ? 'Level 2: Dean Pending Reviews' : 'Administrative Approval Pipeline'}
             </h2>
             <Link to="/admin/approvals" className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
               View All Queue <ArrowRight size={13} />

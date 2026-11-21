@@ -560,7 +560,7 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
       // Mock validation: cannot exceed remaining budget
       if (data.amount > club.remainingBudget) {
         throw new Error(
-          `Expense of ₹${data.amount.toLocaleString()} exceeds club remaining budget of ₹${club.remainingBudget.toLocaleString()}. Request an allocation increase from Student Affairs.`
+          `Expense of ₹${data.amount.toLocaleString()} exceeds club remaining budget of ₹${club.remainingBudget.toLocaleString()}. Request an allocation increase from the Dean.`
         );
       }
 
@@ -727,7 +727,7 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
       } else {
         // DECISION === 'approved'
         if (approval.level === 1) {
-          // Level 1 (Advisor) Approved -> Advance to Level 2 (Student Affairs)
+          // Level 1 (Advisor) Approved -> Advance to Level 2 (Dean Review)
           newEventStage = 'student_affairs';
           newEventStatus = 'pending_approval';
           nextLevelRecord = {
@@ -738,7 +738,7 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
             clubName: approval.clubName,
             level: 2,
             stage: 'student_affairs',
-            stageDisplayName: 'Student Affairs',
+            stageDisplayName: 'Dean Review',
             status: 'pending',
             submittedAt: new Date().toISOString(),
           };
@@ -1132,7 +1132,7 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
         event_coordinator: 'Event Coordinator',
         club_president: 'Club President',
         club_advisor: 'Faculty Club Advisor',
-        student_affairs: 'Student Affairs Officer',
+        student_affairs: 'Dean of Student Affairs',
         administrator: 'System Administrator',
         venue_manager: 'Venue & Facilities Manager',
       };

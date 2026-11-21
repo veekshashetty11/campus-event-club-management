@@ -427,7 +427,7 @@ export default function AdvisorApprovalsPage() {
 
           <p className="text-sm text-slate-300">
             {decisionType === 'approved'
-              ? 'Approving this event will advance it to Level 2 (Student Affairs & Dean Brody) for administrative review.'
+              ? 'Approving this event will advance it to Level 2 (Dean Marcus Brody) for review.'
               : decisionType === 'changes_requested'
               ? 'Please specify what modifications or clarifications the Club Coordinator must provide before approval.'
               : 'Provide an official rationale for rejecting this event.'}

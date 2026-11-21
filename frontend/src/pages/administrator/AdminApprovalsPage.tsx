@@ -131,7 +131,7 @@ export default function AdminApprovalsPage() {
           </p>
         </div>
 
-        {/* Stage Tabs (Level 2: Student Affairs vs Level 3: Final Admin) */}
+        {/* Stage Tabs (Level 2: Dean Review vs Level 3: Final Admin) */}
         <div className="flex items-center gap-1.5 p-1 bg-[#17243B] rounded-xl border border-[#263650]">
           <button
             onClick={() => setActiveStageTab('student_affairs')}
@@ -141,7 +141,7 @@ export default function AdminApprovalsPage() {
                 : 'text-slate-300 hover:text-slate-100'
             }`}
           >
-            Level 2: Student Affairs
+            Level 2: Dean Review
           </button>
           <button
             onClick={() => setActiveStageTab('administrator')}
@@ -424,7 +424,7 @@ export default function AdminApprovalsPage() {
           decisionType === 'approved'
             ? activeStageTab === 'administrator'
               ? 'Confirm Final Administrative Approval'
-              : 'Confirm Student Affairs Approval'
+              : 'Confirm Dean Approval'
             : decisionType === 'changes_requested'
             ? 'Request Event Revision'
             : 'Reject Proposed Event'

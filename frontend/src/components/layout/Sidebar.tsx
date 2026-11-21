@@ -194,7 +194,7 @@ const ROLE_META: Record<string, { label: string; color: string; gradient: string
   event_coordinator: { label: 'Coordinator', color: 'text-indigo-400', gradient: 'from-indigo-500 to-purple-500' },
   club_president: { label: 'President', color: 'text-indigo-400', gradient: 'from-indigo-500 to-purple-500' },
   club_advisor: { label: 'Faculty Advisor', color: 'text-emerald-400', gradient: 'from-emerald-500 to-teal-500' },
-  student_affairs: { label: 'Student Affairs', color: 'text-amber-400', gradient: 'from-amber-500 to-orange-500' },
+  student_affairs: { label: 'Dean', color: 'text-amber-400', gradient: 'from-amber-500 to-orange-500' },
   administrator: { label: 'Admin', color: 'text-rose-400', gradient: 'from-rose-500 to-pink-500' },
   venue_manager: { label: 'Venue Mgr', color: 'text-sky-400', gradient: 'from-sky-500 to-blue-500' },
 };

@@ -161,7 +161,7 @@ export default function CoordinatorCreateEventPage() {
         <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 space-y-1">
           <div className="flex items-center gap-2 font-bold text-sm text-amber-400">
             <AlertCircle size={18} className="text-amber-400" />
-            <span>Revision Required by {latestApproval.reviewerRole === 'club_advisor' ? 'Club Advisor' : 'Student Affairs'}</span>
+            <span>Revision Required by {latestApproval.reviewerRole === 'club_advisor' ? 'Club Advisor' : 'Dean'}</span>
           </div>
           <p className="text-sm text-amber-300/90 pl-6.5 font-medium">{latestApproval.requestedChanges}</p>
         </div>

@@ -170,7 +170,7 @@ export default function AdminUsersPage() {
               <option value="student">Student</option>
               <option value="event_coordinator">Club Coordinator</option>
               <option value="club_advisor">Faculty Advisor</option>
-              <option value="student_affairs">Student Affairs</option>
+              <option value="student_affairs">Dean of Student Affairs</option>
               <option value="administrator">Administrator</option>
               <option value="venue_manager">Venue Manager</option>
             </select>
@@ -295,7 +295,7 @@ export default function AdminUsersPage() {
                 { id: 'student', label: 'Student', desc: 'Registers for events, joins clubs, views certificates.' },
                 { id: 'event_coordinator', label: 'Club Coordinator', desc: 'Creates events, manages club roster and budget.' },
                 { id: 'club_advisor', label: 'Faculty Advisor', desc: 'Level 1 event approvals, chapter oversight.' },
-                { id: 'student_affairs', label: 'Student Affairs', desc: 'Level 2 institutional approvals, policy oversight.' },
+                { id: 'student_affairs', label: 'Dean of Student Affairs', desc: 'Level 2 institutional approvals, policy oversight.' },
                 { id: 'administrator', label: 'Administrator', desc: 'Level 3 final approval, user RBAC, audit logging.' },
                 { id: 'venue_manager', label: 'Venue Manager', desc: 'Venue and equipment booking approvals.' },
               ].map((r) => (

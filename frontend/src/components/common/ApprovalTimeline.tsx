@@ -61,8 +61,8 @@ export default function ApprovalTimeline({ event, currentStatus, approvals = [] 
     },
     {
       level: 2,
-      title: '3. Student Affairs Review',
-      role: 'Student Affairs',
+      title: '3. Dean Review',
+      role: 'Dean',
       assignedTo: 'Dean Marcus Brody',
       date: affairsApproval?.decidedAt ? formatDate(affairsApproval.decidedAt) : (affairsApproval ? 'In Review' : 'Upcoming'),
       status: affairsApproval?.status || (advisorApproval?.status === 'approved' ? 'pending' : 'not_started'),
@@ -172,7 +172,7 @@ export default function ApprovalTimeline({ event, currentStatus, approvals = [] 
 
           <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-200">
             <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
-            <span>Student Affairs</span>
+            <span>Dean</span>
           </div>
 
           <span className="text-slate-500 font-bold text-sm px-1">→</span>

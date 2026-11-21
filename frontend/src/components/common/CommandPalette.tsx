@@ -97,7 +97,7 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
     if (role === 'student_affairs' || role === 'administrator') {
       items.push(
         { id: 'adm-dash', title: 'University Admin Dashboard', description: 'Campus-wide metrics, events, and audit logs', path: '/admin/dashboard', icon: <Sparkles size={16} className="text-indigo-400" />, category: 'Navigation' },
-        { id: 'adm-appr', title: 'Multi-Level Approval Queue', description: 'Student Affairs (L2) and Final Admin (L3) sign-offs', path: '/admin/approvals', icon: <FileCheck2 size={16} className="text-amber-400" />, category: 'Approvals' },
+        { id: 'adm-appr', title: 'Multi-Level Approval Queue', description: 'Dean Review (L2) and Final Admin (L3) sign-offs', path: '/admin/approvals', icon: <FileCheck2 size={16} className="text-amber-400" />, category: 'Approvals' },
         { id: 'adm-events', title: 'University Event Directory', description: 'All departmental and campus events', path: '/admin/events', icon: <Calendar size={16} className="text-blue-400" />, category: 'Events' },
         { id: 'adm-clubs', title: 'All Campus Organizations', description: 'Full registry of student clubs and chapters', path: '/admin/clubs', icon: <Building2 size={16} className="text-indigo-400" />, category: 'Clubs' },
         { id: 'adm-users', title: 'User Management & RBAC', description: 'Modify roles, statuses, and user accounts', path: '/admin/users', icon: <Users size={16} className="text-emerald-400" />, category: 'Admin' },

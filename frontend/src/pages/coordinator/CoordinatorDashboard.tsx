@@ -395,7 +395,7 @@ export default function CoordinatorDashboard() {
                     {p.title}
                   </strong>
                   <span className="text-amber-300 text-[11px]">
-                    Awaiting {p.approvalStage === 'club_advisor' ? 'Level 1: Faculty Advisor' : 'Level 2: Student Affairs'}
+                    Awaiting {p.approvalStage === 'club_advisor' ? 'Level 1: Faculty Advisor' : 'Level 2: Dean Review'}
                   </span>
                 </div>
                 <Badge variant="amber" size="sm" dot>

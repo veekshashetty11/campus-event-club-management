@@ -9,7 +9,7 @@ const DEMO_ACCOUNTS = [
   { label: 'Student', email: 'student@campus.edu', password: 'StudentPassword123!', color: 'from-cyan-500 to-blue-500', icon: '🎓' },
   { label: 'Coordinator', email: 'coordinator@campus.edu', password: 'CoordinatorPassword123!', color: 'from-violet-500 to-purple-500', icon: '📋' },
   { label: 'Advisor', email: 'advisor@campus.edu', password: 'AdvisorPassword123!', color: 'from-emerald-500 to-teal-500', icon: '🎯' },
-  { label: 'Affairs', email: 'affairs@campus.edu', password: 'AffairsPassword123!', color: 'from-amber-500 to-orange-500', icon: '⚡' },
+  { label: 'Dean', email: 'affairs@campus.edu', password: 'AffairsPassword123!', color: 'from-amber-500 to-orange-500', icon: '⚡' },
   { label: 'Admin', email: 'admin@campus.edu', password: 'AdminPassword123!', color: 'from-red-500 to-pink-500', icon: '🛡️' },
   { label: 'Venue Mgr', email: 'venue@campus.edu', password: 'VenuePassword123!', color: 'from-sky-500 to-blue-500', icon: '🏛️' },
 ];
