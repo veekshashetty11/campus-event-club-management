@@ -56,6 +56,7 @@ interface ManagementContextType {
   updateMembershipStatus: (membershipId: number, status: 'approved' | 'rejected') => Promise<{ success: boolean; message: string }>;
   updateMemberRole: (membershipId: number, role: MemberRole) => Promise<{ success: boolean; message: string }>;
   markAttendance: (registrationId: number, status: AttendanceMark) => Promise<{ success: boolean; message: string }>;
+  issueCertificatesForEvent: (eventId: number) => Promise<{ success: boolean; message: string; count: number }>;
   addExpense: (data: Omit<Expense, 'expenseId' | 'createdAt'>) => Promise<{ success: boolean; message: string }>;
   deleteExpense: (expenseId: number) => Promise<{ success: boolean; message: string }>;
   addSponsor: (data: Omit<Sponsor, 'sponsorId' | 'createdAt'>) => Promise<{ success: boolean; message: string }>;
@@ -479,6 +480,73 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
       return { success: true, message: 'Attendance marked.' };
     },
     []
+  );
+
+  // ── 3b. COORDINATOR: Issue Event Certificates ───────────────────────────────
+  const issueCertificatesForEvent = useCallback(
+    async (eventId: number) => {
+      await new Promise((r) => setTimeout(r, 400));
+      const targetEvent = events.find((e) => e.eventId === eventId);
+      let count = 0;
+      const newCertificates: any[] = [];
+      const now = new Date();
+
+      setRegistrations((prev) => {
+        const updated = prev.map((r) => {
+          if (r.eventId === eventId && (r.attendanceStatus === 'present' || r.attendanceStatus === 'late')) {
+            count++;
+            const certId = r.certificateId || `CERT-${eventId}-${r.registrationId}-${Date.now().toString().slice(-4)}`;
+            const certHash = `SHA256-${Math.random().toString(36).substring(2, 10).toUpperCase()}-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
+
+            newCertificates.push({
+              certificateId: certId,
+              eventTitle: targetEvent?.title || r.eventTitle,
+              clubName: targetEvent?.clubName || r.clubName,
+              studentName: r.studentName || 'Student Attendee',
+              rollNumber: r.rollNumber || 'CS2026-001',
+              issueDate: now.toISOString(),
+              issueDateFormatted: now.toLocaleDateString('en-US', { month: 'long', year: 'numeric', day: 'numeric' }),
+              certificateType: 'participation',
+              verificationHash: certHash,
+              status: 'issued',
+            });
+
+            return {
+              ...r,
+              certificateIssued: true,
+              certificateId: certId,
+            };
+          }
+          return r;
+        });
+        saveState('registrations', updated);
+        return updated;
+      });
+
+      // Synchronize to student certificates in localStorage so student sees new credentials
+      try {
+        const key = 'campus_event_student_state_certificates';
+        const existingRaw = localStorage.getItem(key);
+        const existing = existingRaw ? JSON.parse(existingRaw) : [];
+        const merged = [
+          ...newCertificates,
+          ...existing.filter((c: any) => !newCertificates.some((nc) => nc.certificateId === c.certificateId)),
+        ];
+        localStorage.setItem(key, JSON.stringify(merged));
+        window.dispatchEvent(new Event('storage'));
+      } catch (err) {
+        console.error('Failed to sync student certificates:', err);
+      }
+
+      return {
+        success: true,
+        message: count > 0
+          ? `Successfully issued ${count} verifiable certificates for "${targetEvent?.title || 'Event'}".`
+          : 'No eligible checked-in attendees found to generate certificates.',
+        count,
+      };
+    },
+    [events]
   );
 
   // ── 4. COORDINATOR: Expenses & Budget ───────────────────────────────────────
@@ -1094,6 +1162,7 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
       updateMembershipStatus,
       updateMemberRole,
       markAttendance,
+      issueCertificatesForEvent,
       addExpense,
       deleteExpense,
       addSponsor,
@@ -1136,6 +1205,7 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
       updateMembershipStatus,
       updateMemberRole,
       markAttendance,
+      issueCertificatesForEvent,
       addExpense,
       deleteExpense,
       addSponsor,

@@ -21,6 +21,7 @@ export interface EventRegistration {
   ticketCode: string;
   attendanceStatus?: AttendanceMark;
   certificateIssued?: boolean;
+  certificateId?: string;
   waitlistPosition?: number;
   dietaryPreferences?: string;
   specialNotes?: string;

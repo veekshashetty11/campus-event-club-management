@@ -83,7 +83,14 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
     }
   });
 
-  const [certificates] = useState<Certificate[]>(MOCK_CERTIFICATES);
+  const [certificates, setCertificates] = useState<Certificate[]>(() => {
+    try {
+      const saved = localStorage.getItem(`${STORAGE_KEY_PREFIX}certificates`);
+      return saved ? JSON.parse(saved) : MOCK_CERTIFICATES;
+    } catch {
+      return MOCK_CERTIFICATES;
+    }
+  });
 
   const [notifications, setNotifications] = useState<Notification[]>(() => {
     try {
@@ -112,6 +119,13 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
       if (e.key === `${STORAGE_KEY_PREFIX}events` && e.newValue) {
         try {
           setEvents(JSON.parse(e.newValue));
+        } catch {
+          // ignore parse errors
+        }
+      }
+      if (e.key === `${STORAGE_KEY_PREFIX}certificates` && e.newValue) {
+        try {
+          setCertificates(JSON.parse(e.newValue));
         } catch {
           // ignore parse errors
         }
