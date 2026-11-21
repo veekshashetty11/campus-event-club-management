@@ -50,6 +50,28 @@ const StudentContext = createContext<StudentContextType | null>(null);
 
 const STORAGE_KEY_PREFIX = 'campus_event_student_state_';
 
+function sanitizeEventDates(event: CampusEvent): CampusEvent {
+  const dateBase =
+    event.startDate ||
+    (event.startTime?.includes('T') ? event.startTime.split('T')[0] : '2026-12-01');
+  let startTime = event.startTime;
+  let endTime = event.endTime;
+
+  if (!startTime || !startTime.includes('T')) {
+    startTime = `${dateBase}T10:00:00Z`;
+  }
+  if (!endTime || !endTime.includes('T')) {
+    endTime = `${dateBase}T14:00:00Z`;
+  }
+
+  return {
+    ...event,
+    startDate: dateBase,
+    startTime,
+    endTime,
+  };
+}
+
 export function StudentProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
 
@@ -59,7 +81,7 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
       const saved =
         localStorage.getItem(`${STORAGE_KEY_PREFIX}events`) ||
         localStorage.getItem('campus_mgmt_state_v1_events');
-      return saved ? JSON.parse(saved) : MOCK_EVENTS;
+      return saved ? JSON.parse(saved).map(sanitizeEventDates) : MOCK_EVENTS;
     } catch {
       return MOCK_EVENTS;
     }
@@ -120,7 +142,7 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
           localStorage.getItem(`${STORAGE_KEY_PREFIX}events`) ||
           localStorage.getItem('campus_mgmt_state_v1_events');
         if (saved) {
-          setEvents(JSON.parse(saved));
+          setEvents(JSON.parse(saved).map(sanitizeEventDates));
         }
       } catch {}
     };
@@ -128,7 +150,7 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
     const handler = (e: StorageEvent) => {
       if ((e.key === `${STORAGE_KEY_PREFIX}events` || e.key === 'campus_mgmt_state_v1_events') && e.newValue) {
         try {
-          setEvents(JSON.parse(e.newValue));
+          setEvents(JSON.parse(e.newValue).map(sanitizeEventDates));
         } catch {
           // ignore parse errors
         }

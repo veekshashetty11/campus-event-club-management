@@ -109,7 +109,32 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
     }
   };
 
-  const [events, setEvents] = useState<CampusEvent[]>(() => loadState('events', MOCK_EVENTS));
+  function sanitizeEventDates(event: CampusEvent): CampusEvent {
+    const dateBase =
+      event.startDate ||
+      (event.startTime?.includes('T') ? event.startTime.split('T')[0] : '2026-12-01');
+    let startTime = event.startTime;
+    let endTime = event.endTime;
+
+    if (!startTime || !startTime.includes('T')) {
+      startTime = `${dateBase}T10:00:00Z`;
+    }
+    if (!endTime || !endTime.includes('T')) {
+      endTime = `${dateBase}T14:00:00Z`;
+    }
+
+    return {
+      ...event,
+      startDate: dateBase,
+      startTime,
+      endTime,
+    };
+  }
+
+  const [events, setEvents] = useState<CampusEvent[]>(() => {
+    const loaded = loadState('events', MOCK_EVENTS);
+    return Array.isArray(loaded) ? loaded.map(sanitizeEventDates) : MOCK_EVENTS;
+  });
   const [approvals, setApprovals] = useState<EventApproval[]>(() => loadState('approvals', MOCK_EVENT_APPROVALS));
   const [clubs, setClubs] = useState<Club[]>(() => loadState('clubs', MOCK_CLUBS));
   const [memberships, setMemberships] = useState<ClubMembership[]>(() => loadState('memberships', MOCK_MEMBERSHIPS));

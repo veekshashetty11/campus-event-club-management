@@ -85,7 +85,9 @@ export default function UpcomingEventCard({ event }: UpcomingEventCardProps) {
             <div className="w-5 h-5 rounded-md bg-[#17243B] border border-[#263650] flex items-center justify-center shrink-0">
               <Calendar size={11} className="text-indigo-400" />
             </div>
-            <span className="truncate">{formatDate(event.startTime)}, {formatTime(event.startTime)}</span>
+            <span className="truncate">
+              {formatDate(event.startDate || event.startTime)}, {event.startTime?.includes('T') ? formatTime(event.startTime) : (event.startTime || '10:00 AM')}
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-5 h-5 rounded-md bg-[#17243B] border border-[#263650] flex items-center justify-center shrink-0">

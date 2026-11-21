@@ -104,9 +104,41 @@ export default function CoordinatorCreateEventPage() {
 
     setIsSubmitting(true);
     try {
+      // Normalize times to valid ISO 8601 strings
+      const eventStartDate = formData.startDate || new Date().toISOString().split('T')[0];
+      const eventEndDate = formData.endDate || eventStartDate;
+
+      const to24h = (t: string) => {
+        if (!t) return '10:00:00';
+        const trimmed = t.trim().toUpperCase();
+        if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(trimmed)) {
+          const parts = trimmed.split(':');
+          return `${parts[0].padStart(2, '0')}:${parts[1]}:00`;
+        }
+        const match = trimmed.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/);
+        if (!match) return '10:00:00';
+        let h = parseInt(match[1], 10);
+        const m = match[2];
+        if (match[3] === 'PM' && h < 12) h += 12;
+        if (match[3] === 'AM' && h === 12) h = 0;
+        return `${h.toString().padStart(2, '0')}:${m}:00`;
+      };
+
+      const isoStart = formData.startTime.includes('T')
+        ? formData.startTime
+        : `${eventStartDate}T${to24h(formData.startTime)}Z`;
+      const isoEnd = formData.endTime.includes('T')
+        ? formData.endTime
+        : `${eventEndDate}T${to24h(formData.endTime)}Z`;
+
       const budgetVal = Number(formData.budget) || 0;
       const payload = {
         ...formData,
+        startDate: eventStartDate,
+        endDate: eventEndDate,
+        startTime: isoStart,
+        endTime: isoEnd,
+        registrationDeadline: formData.registrationDeadline || eventStartDate,
         venueId: Number(formData.venueId),
         preferredVenueId: Number(formData.venueId),
         venueName: selectedVenue.name,
