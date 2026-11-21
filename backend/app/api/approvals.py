@@ -197,21 +197,23 @@ def process_approval_decision(
         if decision == "approved" and expected_level == 3:
             existing_booking = db.query(VenueBooking).filter(VenueBooking.event_id == event.event_id).first()
             if not existing_booking:
-                target_venue_id = event.venue_id
-                if not target_venue_id:
-                    first_venue = db.query(Venue).filter(Venue.is_active == True).first()
-                    target_venue_id = first_venue.venue_id if first_venue else 1
+                target_venue = None
+                if event.venue_id:
+                    target_venue = db.query(Venue).filter(Venue.venue_id == event.venue_id).first()
+                if not target_venue:
+                    target_venue = db.query(Venue).filter(Venue.is_active == True).first()
 
-                pending_booking = VenueBooking(
-                    venue_id=target_venue_id,
-                    event_id=event.event_id,
-                    booked_by=event.created_by,
-                    start_time=event.start_time,
-                    end_time=event.end_time,
-                    status="pending",
-                    notes=f"Venue reservation requested for finally approved event: {event.title}",
-                )
-                db.add(pending_booking)
+                if target_venue:
+                    pending_booking = VenueBooking(
+                        venue_id=target_venue.venue_id,
+                        event_id=event.event_id,
+                        booked_by=event.created_by,
+                        start_time=event.start_time,
+                        end_time=event.end_time,
+                        status="pending",
+                        notes=f"Venue reservation requested for finally approved event: {event.title}",
+                    )
+                    db.add(pending_booking)
             elif existing_booking.status != "confirmed":
                 existing_booking.status = "pending"
 
