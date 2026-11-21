@@ -91,7 +91,15 @@ interface ManagementContextType {
   getRegistrationsForEvent: (eventId: number) => EventRegistration[];
 }
 
-const ManagementContext = createContext<ManagementContextType | null>(null);
+// Singleton React Context instance to survive Vite Hot Module Replacement (HMR)
+const MGMT_CONTEXT_KEY = '__CAMPUS_MGMT_CONTEXT__';
+const ManagementContext: React.Context<ManagementContextType | null> =
+  (typeof window !== 'undefined' && (window as any)[MGMT_CONTEXT_KEY]) ||
+  (() => {
+    const ctx = createContext<ManagementContextType | null>(null);
+    if (typeof window !== 'undefined') (window as any)[MGMT_CONTEXT_KEY] = ctx;
+    return ctx;
+  })();
 
 const STORAGE_PREFIX = 'campus_mgmt_state_v1_';
 

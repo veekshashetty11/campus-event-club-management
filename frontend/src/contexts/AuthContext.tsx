@@ -19,7 +19,15 @@ interface AuthContextValue {
   clearError: () => void;
 }
 
-const AuthContext = createContext<AuthContextValue | null>(null);
+// Singleton React Context instance to survive Vite Hot Module Replacement (HMR)
+const AUTH_CONTEXT_KEY = '__CAMPUS_AUTH_CONTEXT__';
+const AuthContext: React.Context<AuthContextValue | null> =
+  (typeof window !== 'undefined' && (window as any)[AUTH_CONTEXT_KEY]) ||
+  (() => {
+    const ctx = createContext<AuthContextValue | null>(null);
+    if (typeof window !== 'undefined') (window as any)[AUTH_CONTEXT_KEY] = ctx;
+    return ctx;
+  })();
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 export function AuthProvider({ children }: { children: React.ReactNode }) {

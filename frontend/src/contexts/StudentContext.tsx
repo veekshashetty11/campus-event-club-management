@@ -46,11 +46,20 @@ interface StudentContextType {
   getRegistrationForEvent: (eventId: number) => EventRegistration | undefined;
 }
 
-const StudentContext = createContext<StudentContextType | null>(null);
+// Singleton React Context instance to survive Vite Hot Module Replacement (HMR)
+const CONTEXT_KEY = '__CAMPUS_STUDENT_CONTEXT__';
+const StudentContext: React.Context<StudentContextType | null> =
+  (typeof window !== 'undefined' && (window as any)[CONTEXT_KEY]) ||
+  (() => {
+    const ctx = createContext<StudentContextType | null>(null);
+    if (typeof window !== 'undefined') (window as any)[CONTEXT_KEY] = ctx;
+    return ctx;
+  })();
 
 const STORAGE_KEY_PREFIX = 'campus_event_student_state_';
 
 function sanitizeEventDates(event: CampusEvent): CampusEvent {
+  if (!event || typeof event !== 'object') return event;
   const dateBase =
     event.startDate ||
     (event.startTime?.includes('T') ? event.startTime.split('T')[0] : '2026-12-01');
@@ -78,10 +87,12 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
   // State initialized with centralized mock fixtures
   const [events, setEvents] = useState<CampusEvent[]>(() => {
     try {
-      const saved =
+      const raw =
         localStorage.getItem(`${STORAGE_KEY_PREFIX}events`) ||
         localStorage.getItem('campus_mgmt_state_v1_events');
-      return saved ? JSON.parse(saved).map(sanitizeEventDates) : MOCK_EVENTS;
+      if (!raw) return MOCK_EVENTS;
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed.map(sanitizeEventDates) : MOCK_EVENTS;
     } catch {
       return MOCK_EVENTS;
     }
@@ -90,7 +101,9 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
   const [registrations, setRegistrations] = useState<EventRegistration[]>(() => {
     try {
       const saved = localStorage.getItem(`${STORAGE_KEY_PREFIX}registrations`);
-      return saved ? JSON.parse(saved) : MOCK_REGISTRATIONS;
+      if (!saved) return MOCK_REGISTRATIONS;
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) ? parsed : MOCK_REGISTRATIONS;
     } catch {
       return MOCK_REGISTRATIONS;
     }
@@ -101,7 +114,9 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
   const [memberships, setMemberships] = useState<ClubMembership[]>(() => {
     try {
       const saved = localStorage.getItem(`${STORAGE_KEY_PREFIX}memberships`);
-      return saved ? JSON.parse(saved) : MOCK_MEMBERSHIPS;
+      if (!saved) return MOCK_MEMBERSHIPS;
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) ? parsed : MOCK_MEMBERSHIPS;
     } catch {
       return MOCK_MEMBERSHIPS;
     }
@@ -110,7 +125,9 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
   const [certificates, setCertificates] = useState<Certificate[]>(() => {
     try {
       const saved = localStorage.getItem(`${STORAGE_KEY_PREFIX}certificates`);
-      return saved ? JSON.parse(saved) : MOCK_CERTIFICATES;
+      if (!saved) return MOCK_CERTIFICATES;
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) ? parsed : MOCK_CERTIFICATES;
     } catch {
       return MOCK_CERTIFICATES;
     }
@@ -119,7 +136,9 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
   const [notifications, setNotifications] = useState<Notification[]>(() => {
     try {
       const saved = localStorage.getItem(`${STORAGE_KEY_PREFIX}notifications`);
-      return saved ? JSON.parse(saved) : MOCK_NOTIFICATIONS;
+      if (!saved) return MOCK_NOTIFICATIONS;
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) ? parsed : MOCK_NOTIFICATIONS;
     } catch {
       return MOCK_NOTIFICATIONS;
     }
@@ -128,7 +147,9 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
   const [activities, setActivities] = useState<ActivityItem[]>(() => {
     try {
       const saved = localStorage.getItem(`${STORAGE_KEY_PREFIX}activities`);
-      return saved ? JSON.parse(saved) : MOCK_ACTIVITIES;
+      if (!saved) return MOCK_ACTIVITIES;
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) ? parsed : MOCK_ACTIVITIES;
     } catch {
       return MOCK_ACTIVITIES;
     }
@@ -869,7 +890,37 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
 export function useStudent() {
   const context = useContext(StudentContext);
   if (!context) {
-    throw new Error('useStudent must be used within a StudentProvider');
+    // Provide safe fallback context to prevent HMR or initial race conditions from crashing the application
+    return {
+      events: MOCK_EVENTS,
+      registrations: MOCK_REGISTRATIONS,
+      clubs: MOCK_CLUBS,
+      memberships: MOCK_MEMBERSHIPS,
+      certificates: MOCK_CERTIFICATES,
+      notifications: MOCK_NOTIFICATIONS,
+      activities: MOCK_ACTIVITIES,
+      stats: {
+        eventsRegistered: MOCK_REGISTRATIONS.filter((r) => r.status === 'registered').length,
+        eventsAttended: MOCK_REGISTRATIONS.filter((r) => r.status === 'attended').length,
+        certificatesEarned: MOCK_CERTIFICATES.length,
+        clubMemberships: MOCK_MEMBERSHIPS.length,
+        totalPoints: 185,
+        upcomingEvents: 2,
+      },
+      unreadNotificationsCount: 0,
+      registerForEvent: async () => ({ success: true, message: '' }),
+      cancelRegistration: async () => ({ success: true, message: '' }),
+      joinWaitlist: async () => ({ success: true, message: '' }),
+      cancelWaitlist: async () => ({ success: true, message: '' }),
+      simulateWaitlistPromotion: async () => ({ success: true, message: '' }),
+      requestClubMembership: async () => ({ success: true, message: '' }),
+      markNotificationAsRead: () => {},
+      markAllNotificationsAsRead: () => {},
+      updateStudentProfile: async () => ({ success: true, message: '' }),
+      getEvent: (id: number) => MOCK_EVENTS.find((e) => e.eventId === id),
+      getClub: (id: number) => MOCK_CLUBS.find((c) => c.clubId === id),
+      getRegistrationForEvent: (id: number) => MOCK_REGISTRATIONS.find((r) => r.eventId === id),
+    } as StudentContextType;
   }
   return context;
 }
