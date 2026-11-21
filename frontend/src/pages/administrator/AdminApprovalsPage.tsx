@@ -214,9 +214,10 @@ export default function AdminApprovalsPage() {
               <tr className="bg-[#17243B] border-b border-[#263650] text-xs font-semibold uppercase tracking-wider text-slate-400">
                 <th className="py-3.5 px-5">Proposed Event</th>
                 <th className="py-3.5 px-4">Club</th>
+                <th className="py-3.5 px-4">Allocated Venue</th>
                 <th className="py-3.5 px-4">Stage</th>
                 <th className="py-3.5 px-4">Event Date</th>
-                <th className="py-3.5 px-4">Budget</th>
+                <th className="py-3.5 px-4">Requested Budget</th>
                 <th className="py-3.5 px-4">Status</th>
                 <th className="py-3.5 px-5 text-right">Action</th>
               </tr>
@@ -224,7 +225,7 @@ export default function AdminApprovalsPage() {
             <tbody className="divide-y divide-[#263650]/60">
               {filteredApprovals.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-slate-400">
+                  <td colSpan={8} className="py-12 text-center text-slate-400">
                     <FileCheck2 size={32} className="mx-auto mb-2 opacity-50 text-slate-300" />
                     <p className="font-medium text-slate-300">No event approvals in this queue</p>
                   </td>
@@ -232,23 +233,31 @@ export default function AdminApprovalsPage() {
               ) : (
                 filteredApprovals.map((appr) => {
                   const evt = events.find((e) => e.eventId === appr.eventId);
+                  const venueTitle = evt?.venueName || (evt as any)?.venue?.name || 'Main Auditorium';
+
                   return (
                     <tr key={appr.approvalId} className="hover:bg-[#17243B]/60 transition-colors">
                       <td className="py-3.5 px-5">
                         <p className="font-semibold text-slate-100">{evt?.title || 'Unknown Event'}</p>
-                        <p className="text-xs text-slate-400">{evt?.category} • {evt?.venueName}</p>
+                        <p className="text-xs text-slate-400">{evt?.category}</p>
                       </td>
                       <td className="py-3.5 px-4 text-xs font-medium text-slate-300">{appr.clubName}</td>
+                      <td className="py-3.5 px-4 text-xs text-slate-300">
+                        <div className="flex items-center gap-1.5">
+                          <MapPin size={13} className="text-cyan-400 shrink-0" />
+                          <span className="font-medium text-slate-200 truncate max-w-[150px]">{venueTitle}</span>
+                        </div>
+                      </td>
                       <td className="py-3.5 px-4">
                         <Badge variant="neutral" className="text-[11px] capitalize">
                           {appr.stage.replace('_', ' ')}
                         </Badge>
                       </td>
                       <td className="py-3.5 px-4 text-xs text-slate-300">
-                        {evt?.startDate ? new Date(evt.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'TBD'}
+                        {evt?.startDate ? new Date(evt.startDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : 'TBD'}
                       </td>
-                      <td className="py-3.5 px-4 text-xs font-bold text-slate-100">
-                        ${evt?.budget ? evt.budget.toLocaleString() : '0'}
+                      <td className="py-3.5 px-4 text-xs font-bold text-emerald-400">
+                        ₹{evt?.budget ? evt.budget.toLocaleString('en-IN') : '0'}
                       </td>
                       <td className="py-3.5 px-4">{getStatusBadge(appr.status)}</td>
                       <td className="py-3.5 px-5 text-right">
@@ -275,34 +284,69 @@ export default function AdminApprovalsPage() {
         isOpen={!!selectedApproval && !decisionType}
         onClose={() => setSelectedApproval(null)}
         title={`Administrative Review: ${selectedEvent?.title}`}
+        size="lg"
       >
         {selectedEvent && selectedApproval && (
           <div className="space-y-5 pt-2 max-h-[75vh] overflow-y-auto pr-1">
             {/* Quick Summary Banner */}
-            <div className="p-4 rounded-xl bg-[#17243B] border border-[#263650] flex flex-wrap items-center justify-between gap-4 text-xs">
+            <div className="p-4 rounded-xl bg-[#17243B] border border-[#263650] grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
               <div>
                 <p className="text-slate-400">Club</p>
                 <p className="text-sm font-bold text-slate-100">{selectedEvent.clubName}</p>
               </div>
               <div>
-                <p className="text-slate-400">Venue</p>
-                <p className="text-sm font-semibold text-slate-100">{selectedEvent.venueName}</p>
+                <p className="text-slate-400">Allocated Venue</p>
+                <p className="text-sm font-semibold text-cyan-300 flex items-center gap-1.5">
+                  <MapPin size={13} className="shrink-0" />
+                  <span className="truncate">{selectedEvent.venueName || (selectedEvent as any)?.venue?.name || 'Main Auditorium'}</span>
+                </p>
               </div>
               <div>
                 <p className="text-slate-400">Budget Request</p>
-                <p className="text-sm font-bold text-emerald-300">${selectedEvent.budget?.toLocaleString() || '0'}</p>
+                <p className="text-sm font-black text-emerald-400">₹{selectedEvent.budget?.toLocaleString('en-IN') || '0'}</p>
               </div>
               <div>
-                <p className="text-slate-400">Capacity</p>
-                <p className="text-sm font-semibold text-slate-100">{selectedEvent.capacity} seats</p>
+                <p className="text-slate-400">Capacity & Seats</p>
+                <p className="text-sm font-semibold text-slate-100">{selectedEvent.capacity || selectedEvent.maxCapacity || 100} seats</p>
               </div>
             </div>
 
-            {/* Description */}
+            {/* Event Logistics Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div className="p-3.5 rounded-xl bg-[#17243B] border border-[#263650]">
+                <span className="text-slate-400 block mb-1">Date & Time:</span>
+                <span className="font-semibold text-slate-100 flex items-center gap-1.5">
+                  <Calendar size={13} className="text-indigo-400 shrink-0" />
+                  {selectedEvent.startDate ? new Date(selectedEvent.startDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : 'TBD'}
+                </span>
+                <span className="text-slate-400 text-[11px] block mt-1 flex items-center gap-1.5">
+                  <Clock size={12} className="text-slate-400 shrink-0" />
+                  {selectedEvent.startTime ? selectedEvent.startTime.split('T')[1]?.slice(0, 5) : '10:00'} - {selectedEvent.endTime ? selectedEvent.endTime.split('T')[1]?.slice(0, 5) : '16:00'}
+                </span>
+              </div>
+              <div className="p-3.5 rounded-xl bg-[#17243B] border border-[#263650]">
+                <span className="text-slate-400 block mb-1">Capacity & Waitlist:</span>
+                <span className="font-semibold text-slate-100 flex items-center gap-1.5">
+                  <Users size={13} className="text-emerald-400 shrink-0" />
+                  {selectedEvent.capacity || selectedEvent.maxCapacity || 100} maximum seats
+                </span>
+                <span className="text-slate-400 text-[11px] block mt-1">
+                  {selectedEvent.isWaitlistEnabled ? 'Waitlist auto-promotion enabled' : 'Direct admission'}
+                </span>
+              </div>
+              <div className="p-3.5 rounded-xl bg-[#17243B] border border-[#263650]">
+                <span className="text-slate-400 block mb-1">Required Equipment:</span>
+                <span className="font-semibold text-slate-100 block">
+                  {selectedEvent.equipmentNeeded || 'Standard AV setup, Projector & Wireless Mics'}
+                </span>
+              </div>
+            </div>
+
+            {/* Description & Scope */}
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Description & Scope</h4>
-              <p className="text-sm text-slate-300 leading-relaxed bg-[#17243B] p-3 rounded-xl border border-[#263650]">
-                {selectedEvent.description || selectedEvent.shortDescription}
+              <p className="text-sm text-slate-300 leading-relaxed bg-[#17243B] p-3.5 rounded-xl border border-[#263650]">
+                {selectedEvent.description || selectedEvent.shortDescription || 'No description provided.'}
               </p>
             </div>
 
@@ -387,6 +431,23 @@ export default function AdminApprovalsPage() {
         }
       >
         <div className="space-y-4 pt-2">
+          {/* Quick Recap of event, venue, and budget in Rupees */}
+          {selectedEvent && (
+            <div className="p-3 rounded-xl bg-[#111C32] border border-[#263650] text-xs flex items-center justify-between gap-3">
+              <div>
+                <p className="font-bold text-slate-100">{selectedEvent.title}</p>
+                <p className="text-slate-400 mt-0.5 flex items-center gap-1">
+                  <MapPin size={12} className="text-cyan-400" />
+                  {selectedEvent.venueName || 'Main Auditorium'}
+                </p>
+              </div>
+              <div className="text-right shrink-0">
+                <span className="text-[11px] text-slate-400 block">Requested Budget</span>
+                <span className="font-black text-emerald-400 text-sm">₹{selectedEvent.budget?.toLocaleString('en-IN') || '0'}</span>
+              </div>
+            </div>
+          )}
+
           <p className="text-sm text-slate-300">
             {decisionType === 'approved'
               ? activeStageTab === 'administrator'

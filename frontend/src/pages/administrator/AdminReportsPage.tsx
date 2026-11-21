@@ -33,11 +33,11 @@ export default function AdminReportsPage() {
 
   const handleExport = () => {
     const data = `Campus Event & Club Management - Institutional Report
-Generated: ${new Date().toLocaleString()}
+Generated: ${new Date().toLocaleString('en-IN')}
 Total Clubs: ${clubs.length}
 Total Events: ${events.length}
-Total Budget Allocated: $${clubs.reduce((sum, c) => sum + c.allocatedBudget, 0)}
-Total Spent: $${expenses.reduce((sum, e) => sum + e.amount, 0)}
+Total Budget Allocated: ₹${clubs.reduce((sum, c) => sum + c.allocatedBudget, 0).toLocaleString('en-IN')}
+Total Spent: ₹${expenses.reduce((sum, e) => sum + e.amount, 0).toLocaleString('en-IN')}
 `;
     const blob = new Blob([data], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -81,7 +81,7 @@ Total Spent: $${expenses.reduce((sum, e) => sum + e.amount, 0)}
                 <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} />
                 <YAxis stroke="#94a3b8" fontSize={11} />
                 <Tooltip
-                  formatter={(val: number) => `$${val.toLocaleString()}`}
+                  formatter={(val: number) => `₹${val.toLocaleString('en-IN')}`}
                   contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0' }}
                 />
                 <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />

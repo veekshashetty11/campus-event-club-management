@@ -85,7 +85,7 @@ export default function CoordinatorReportsPage() {
 Generated: ${new Date().toLocaleString()}
 Club Events Count: ${clubEvents.length}
 Total Registrations: ${clubEvents.reduce((s, e) => s + e.registeredCount, 0)}
-Total Expenses Logged: $${clubExpenses.reduce((s, e) => s + e.amount, 0)}
+Total Expenses Logged: ₹${clubExpenses.reduce((s, e) => s + e.amount, 0).toLocaleString('en-IN')}
 `;
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
