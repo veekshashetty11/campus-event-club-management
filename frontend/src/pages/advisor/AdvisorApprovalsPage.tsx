@@ -24,7 +24,17 @@ import type { CampusEvent, EventApproval } from '../../types/event';
 
 export default function AdvisorApprovalsPage() {
   const { user } = useAuth();
-  const { events, approvals, clubs, decideEventApproval } = useManagement();
+  const { events, approvals, clubs, venues, decideEventApproval } = useManagement();
+
+  const getVenueDetails = (evt: CampusEvent | undefined) => {
+    if (!evt) return { name: 'Main Auditorium', location: 'Academic Block B', fullText: 'Main Auditorium (Academic Block B)' };
+    const matchedVenue = evt.venue || venues.find((v) => v.venueId === (evt.venueId || evt.preferredVenueId));
+    const name = evt.venueName || matchedVenue?.name || 'Main Auditorium';
+    const locationParts = [matchedVenue?.building, matchedVenue?.roomNumber].filter(Boolean);
+    const location = locationParts.join(', ') || matchedVenue?.building || 'Academic Block B';
+    const fullText = location ? `${name} • ${location}` : name;
+    return { name, location, fullText };
+  };
 
   const [filterStatus, setFilterStatus] = useState<'pending' | 'approved' | 'changes_requested' | 'rejected' | 'all'>('pending');
   const [selectedApproval, setSelectedApproval] = useState<EventApproval | null>(null);
@@ -218,7 +228,6 @@ export default function AdvisorApprovalsPage() {
               ) : (
                 filteredApprovals.map((appr) => {
                   const evt = events.find((e) => e.eventId === appr.eventId);
-                  const venueTitle = evt?.venueName || (evt as any)?.venue?.name || 'Main Auditorium';
 
                   return (
                     <tr key={appr.approvalId} className="hover:bg-[#17243B]/60 transition-colors">
@@ -227,11 +236,21 @@ export default function AdvisorApprovalsPage() {
                         <p className="text-xs text-slate-400">{evt?.category}</p>
                       </td>
                       <td className="py-3.5 px-4 text-xs font-medium text-slate-300">{appr.clubName}</td>
-                      <td className="py-3.5 px-4 text-xs text-slate-300">
-                        <div className="flex items-center gap-1.5">
-                          <MapPin size={13} className="text-cyan-400 shrink-0" />
-                          <span className="font-medium text-slate-200 truncate max-w-[150px]">{venueTitle}</span>
-                        </div>
+                      <td className="py-3.5 px-4 text-xs">
+                        {(() => {
+                          const vInfo = getVenueDetails(evt);
+                          return (
+                            <div className="flex items-start gap-1.5 min-w-[190px]">
+                              <MapPin size={13} className="text-cyan-400 shrink-0 mt-0.5" />
+                              <div className="leading-tight">
+                                <p className="font-semibold text-slate-200 whitespace-normal break-words">{vInfo.name}</p>
+                                {vInfo.location && (
+                                  <p className="text-[11px] text-slate-400 mt-0.5 whitespace-normal break-words">{vInfo.location}</p>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </td>
                       <td className="py-3.5 px-4 text-xs text-slate-400">
                         {new Date(appr.submittedAt).toLocaleDateString('en-IN')}
@@ -277,12 +296,22 @@ export default function AdvisorApprovalsPage() {
                 <p className="text-xs text-slate-400">Organizing Club</p>
                 <p className="text-sm font-bold text-slate-100">{selectedEvent.clubName}</p>
               </div>
-              <div>
+              <div className="min-w-[150px]">
                 <p className="text-xs text-slate-400">Allocated Venue</p>
-                <p className="text-sm font-semibold text-cyan-300 flex items-center gap-1.5">
-                  <MapPin size={13} className="shrink-0" />
-                  <span className="truncate">{selectedEvent.venueName || (selectedEvent as any)?.venue?.name || 'Main Auditorium'}</span>
-                </p>
+                {(() => {
+                  const vInfo = getVenueDetails(selectedEvent);
+                  return (
+                    <div className="mt-1 flex items-start gap-1.5">
+                      <MapPin size={13} className="text-cyan-400 shrink-0 mt-0.5" />
+                      <div className="leading-snug">
+                        <p className="text-sm font-bold text-cyan-300 whitespace-normal break-words">{vInfo.name}</p>
+                        {vInfo.location && (
+                          <p className="text-[11px] text-slate-300 mt-0.5 whitespace-normal break-words">{vInfo.location}</p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
               <div>
                 <p className="text-xs text-slate-400">Requested Budget</p>
@@ -295,7 +324,24 @@ export default function AdvisorApprovalsPage() {
             </div>
 
             {/* Comprehensive Event Details Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+              <div className="p-3.5 rounded-xl bg-[#17243B] border border-[#263650]">
+                <span className="text-slate-400 block mb-1">Allocated Venue & Facility:</span>
+                {(() => {
+                  const vInfo = getVenueDetails(selectedEvent);
+                  return (
+                    <div>
+                      <span className="font-semibold text-cyan-300 flex items-center gap-1.5 leading-snug break-words">
+                        <MapPin size={13} className="text-cyan-400 shrink-0" />
+                        {vInfo.name}
+                      </span>
+                      <span className="text-slate-400 text-[11px] block mt-1">
+                        {vInfo.location}
+                      </span>
+                    </div>
+                  );
+                })()}
+              </div>
               <div className="p-3.5 rounded-xl bg-[#17243B] border border-[#263650]">
                 <span className="text-slate-400 block mb-1">Date & Time:</span>
                 <span className="font-semibold text-slate-100 flex items-center gap-1.5">
@@ -331,20 +377,6 @@ export default function AdvisorApprovalsPage() {
               <p className="text-sm text-slate-300 leading-relaxed bg-[#17243B] p-3.5 rounded-xl border border-[#263650]">
                 {selectedEvent.description || selectedEvent.shortDescription || 'No description provided.'}
               </p>
-            </div>
-
-            {/* Logistics & Equipment */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div className="p-3 rounded-xl bg-[#17243B] border border-[#263650]">
-                <span className="text-slate-400 block mb-0.5">Capacity & Waitlist:</span>
-                <span className="font-semibold text-slate-100">
-                  {selectedEvent.capacity} seats ({selectedEvent.isWaitlistEnabled ? 'Waitlist Enabled' : 'No Waitlist'})
-                </span>
-              </div>
-              <div className="p-3 rounded-xl bg-[#17243B] border border-[#263650]">
-                <span className="text-slate-400 block mb-0.5">Required Equipment:</span>
-                <span className="font-semibold text-slate-100">{selectedEvent.equipmentNeeded || 'Standard AV setup'}</span>
-              </div>
             </div>
 
             {/* Approval Workflow Stepper */}
@@ -413,10 +445,15 @@ export default function AdvisorApprovalsPage() {
             <div className="p-3 rounded-xl bg-[#111C32] border border-[#263650] text-xs flex items-center justify-between gap-3">
               <div>
                 <p className="font-bold text-slate-100">{selectedEvent.title}</p>
-                <p className="text-slate-400 mt-0.5 flex items-center gap-1">
-                  <MapPin size={12} className="text-cyan-400" />
-                  {selectedEvent.venueName || 'Main Auditorium'}
-                </p>
+                {(() => {
+                  const vInfo = getVenueDetails(selectedEvent);
+                  return (
+                    <p className="text-slate-300 mt-1 flex items-center gap-1.5 font-medium">
+                      <MapPin size={12} className="text-cyan-400 shrink-0" />
+                      <span>{vInfo.fullText}</span>
+                    </p>
+                  );
+                })()}
               </div>
               <div className="text-right shrink-0">
                 <span className="text-[11px] text-slate-400 block">Requested Budget</span>

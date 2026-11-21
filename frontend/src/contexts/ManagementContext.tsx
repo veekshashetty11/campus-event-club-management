@@ -206,6 +206,7 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
         registrationDeadline: data.registrationDeadline || new Date(Date.now() + 86400000 * 10).toISOString(),
         venueId: selectedVenue?.venueId,
         venue: selectedVenue,
+        venueName: selectedVenue?.name || (data as any).venueName,
         preferredVenueId: selectedVenue?.venueId,
         venueRequirements: data.venueRequirements,
         isOnline: data.isOnline || false,

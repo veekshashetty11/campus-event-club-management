@@ -161,7 +161,9 @@ export default function AdminEventsPage() {
                     <p className="font-medium">{evt.startDate ? new Date(evt.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : (evt.eventDate || 'TBD')}</p>
                     <span className="text-[11px] text-slate-400">{evt.startTime}</span>
                   </td>
-                  <td className="py-3.5 px-4 text-xs text-slate-600">{evt.venueName}</td>
+                  <td className="py-3.5 px-4 text-xs text-slate-600">
+                    <span className="font-medium text-slate-800">{evt.venueName || evt.venue?.name || 'Main Auditorium'}</span>
+                  </td>
                   <td className="py-3.5 px-4 text-xs">
                     <span className="font-semibold text-slate-800">{evt.registeredCount}</span> / {evt.capacity}
                   </td>
@@ -194,7 +196,7 @@ export default function AdminEventsPage() {
               </div>
               <div>
                 <span className="text-slate-400 block">Venue:</span>
-                <span className="font-bold text-slate-800">{inspectEvent.venueName}</span>
+                <span className="font-bold text-slate-800">{inspectEvent.venueName || inspectEvent.venue?.name || 'Main Auditorium'}</span>
               </div>
             </div>
 
