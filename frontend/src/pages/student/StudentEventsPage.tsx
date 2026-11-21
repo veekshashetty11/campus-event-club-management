@@ -29,10 +29,9 @@ export default function StudentEventsPage() {
 
     return events
       .filter((ev) => {
-        // Visibility guard: students only see published/ongoing/completed events
-        // Draft, pending_approval, approved (pending venue), and rejected events are hidden
-        const VISIBLE_STATUSES = ['published', 'ongoing', 'completed', 'cancelled'];
-        if (!VISIBLE_STATUSES.includes(ev.status)) return false;
+        // Visibility guard: students see published, approved, ongoing, completed events
+        const VISIBLE_STATUSES = ['published', 'approved', 'ongoing', 'completed', 'cancelled'];
+        if (!VISIBLE_STATUSES.includes(ev.status) && ev.approvalStage !== 'final_approved') return false;
 
         // Keyword Search
         const searchLower = search.toLowerCase();

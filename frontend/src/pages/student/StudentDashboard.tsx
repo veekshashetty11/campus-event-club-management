@@ -43,7 +43,19 @@ export default function StudentDashboard() {
     const now = new Date();
     return events
       .filter((ev) => {
-        const isUpcoming = ev.status === 'published' && new Date(ev.endTime) >= now;
+        // Any approved or published campus event
+        const isApprovedOrPublished =
+          ev.status === 'published' ||
+          ev.status === 'approved' ||
+          ev.approvalStage === 'final_approved';
+        const evDate = ev.endTime
+          ? new Date(ev.endTime)
+          : ev.startDate
+          ? new Date(ev.startDate)
+          : ev.startTime
+          ? new Date(ev.startTime)
+          : null;
+        const isUpcoming = isApprovedOrPublished && (!evDate || evDate >= now);
         const matchCat = categoryFilter === 'All' || ev.category === categoryFilter;
         const s = searchQuery.toLowerCase();
         const matchSearch =

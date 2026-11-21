@@ -190,6 +190,8 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
         });
       }
 
+      const budgetAmount = Number(data.budget ?? data.budgetRequired ?? data.budgetAllocated ?? 15000);
+
       const newEvent: CampusEvent = {
         eventId: newEventId,
         clubId: club.clubId,
@@ -201,6 +203,7 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
         shortDescription: data.shortDescription || data.description?.slice(0, 100),
         description: data.description || '',
         bannerUrl: data.bannerUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80',
+        startDate: data.startDate || (data.startTime ? data.startTime.split('T')[0] : new Date().toISOString().split('T')[0]),
         startTime: data.startTime || new Date(Date.now() + 86400000 * 14).toISOString(),
         endTime: data.endTime || new Date(Date.now() + 86400000 * 14 + 14400000).toISOString(),
         registrationDeadline: data.registrationDeadline || new Date(Date.now() + 86400000 * 10).toISOString(),
@@ -211,10 +214,13 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
         venueRequirements: data.venueRequirements,
         isOnline: data.isOnline || false,
         onlineLink: data.onlineLink,
-        maxCapacity: data.maxCapacity || 100,
+        capacity: Number(data.capacity || data.maxCapacity || 100),
+        maxCapacity: Number(data.capacity || data.maxCapacity || 100),
         registeredCount: 0,
         waitlistCount: 0,
+        waitlistCapacity: Number(data.waitlistCapacity || 25),
         waitlistEnabled: data.waitlistEnabled ?? true,
+        isWaitlistEnabled: data.isWaitlistEnabled ?? data.waitlistEnabled ?? true,
         isPublic: true,
         status,
         pointsAwarded: data.pointsAwarded || 30,
@@ -224,8 +230,11 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
         coordinatorName: user?.fullName || 'Chris Martinez',
         coordinatorEmail: user?.email || 'coordinator@campus.edu',
         coordinatorPhone: user?.phone || '+1-555-0104',
-        budgetRequired: data.budgetRequired || 5000,
-        budgetAllocated: data.budgetRequired || 5000,
+        budget: budgetAmount,
+        budgetRequired: budgetAmount,
+        budgetAllocated: budgetAmount,
+        rules: data.rules,
+        equipmentNeeded: data.equipmentNeeded,
         equipmentRequirements: data.equipmentRequirements,
         sponsorshipRequirements: data.sponsorshipRequirements,
         approvalStage: submitNow ? 'club_advisor' : undefined,
@@ -263,6 +272,10 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
       setEvents((prev) => {
         const updated = [newEvent, ...prev];
         saveState('events', updated);
+        try {
+          localStorage.setItem('campus_event_student_state_events', JSON.stringify(updated));
+          window.dispatchEvent(new Event('campus_event_sync'));
+        } catch {}
         return updated;
       });
 
@@ -298,9 +311,15 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
           if (ev.eventId === eventId) {
             updatedEventTitle = data.title || ev.title;
             const status: EventStatus = submitNow ? 'pending_approval' : 'draft';
+            const budgetVal = data.budget ?? data.budgetRequired ?? data.budgetAllocated ?? ev.budget;
             return {
               ...ev,
               ...data,
+              budget: budgetVal,
+              budgetRequired: budgetVal,
+              budgetAllocated: budgetVal,
+              capacity: data.capacity || data.maxCapacity || ev.capacity,
+              maxCapacity: data.capacity || data.maxCapacity || ev.maxCapacity,
               status,
               approvalStage: submitNow ? ('club_advisor' as const) : ev.approvalStage,
               submissionDate: submitNow ? new Date().toISOString() : ev.submissionDate,
@@ -309,6 +328,10 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
           return ev;
         });
         saveState('events', updated);
+        try {
+          localStorage.setItem('campus_event_student_state_events', JSON.stringify(updated));
+          window.dispatchEvent(new Event('campus_event_sync'));
+        } catch {}
         return updated;
       });
 
@@ -349,9 +372,15 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
       setEvents((prev) => {
         const updated = prev.map((ev) => {
           if (ev.eventId === eventId) {
+            const budgetVal = data.budget ?? data.budgetRequired ?? data.budgetAllocated ?? ev.budget;
             return {
               ...ev,
               ...data,
+              budget: budgetVal,
+              budgetRequired: budgetVal,
+              budgetAllocated: budgetVal,
+              capacity: data.capacity || data.maxCapacity || ev.capacity,
+              maxCapacity: data.capacity || data.maxCapacity || ev.maxCapacity,
               status: 'pending_approval' as const,
               approvalStage: 'club_advisor' as const, // restarts from Level 1 Advisor
               changesRequestedNotes: undefined,
@@ -362,6 +391,10 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
           return ev;
         });
         saveState('events', updated);
+        try {
+          localStorage.setItem('campus_event_student_state_events', JSON.stringify(updated));
+          window.dispatchEvent(new Event('campus_event_sync'));
+        } catch {}
         return updated;
       });
 
@@ -760,10 +793,9 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
             submittedAt: new Date().toISOString(),
           };
         } else if (approval.level === 3) {
-          // Level 3 (Administrator) Approved -> Event is finally approved!
-          // Next step: Awaiting Venue Manager allocation / confirmation before public publishing
+          // Level 3 (Administrator) Approved -> Event is finally approved & published!
           newEventStage = 'final_approved';
-          newEventStatus = 'approved';
+          newEventStatus = 'published';
 
           // Ensure a pending venue booking request is queued for Venue Manager
           setVenueBookings((prev) => {
@@ -816,6 +848,7 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
               ...ev,
               status: newEventStatus,
               approvalStage: newEventStage,
+              isPublic: newEventStatus === 'published' ? true : ev.isPublic,
               rejectionReason: decision === 'rejected' ? rejectionReason || comments : ev.rejectionReason,
               changesRequestedNotes: decision === 'changes_requested' ? requestedChanges || comments : undefined,
             };
@@ -823,6 +856,10 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
           return ev;
         });
         saveState('events', updated);
+        try {
+          localStorage.setItem('campus_event_student_state_events', JSON.stringify(updated));
+          window.dispatchEvent(new Event('campus_event_sync'));
+        } catch {}
         return updated;
       });
 

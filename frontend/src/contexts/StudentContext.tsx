@@ -56,7 +56,9 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
   // State initialized with centralized mock fixtures
   const [events, setEvents] = useState<CampusEvent[]>(() => {
     try {
-      const saved = localStorage.getItem(`${STORAGE_KEY_PREFIX}events`);
+      const saved =
+        localStorage.getItem(`${STORAGE_KEY_PREFIX}events`) ||
+        localStorage.getItem('campus_mgmt_state_v1_events');
       return saved ? JSON.parse(saved) : MOCK_EVENTS;
     } catch {
       return MOCK_EVENTS;
@@ -111,12 +113,20 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
   });
 
   // ── Cross-context sync: listen for localStorage changes from ManagementContext ──
-  // When the Venue Manager approves a booking, ManagementContext writes to
-  // 'campus_event_student_state_events'. This listener picks that up so the
-  // student sees newly-published events without a full page reload.
   useEffect(() => {
+    const reloadEvents = () => {
+      try {
+        const saved =
+          localStorage.getItem(`${STORAGE_KEY_PREFIX}events`) ||
+          localStorage.getItem('campus_mgmt_state_v1_events');
+        if (saved) {
+          setEvents(JSON.parse(saved));
+        }
+      } catch {}
+    };
+
     const handler = (e: StorageEvent) => {
-      if (e.key === `${STORAGE_KEY_PREFIX}events` && e.newValue) {
+      if ((e.key === `${STORAGE_KEY_PREFIX}events` || e.key === 'campus_mgmt_state_v1_events') && e.newValue) {
         try {
           setEvents(JSON.parse(e.newValue));
         } catch {
@@ -139,7 +149,13 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
       }
     };
     window.addEventListener('storage', handler);
-    return () => window.removeEventListener('storage', handler);
+    window.addEventListener('campus_event_sync', reloadEvents);
+    window.addEventListener('focus', reloadEvents);
+    return () => {
+      window.removeEventListener('storage', handler);
+      window.removeEventListener('campus_event_sync', reloadEvents);
+      window.removeEventListener('focus', reloadEvents);
+    };
   }, []);
 
   // Dynamically computed stats

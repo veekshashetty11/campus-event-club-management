@@ -112,7 +112,7 @@ export default function CoordinatorBudgetPage() {
 
     if (formData.amount > remainingBudget) {
       setMessage({
-        text: `Budget Exceeded: Expense ($${formData.amount}) exceeds remaining club budget ($${remainingBudget}).`,
+        text: `Budget Exceeded: Expense (₹${formData.amount.toLocaleString('en-IN')}) exceeds remaining club budget (₹${remainingBudget.toLocaleString('en-IN')}).`,
         isError: true,
       });
       return;
@@ -206,7 +206,7 @@ export default function CoordinatorBudgetPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Annual Allocated Budget</p>
-              <p className="text-2xl font-black text-white mt-1">${club.allocatedBudget.toLocaleString()}</p>
+              <p className="text-2xl font-black text-white mt-1">₹{club.allocatedBudget.toLocaleString('en-IN')}</p>
             </div>
             <div className="w-11 h-11 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center">
               <Wallet size={22} />
@@ -218,7 +218,7 @@ export default function CoordinatorBudgetPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Disbursements</p>
-              <p className="text-2xl font-black text-rose-400 mt-1">${totalSpent.toLocaleString()}</p>
+              <p className="text-2xl font-black text-rose-400 mt-1">₹{totalSpent.toLocaleString('en-IN')}</p>
             </div>
             <div className="w-11 h-11 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center">
               <TrendingDown size={22} />
@@ -230,7 +230,7 @@ export default function CoordinatorBudgetPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Remaining Balance</p>
-              <p className="text-2xl font-black text-emerald-400 mt-1">${remainingBudget.toLocaleString()}</p>
+              <p className="text-2xl font-black text-emerald-400 mt-1">₹{remainingBudget.toLocaleString('en-IN')}</p>
             </div>
             <div className="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
               <DollarSign size={22} />
@@ -525,7 +525,7 @@ export default function CoordinatorBudgetPage() {
             </div>
 
             <Input
-              label="Amount ($ USD)"
+              label="Amount (₹ Rupees)"
               type="number"
               min="1"
               value={formData.amount}
@@ -557,7 +557,7 @@ export default function CoordinatorBudgetPage() {
 
           <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 flex justify-between">
             <span>Remaining Club Balance:</span>
-            <span className="font-bold text-emerald-700">${remainingBudget.toLocaleString()}</span>
+            <span className="font-bold text-emerald-700">₹{remainingBudget.toLocaleString('en-IN')}</span>
           </div>
 
           <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">

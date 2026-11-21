@@ -310,7 +310,7 @@ export default function CoordinatorEventsPage() {
               <div className="text-right">
                 <p className="text-xs text-slate-500">Proposed Budget</p>
                 <p className="text-sm font-bold text-slate-200">
-                  ${selectedEventForTimeline.budget ? selectedEventForTimeline.budget.toLocaleString() : '0'}
+                  ₹{selectedEventForTimeline.budget ? selectedEventForTimeline.budget.toLocaleString('en-IN') : '0'}
                 </p>
               </div>
             </div>

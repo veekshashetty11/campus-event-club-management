@@ -49,7 +49,7 @@ export default function CoordinatorCreateEventPage() {
     registrationDeadline: '',
     isWaitlistEnabled: true,
     waitlistCapacity: 25,
-    budget: 500,
+    budget: 15000,
     rules: 'College ID card required. Please arrive 15 minutes before scheduled start time.',
     equipmentNeeded: 'Projector, 2 Cordless Microphones, Stage podium.',
   });
@@ -74,7 +74,7 @@ export default function CoordinatorCreateEventPage() {
         registrationDeadline: existingEvent.registrationDeadline || existingEvent.startDate || '',
         isWaitlistEnabled: Boolean(existingEvent.isWaitlistEnabled ?? existingEvent.waitlistEnabled ?? true),
         waitlistCapacity: existingEvent.waitlistCapacity || 25,
-        budget: existingEvent.budget || 500,
+        budget: existingEvent.budget || existingEvent.budgetRequired || existingEvent.budgetAllocated || 15000,
         rules: typeof existingEvent.rules === 'string' ? existingEvent.rules : Array.isArray(existingEvent.rules) ? existingEvent.rules.join('\n') : '',
         equipmentNeeded: existingEvent.equipmentNeeded || '',
       });
@@ -104,13 +104,18 @@ export default function CoordinatorCreateEventPage() {
 
     setIsSubmitting(true);
     try {
+      const budgetVal = Number(formData.budget) || 0;
       const payload = {
         ...formData,
         venueId: Number(formData.venueId),
+        preferredVenueId: Number(formData.venueId),
         venueName: selectedVenue.name,
         capacity: Number(formData.capacity),
+        maxCapacity: Number(formData.capacity),
         waitlistCapacity: Number(formData.waitlistCapacity),
-        budget: Number(formData.budget),
+        budget: budgetVal,
+        budgetRequired: budgetVal,
+        budgetAllocated: budgetVal,
         clubId: user?.clubId || 1,
       };
 
@@ -368,18 +373,18 @@ export default function CoordinatorCreateEventPage() {
         {/* 4. Budget & Equipment */}
         <Card className="p-6 bg-[#111C32] border-[#263650]">
           <h2 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-            <DollarSign size={18} className="text-indigo-400" />
+            <span className="text-indigo-400 font-bold text-base leading-none">₹</span>
             4. Budget, Logistics & Guidelines
           </h2>
 
           <div className="space-y-4">
             <Input
-              label="Estimated Budget ($ USD)"
+              label="Estimated Budget (₹ Rupees)"
               type="number"
               min="0"
               value={formData.budget}
               onChange={(e) => setFormData({ ...formData, budget: Number(e.target.value) })}
-              placeholder="e.g. 500"
+              placeholder="e.g. 25000"
             />
 
             <div>
