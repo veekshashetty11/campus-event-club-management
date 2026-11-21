@@ -856,11 +856,33 @@ export function ManagementProvider({ children }: { children: React.ReactNode }) 
         actionUrl: '/coordinator/events',
         targetRole: 'event_coordinator',
       };
-      setNotifications((prev) => [notif, ...prev]);
+
+      setNotifications((prev) => {
+        const updated = [notif, ...prev];
+        saveState('notifications', updated);
+        return updated;
+      });
+
+      // Synchronize notification across to student & coordinator context
+      try {
+        const studentNotifKey = 'campus_event_student_state_notifications';
+        const existingRaw = localStorage.getItem(studentNotifKey);
+        const existing = existingRaw ? JSON.parse(existingRaw) : [];
+        const mergedNotifs = [notif, ...existing.filter((n: any) => n.notificationId !== notif.notificationId)];
+        localStorage.setItem(studentNotifKey, JSON.stringify(mergedNotifs));
+        window.dispatchEvent(
+          new StorageEvent('storage', {
+            key: studentNotifKey,
+            newValue: JSON.stringify(mergedNotifs),
+          })
+        );
+      } catch (err) {
+        console.error('Failed to dispatch notification:', err);
+      }
 
       return {
         success: true,
-        message: `Decision recorded: ${decision.replace('_', ' ').toUpperCase()}.`,
+        message: `Decision recorded: ${decision.replace('_', ' ').toUpperCase()}. Notification sent: "${notifMessage}"`,
       };
     },
     [approvals, events, user, addAuditLog]

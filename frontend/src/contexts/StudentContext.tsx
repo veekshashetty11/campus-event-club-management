@@ -130,6 +130,13 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
           // ignore parse errors
         }
       }
+      if (e.key === `${STORAGE_KEY_PREFIX}notifications` && e.newValue) {
+        try {
+          setNotifications(JSON.parse(e.newValue));
+        } catch {
+          // ignore parse errors
+        }
+      }
     };
     window.addEventListener('storage', handler);
     return () => window.removeEventListener('storage', handler);

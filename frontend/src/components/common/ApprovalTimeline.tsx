@@ -39,8 +39,8 @@ export default function ApprovalTimeline({ event, currentStatus, approvals = [] 
   const stages = [
     {
       level: 0,
-      title: '1. Coordinator Submission',
-      role: 'Club Coordinator',
+      title: '1. Student Coordinator Submission',
+      role: 'Student Coordinator',
       assignedTo: event?.organizerName || event?.coordinatorName || 'Chris Martinez',
       date: event?.submissionDate ? formatDate(event.submissionDate) : 'Initial Draft',
       status: 'approved',
@@ -49,8 +49,8 @@ export default function ApprovalTimeline({ event, currentStatus, approvals = [] 
     },
     {
       level: 1,
-      title: '2. Club Advisor Review',
-      role: 'Faculty Club Advisor',
+      title: '2. Faculty Advisor Review',
+      role: 'Faculty Advisor',
       assignedTo: 'Prof. Alistair Finch',
       date: advisorApproval?.decidedAt ? formatDate(advisorApproval.decidedAt) : (advisorApproval ? 'In Review' : 'Upcoming'),
       status: advisorApproval?.status || (eventStatus === 'draft' ? 'not_started' : 'pending'),
@@ -62,7 +62,7 @@ export default function ApprovalTimeline({ event, currentStatus, approvals = [] 
     {
       level: 2,
       title: '3. Student Affairs Review',
-      role: 'Student Affairs Officer',
+      role: 'Student Affairs',
       assignedTo: 'Dean Marcus Brody',
       date: affairsApproval?.decidedAt ? formatDate(affairsApproval.decidedAt) : (affairsApproval ? 'In Review' : 'Upcoming'),
       status: affairsApproval?.status || (advisorApproval?.status === 'approved' ? 'pending' : 'not_started'),
@@ -73,7 +73,7 @@ export default function ApprovalTimeline({ event, currentStatus, approvals = [] 
     },
     {
       level: 3,
-      title: '4. Administrator Final Approval',
+      title: '4. Campus Administrator Final Approval',
       role: 'Campus Administrator',
       assignedTo: 'Dr. Eleanor Vance',
       date: adminApproval?.decidedAt ? formatDate(adminApproval.decidedAt) : (adminApproval ? 'In Review' : 'Upcoming'),
@@ -132,7 +132,7 @@ export default function ApprovalTimeline({ event, currentStatus, approvals = [] 
             <h3 className="font-bold text-white text-base">Interactive Event Approval Pipeline</h3>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Coordinator Submission → Club Advisor Review → Student Affairs Review → Administrator Final Approval
+            Track multi-level institutional authorization in sequential hierarchy.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -150,8 +150,42 @@ export default function ApprovalTimeline({ event, currentStatus, approvals = [] 
         </div>
       </div>
 
+      {/* ── Approval Roles & Sequential Stages Legend with Generous Spacing ── */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-[#17243B]/80 border border-[#263650] my-4 shadow-sm">
+        <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3">
+          Institutional Approval Sequence & Roles:
+        </p>
+        <div className="flex items-center flex-wrap gap-2.5 sm:gap-4 text-xs font-semibold">
+          <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-200">
+            <span className="w-2 h-2 rounded-full bg-indigo-400 shrink-0" />
+            <span>Student Coordinator</span>
+          </div>
+
+          <span className="text-slate-500 font-bold text-sm px-1">→</span>
+
+          <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-200">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
+            <span>Faculty Advisor</span>
+          </div>
+
+          <span className="text-slate-500 font-bold text-sm px-1">→</span>
+
+          <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-200">
+            <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
+            <span>Student Affairs</span>
+          </div>
+
+          <span className="text-slate-500 font-bold text-sm px-1">→</span>
+
+          <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-200">
+            <span className="w-2 h-2 rounded-full bg-cyan-400 shrink-0" />
+            <span>Campus Administrator</span>
+          </div>
+        </div>
+      </div>
+
       {/* Connected Top Progress Stepper (Desktop) */}
-      <div className="hidden md:block">
+      <div className="hidden md:block my-2">
         <div className="relative flex items-center justify-between">
           {/* Track line behind steps */}
           <div className="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-1 bg-[#17243B] border border-[#263650] rounded-full z-0">
@@ -171,7 +205,7 @@ export default function ApprovalTimeline({ event, currentStatus, approvals = [] 
               <div
                 key={idx}
                 onClick={() => toggleStage(idx)}
-                className="relative z-10 flex flex-col items-center cursor-pointer group"
+                className="relative z-10 flex flex-col items-center cursor-pointer group px-2"
               >
                 <div
                   className={`w-10 h-10 rounded-2xl flex items-center justify-center border transition-all duration-300 ${
@@ -188,10 +222,10 @@ export default function ApprovalTimeline({ event, currentStatus, approvals = [] 
                 >
                   {getStepIcon(stage.status)}
                 </div>
-                <span className="text-[11px] font-bold text-slate-200 mt-2 text-center max-w-[110px] leading-tight">
+                <span className="text-xs font-bold text-slate-200 mt-2.5 text-center leading-tight">
                   Stage {idx + 1}
                 </span>
-                <span className="text-[10px] text-slate-400 text-center truncate max-w-[120px]">
+                <span className="text-[11px] font-medium text-slate-300 text-center mt-1 px-1.5 leading-snug">
                   {stage.role}
                 </span>
               </div>

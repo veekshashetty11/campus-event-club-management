@@ -158,17 +158,32 @@ export default function AdminApprovalsPage() {
 
       {actionAlert && (
         <div
-          className={`p-4 rounded-xl flex items-center justify-between border text-sm ${
+          className={`p-4 rounded-xl flex items-center justify-between border text-sm shadow-md ${
             !actionAlert.isError
-              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300'
-              : 'bg-rose-500/10 border-rose-500/20 text-rose-300'
+              ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-200'
+              : 'bg-rose-500/15 border-rose-500/30 text-rose-200'
           }`}
         >
-          <div className="flex items-center gap-2">
-            {!actionAlert.isError ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
-            <span>{actionAlert.text}</span>
+          <div className="flex items-center gap-2.5">
+            {!actionAlert.isError ? (
+              <div className="w-7 h-7 rounded-lg bg-emerald-500/20 flex items-center justify-center shrink-0">
+                <CheckCircle2 size={16} className="text-emerald-400" />
+              </div>
+            ) : (
+              <div className="w-7 h-7 rounded-lg bg-rose-500/20 flex items-center justify-center shrink-0">
+                <AlertCircle size={16} className="text-rose-400" />
+              </div>
+            )}
+            <div>
+              <p className="font-semibold text-white">{actionAlert.text}</p>
+              {!actionAlert.isError && (
+                <p className="text-xs text-emerald-300/80 mt-0.5">
+                  Notification and audit entry successfully dispatched to the Club Coordinator & subsequent reviewers.
+                </p>
+              )}
+            </div>
           </div>
-          <button onClick={() => setActionAlert(null)} className="text-xs font-semibold hover:underline">
+          <button onClick={() => setActionAlert(null)} className="text-xs font-semibold hover:underline text-slate-300 ml-4 shrink-0">
             Dismiss
           </button>
         </div>
